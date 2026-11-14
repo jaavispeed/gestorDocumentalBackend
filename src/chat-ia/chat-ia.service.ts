@@ -5,7 +5,6 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { GoogleGenAI } from '@google/genai';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -15,32 +14,68 @@ import { EstadoServidorDto, RespuestaChatDto } from '../common/dto/chat-respuest
 @Injectable()
 export class ChatIaService {
   private readonly logger = new Logger(ChatIaService.name);
-  private readonly clienteAiPorDefecto: GoogleGenAI | null = null;
-  private readonly clavePorDefecto: string;
-  private readonly modeloPorDefecto: string;
   private readonly rutaDocumentacion: string;
+  private readonly instruccionSistema = `
+Eres el asistente documental del sistema. Tu rol es responder consultas con máxima fidelidad y claridad.
 
-  constructor(private readonly configService: ConfigService) {
-    this.clavePorDefecto = this.configService.get<string>('GEMINI_API_KEY') || '';
-    this.modeloPorDefecto =
-      this.configService.get<string>('GEMINI_MODELO') || 'gemini-2.5-flash';
+REGLAS DE OPERACIÓN (CERO ALUCINACIÓN):
+1. Fuente única: Basa tus respuestas exclusivamente en la base de conocimiento provista. No agregues datos externos ni supuestos.
+2. Si la información solicitada no figura en los documentos, indica con amabilidad:
+   "La información solicitada no se encuentra disponible en la documentación técnica del sistema."
+3. Cita el documento de origen cuando corresponda.
 
-    if (this.clavePorDefecto) {
-      this.clienteAiPorDefecto = new GoogleGenAI({
-        apiKey: this.clavePorDefecto,
-      });
-    }
+FORMATO Y ESTILO:
+- Respuestas directas, concisas y fáciles de leer para cualquier usuario.
+- Usa Markdown limpio: títulos cortos (###), viñetas y conceptos clave en **negrita**.
+- Evita párrafos largos y redundancias innecesarias.
+`.trim();
 
+  constructor() {
     // Ruta de la carpeta documentacion en la raíz del backend
     this.rutaDocumentacion = path.resolve(process.cwd(), 'documentacion');
   }
 
-  obtenerEstado(): EstadoServidorDto {
-    return {
-      estado: 'activo',
-      modelo: this.modeloPorDefecto,
-      tieneClaveConfigurada: Boolean(this.clavePorDefecto),
-    };
+  async obtenerEstado(
+    clavePersonalizada?: string,
+    modeloPersonalizado?: string,
+  ): Promise<EstadoServidorDto> {
+    const claveFinal = clavePersonalizada ? clavePersonalizada.trim() : '';
+    const modeloFinal = (modeloPersonalizado && modeloPersonalizado.trim()) || 'gemini-2.5-flash';
+
+    if (!claveFinal) {
+      return {
+        estado: 'desconocido',
+        modelo: modeloFinal,
+        tieneClaveConfigurada: false,
+        mensaje: 'Debes configurar tu API Key de Gemini en los Ajustes del frontend.',
+      };
+    }
+
+    try {
+      const cliente = new GoogleGenAI({ apiKey: claveFinal });
+
+      // Verificación real con la API de Gemini
+      const nombreModelo = modeloFinal.replace(/^models\//, '');
+      await cliente.models.get({
+        model: nombreModelo,
+      });
+
+      return {
+        estado: 'activo',
+        modelo: modeloFinal,
+        tieneClaveConfigurada: true,
+      };
+    } catch (error: any) {
+      const mensajeError = error?.message || 'Error al conectar con la API de Gemini';
+      this.logger.warn(`Fallo en verificación de API Gemini: ${mensajeError}`);
+
+      return {
+        estado: 'error',
+        modelo: modeloFinal,
+        tieneClaveConfigurada: true,
+        mensaje: mensajeError,
+      };
+    }
   }
 
   async procesarMensaje(consulta: ConsultaChatDto): Promise<RespuestaChatDto> {
@@ -50,38 +85,36 @@ export class ChatIaService {
       throw new BadRequestException('El mensaje es obligatorio');
     }
 
-    const claveFinal = clavePersonalizada || this.clavePorDefecto;
-    const modeloFinal = (modeloPersonalizado || this.modeloPorDefecto).replace(/^models\//, '');
+    const claveFinal = clavePersonalizada ? clavePersonalizada.trim() : '';
+    const modeloFinal = (modeloPersonalizado && modeloPersonalizado.trim()) || 'gemini-2.5-flash';
 
     if (!claveFinal) {
       throw new ServiceUnavailableException(
-        'No hay ninguna clave API configurada. Configura tu API Key en los ajustes o en el archivo .env del servidor.',
+        'No hay ninguna clave API configurada. Configura tu API Key en los Ajustes de la aplicación.',
       );
     }
 
-    const clienteFinal = clavePersonalizada
-      ? new GoogleGenAI({ apiKey: claveFinal })
-      : this.clienteAiPorDefecto ?? new GoogleGenAI({ apiKey: claveFinal });
+    const clienteFinal = new GoogleGenAI({ apiKey: claveFinal });
 
     try {
       const contextoDoc = this.obtenerContextoBase();
 
       let contenidoPrompt = '';
       if (contextoDoc) {
-        contenidoPrompt += `BASE DE CONOCIMIENTO DISPONIBLE:\n${contextoDoc}\n\n`;
+        contenidoPrompt += `BASE DE CONOCIMIENTO:\n${contextoDoc}\n\n`;
       }
 
       if (historial && historial.length > 0) {
-        const ultimos = historial.slice(-3);
+        const ultimos = historial.slice(-2);
         contenidoPrompt +=
-          'HISTORIAL PREVIO:\n' +
+          'HISTORIAL RECIENTE:\n' +
           ultimos
-            .map((m) => `${m.rol === 'usuario' ? 'Usuario' : 'Asistente'}: ${m.contenido}`)
+            .map((m) => `${m.rol === 'usuario' ? 'U' : 'A'}: ${m.contenido.trim()}`)
             .join('\n') +
           '\n\n';
       }
 
-      contenidoPrompt += `Pregunta del usuario: ${mensaje}`;
+      contenidoPrompt += `Pregunta: ${mensaje.trim()}`;
 
       this.logger.log(`Procesando chat con modelo: ${modeloFinal}`);
 
@@ -89,6 +122,7 @@ export class ChatIaService {
         model: modeloFinal,
         contents: contenidoPrompt,
         config: {
+          systemInstruction: this.instruccionSistema,
           maxOutputTokens: 2048,
         },
       });
@@ -129,11 +163,9 @@ export class ChatIaService {
     }
 
     const archivos = this.leerArchivosMd(this.rutaDocumentacion);
-    // Tomar una muestra representativa o consolidado simple
     return archivos
-      .slice(0, 10)
-      .map((a) => `[Archivo: ${a.ruta}]\n${a.contenido}`)
-      .join('\n\n---\n\n');
+      .map((a) => `[DOC: ${a.ruta}]\n${a.contenido.trim()}`)
+      .join('\n---\n');
   }
 
   private leerArchivosMd(directorio: string): Array<{ ruta: string; contenido: string }> {

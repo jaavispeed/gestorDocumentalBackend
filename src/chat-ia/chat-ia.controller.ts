@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, HttpCode, HttpStatus } from '@nestjs/common';
 import { ChatIaService } from './chat-ia.service.js';
 import { ConsultaChatDto } from '../common/dto/consulta-chat.dto.js';
 import type { EstadoServidorDto, RespuestaChatDto } from '../common/dto/chat-respuestas.dto.js';
@@ -8,8 +8,11 @@ export class ChatIaController {
   constructor(private readonly chatIaService: ChatIaService) {}
 
   @Get('api/estado')
-  obtenerEstado(): EstadoServidorDto {
-    return this.chatIaService.obtenerEstado();
+  async obtenerEstado(
+    @Query('clave') clavePersonalizada?: string,
+    @Query('modelo') modeloPersonalizado?: string,
+  ): Promise<EstadoServidorDto> {
+    return this.chatIaService.obtenerEstado(clavePersonalizada, modeloPersonalizado);
   }
 
   @Post('api/ia/chat')
