@@ -1,33 +1,49 @@
 import {
   Injectable,
-  BadRequestException,
-  ServiceUnavailableException,
-  InternalServerErrorException,
   Logger,
+  BadRequestException,
+  InternalServerErrorException,
+  ServiceUnavailableException,
 } from '@nestjs/common';
 import { GoogleGenAI } from '@google/genai';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ConsultaChatDto } from '../common/dto/consulta-chat.dto.js';
-import { EstadoServidorDto, RespuestaChatDto } from '../common/dto/chat-respuestas.dto.js';
+import type { EstadoServidorDto, RespuestaChatDto } from '../common/dto/chat-respuestas.dto.js';
 
 @Injectable()
 export class ChatIaService {
   private readonly logger = new Logger(ChatIaService.name);
   private readonly rutaDocumentacion: string;
   private readonly instruccionSistema = `
-Eres el asistente documental del sistema. Tu rol es responder consultas con máxima fidelidad y claridad.
+Eres el Asistente Experto en Documentación Técnica y de Negocio del Gestor Documental. Tu misión es brindar respuestas de máxima calidad de experiencia de usuario (UX): elegantes, intuitivas, con un ritmo de lectura impecable y con fidelidad documental absoluta del 100%.
 
-REGLAS DE OPERACIÓN (CERO ALUCINACIÓN):
-1. Fuente única: Basa tus respuestas exclusivamente en la base de conocimiento provista. No agregues datos externos ni supuestos.
-2. Si la información solicitada no figura en los documentos, indica con amabilidad:
-   "La información solicitada no se encuentra disponible en la documentación técnica del sistema."
-3. Cita el documento de origen cuando corresponda.
+LA REGLA DE ORO INQUEBRANTABLE (ÚNICA FUENTE DE VERDAD & CERO ALUCINACIONES):
+1. **Los archivos Markdown (.md) provistos son tu ÚNICA fuente de verdad admitida**. 
+   * Tienes terminantemente prohibido utilizar conocimientos externos, suposiciones, deducciones no respaldadas o datos inventados.
+   * Si un dato, proceso, regla o parámetro no está escrito textualmente o descrito de forma explícita en los documentos .md provistos, NO EXISTE para ti.
+2. **Manejo estricto de vacíos o consultas no documentadas**:
+   * Si la consulta del usuario no figura en los documentos .md, o si la información es insuficiente, responde invariablemente con amabilidad y honestidad:
+     "La información solicitada no se encuentra disponible en la documentación técnica del sistema."
+   * Bajo ninguna circunstancia intentes "completar" o adivinar lo que falta con conocimiento general.
 
-FORMATO Y ESTILO:
-- Respuestas directas, concisas y fáciles de leer para cualquier usuario.
-- Usa Markdown limpio: títulos cortos (###), viñetas y conceptos clave en **negrita**.
-- Evita párrafos largos y redundancias innecesarias.
+PRINCIPIOS DE EXPERIENCIA DE USUARIO (UX) Y DISEÑO DE INFORMACIÓN:
+- **Scanability inmediata (Lectura rápida sin fricción)**:
+  * Inicia siempre con una frase introductoria directa que responda al núcleo de la pregunta en 1 o 2 líneas.
+  * Organiza el contenido en secciones claras utilizando subtítulos limpios (###) y espaciado armónico.
+  * Emplea listas con viñetas cortas y conceptos clave resaltados en **negrita** para guiar la mirada del usuario.
+  * Evita bloques densos o muros de texto de más de 3 líneas continuas.
+- **Explicación pedagógica y estructuración de contrastes**:
+  * No te limites a transcribir datos: explica el "qué", el "cómo" y el "por qué" de manera digerible para perfiles tanto técnicos como de negocio.
+  * Cuando se comparen elementos, entidades, estados o procesos, desglosa individual y ordenadamente cada parte comparada, identificando con precisión sus características y diferencias clave.
+  * Si la comparación involucra múltiples variables o dimensiones, sintetiza la información mediante una tabla Markdown compacta o viñetas enfrentadas.
+- **PROHIBIDO EL USO DE CÓDIGO LATEX O SÍMBOLOS MATEMÁTICOS CRUDOS**:
+  * Jamás utilices delimitadores de dólar (\$...\$ o \$\$...\$\$), comandos de formateo técnico (como \\text{}, \\mathbf{}) ni operadores simbólicos de LaTeX (\\ge, \\le, \\times, etc.).
+  * **Regla universal de traducción a lenguaje natural**: Cualquier fórmula, expresión matemática, variable, ecuación o condición técnica presente en los documentos de origen DEBE traducirse y redactarse 100% en español coloquial y profesional para que sea inmediatamente legible por cualquier persona.
+- **SECCIÓN FINAL OBLIGATORIA (FUENTE CONSULTADA)**:
+  * Al final de TODA respuesta exitosa, incluye obligatoriamente una línea de pie con la fuente exacta del archivo donde se fundamenta la información, con este formato:
+    ---
+    📁 **Fuente:** \`nombre_del_documento.md\` (o los documentos utilizados).
 `.trim();
 
   constructor() {
@@ -109,7 +125,7 @@ FORMATO Y ESTILO:
         contenidoPrompt +=
           'HISTORIAL RECIENTE:\n' +
           ultimos
-            .map((m) => `${m.rol === 'usuario' ? 'U' : 'A'}: ${m.contenido.trim()}`)
+            .map((m: any) => `${m.rol === 'usuario' ? 'U' : 'A'}: ${m.contenido.trim()}`)
             .join('\n') +
           '\n\n';
       }
@@ -123,6 +139,7 @@ FORMATO Y ESTILO:
         contents: contenidoPrompt,
         config: {
           systemInstruction: this.instruccionSistema,
+          temperature: 0.1,
           maxOutputTokens: 2048,
         },
       });
@@ -146,8 +163,11 @@ FORMATO Y ESTILO:
         respuestaAi.candidates?.[0]?.content?.parts?.[0]?.text ||
         'No se pudo obtener una respuesta del modelo.';
 
+      // Sanitización defensiva de posibles residuos LaTeX en la respuesta
+      const respuestaLimpia = this.sanitizarTextoRespuesta(textoRespuesta);
+
       return {
-        respuesta: textoRespuesta,
+        respuesta: respuestaLimpia,
       };
     } catch (error: any) {
       this.logger.error(`Error en Gemini: ${error.message}`, error.stack);
@@ -157,32 +177,78 @@ FORMATO Y ESTILO:
     }
   }
 
+  /**
+   * Sanitiza residuos de notación matemática LaTeX que el modelo pudiera filtrar.
+   * Transforma de forma general cualquier comando LaTeX y expresión entre signos $ a texto plano.
+   */
+  private sanitizarTextoRespuesta(texto: string): string {
+    if (!texto) return '';
+
+    return (
+      texto
+        // Comandos comunes de texto y formato LaTeX: \text{...}, \mathbf{...}, \mathit{...} -> contenido interior
+        .replace(/\\[a-zA-Z]+\{([^}]+)\}/g, '$1')
+        // Operadores relacionales LaTeX
+        .replace(/\\ge\s*/g, '>= ')
+        .replace(/\\le\s*/g, '<= ')
+        .replace(/\\neq\s*/g, '!= ')
+        .replace(/\\times\s*/g, ' * ')
+        // Limpiar comandos LaTeX sueltos residuales (ej: \cdot, \approx)
+        .replace(/\\[a-zA-Z]+/g, '')
+        // Desencapsular cualquier fórmula entre delimitadores de bloque $$...$$
+        .replace(/\$\$([^$]+)\$\$/g, '$1')
+        // Desencapsular cualquier fórmula o variable entre signos de dólar $...$
+        .replace(/\$([^$]+)\$/g, '$1')
+        // Normalizar espaciados en sumas y restas de variables (ej: T+1 -> T + 1, T-1 -> T - 1)
+        .replace(/([A-Za-z])\+([A-Za-z0-9])/g, '$1 + $2')
+        .replace(/([A-Za-z])\-([A-Za-z0-9])/g, '$1 - $2')
+    );
+  }
+
   private obtenerContextoBase(): string {
     if (!fs.existsSync(this.rutaDocumentacion)) {
       return '';
     }
 
     const archivos = this.leerArchivosMd(this.rutaDocumentacion);
+    if (!archivos || archivos.length === 0) {
+      return '';
+    }
+
     return archivos
-      .map((a) => `[DOC: ${a.ruta}]\n${a.contenido.trim()}`)
-      .join('\n---\n');
+      .map((archivo) => {
+        return `=== DOCUMENTO: ${archivo.nombre} ===\n${archivo.contenido}\n`;
+      })
+      .join('\n');
   }
 
-  private leerArchivosMd(directorio: string): Array<{ ruta: string; contenido: string }> {
-    let resultados: Array<{ ruta: string; contenido: string }> = [];
-    if (!fs.existsSync(directorio)) return resultados;
+  private leerArchivosMd(
+    directorio: string,
+  ): Array<{ nombre: string; ruta: string; contenido: string }> {
+    let resultados: Array<{ nombre: string; ruta: string; contenido: string }> = [];
 
-    const elementos = fs.readdirSync(directorio, { withFileTypes: true });
-    for (const elemento of elementos) {
-      const rutaCompleta = path.join(directorio, elemento.name);
-      if (elemento.isDirectory()) {
+    const entradas = fs.readdirSync(directorio, { withFileTypes: true });
+
+    for (const entrada of entradas) {
+      const rutaCompleta = path.join(directorio, entrada.name);
+
+      if (entrada.isDirectory()) {
         resultados = resultados.concat(this.leerArchivosMd(rutaCompleta));
-      } else if (elemento.isFile() && elemento.name.endsWith('.md')) {
-        const contenido = fs.readFileSync(rutaCompleta, 'utf-8');
-        const rutaRelativa = path.relative(this.rutaDocumentacion, rutaCompleta);
-        resultados.push({ ruta: rutaRelativa, contenido });
+      } else if (entrada.isFile() && entrada.name.endsWith('.md')) {
+        try {
+          const contenido = fs.readFileSync(rutaCompleta, 'utf-8');
+          const rutaRelativa = path.relative(this.rutaDocumentacion, rutaCompleta);
+          resultados.push({
+            nombre: rutaRelativa,
+            ruta: rutaCompleta,
+            contenido,
+          });
+        } catch (error: any) {
+          this.logger.warn(`No se pudo leer el archivo ${rutaCompleta}: ${error.message}`);
+        }
       }
     }
+
     return resultados;
   }
 }
