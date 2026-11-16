@@ -1,6 +1,6 @@
 # 💼 Guía General de Fondos Mutuos (FFMM)
 
-Este documento describe la arquitectura, reglas generales de negocio, parámetros de sistema, fórmulas matemáticas y ciclo de vida compartido para las operaciones de Fondos Mutuos (**Inversión** y **Rescate**) en la plataforma `GpiWebCb`.
+Este documento describe la arquitectura, reglas generales de negocio, parámetros de sistema, fórmulas matemáticas y ciclo de vida compartido para las operaciones de Fondos Mutuos (**Inversión** y **Rescate**) en la plataforma Gestor Documental.
 
 ---
 

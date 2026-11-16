@@ -1,6 +1,6 @@
 # Guía de Cierre: Validaciones del Proceso de Verificación (Verifica)
 
-**Sistema GPI • Módulo de Cierre**  
+**Módulo de Cierre y Verificación**  
 Manual operativo de las 21 validaciones que ejecuta el sistema antes de iniciar el Cierre Diario o Reproceso de Cuentas, organizadas por severidad para identificar con rapidez qué detiene el cierre y cómo resolverlo.
 
 ---

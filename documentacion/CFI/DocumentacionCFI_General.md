@@ -1,6 +1,6 @@
 # 💼 Guía General de Cuotas de Fondos de Inversión (CFI) Fuera de Rueda
 
-Este documento describe la arquitectura, directrices de diseño, reglas de negocio y ciclo de vida de las operaciones sobre **Cuotas de Fondos de Inversión (CFI) negociadas Fuera de Rueda** en la plataforma `GpiWebCb`.
+Este documento describe la arquitectura, directrices de diseño, reglas de negocio y ciclo de vida de las operaciones sobre **Cuotas de Fondos de Inversión (CFI) negociadas Fuera de Rueda** en la plataforma Gestor Documental.
 
 ---
 

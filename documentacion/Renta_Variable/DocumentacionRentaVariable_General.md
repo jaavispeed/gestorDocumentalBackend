@@ -1,6 +1,6 @@
 # 📈 Guía General de Renta Variable (Acciones, ETF, CFI)
 
-Este documento describe la arquitectura, reglas generales de negocio, parámetros de sistema, fórmulas matemáticas y ciclo de vida compartido para las operaciones de Renta Variable (**Compra** y **Venta**) en la plataforma `GpiWebCb`.
+Este documento describe la arquitectura, reglas generales de negocio, parámetros de sistema, fórmulas matemáticas y ciclo de vida compartido para las operaciones de Renta Variable (**Compra** y **Venta**) en la plataforma Gestor Documental.
 
 ---
 
@@ -23,7 +23,7 @@ El comportamiento operativo, cálculo de impuestos, tolerancias y publicación h
 | `HORA_INI_FIN_BOLSARV` / `HORA_BOLSA_RV` | RANGO_HORARIO | Determina el horario de apertura y cierre de la rueda bursátil. Si la orden se ingresa fuera de este rango, **se rechaza de inmediato** con error `OrdenErrors.FueraDeHorario` (no se difiere al día siguiente). | Ej: `09:30 - 16:00` |
 | `IVA` | NUMERICO | Porcentaje de IVA aplicable sobre la suma de comisiones de corretaje y derechos de bolsa. | Ej: `19` (19%) |
 | `TOLERANCIA_MONTO_TOTAL_RV` | NUMERICO | Porcentaje de tolerancia (base 100) permitido en la **doble validación de monto total** entre lo enviado por el cliente y lo calculado por el motor de liquidación. | Ej: `1` (1%) |
-| `PUBLICAR_EN_MERCADO_RV` | BOOLEAN | Indica si la orden debe despacharse automáticamente a la rueda bursátil (vía Azure Service Bus / protocolo FIX). Si es `false`, se guarda internamente en GPI sin envío a bolsa. | `true` / `false` |
+| `PUBLICAR_EN_MERCADO_RV` | BOOLEAN | Indica si la orden debe despacharse automáticamente a la rueda bursátil (vía Azure Service Bus / protocolo FIX). Si es `false`, se guarda internamente en el sistema sin envío a bolsa. | `true` / `false` |
 
 ---
 
