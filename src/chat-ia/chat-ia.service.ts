@@ -10,41 +10,18 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { ConsultaChatDto } from '../common/dto/consulta-chat.dto.js';
 import type { EstadoServidorDto, RespuestaChatDto } from '../common/dto/chat-respuestas.dto.js';
+import { GenerarDocGitDiffDto, RespuestaDocGitDiffDto } from '../common/dto/git-diff-doc.dto.js';
+import {
+  PROMPT_ASISTENTE_DOCUMENTACION,
+  PROMPT_GENERADOR_DOC_GIT_DIFF,
+  construirPromptConsultaRAG,
+  construirPromptUsuarioGitDiff,
+} from '../prompts/index.js';
 
 @Injectable()
 export class ChatIaService {
   private readonly logger = new Logger(ChatIaService.name);
   private readonly rutaDocumentacion: string;
-  private readonly instruccionSistema = `
-Eres el Asistente Experto en Documentación Técnica y de Negocio del Gestor Documental. Tu misión es brindar respuestas de máxima calidad de experiencia de usuario (UX): elegantes, intuitivas, con un ritmo de lectura impecable y con fidelidad documental absoluta del 100%.
-
-LA REGLA DE ORO INQUEBRANTABLE (ÚNICA FUENTE DE VERDAD & CERO ALUCINACIONES):
-1. **Los archivos Markdown (.md) provistos son tu ÚNICA fuente de verdad admitida**. 
-   * Tienes terminantemente prohibido utilizar conocimientos externos, suposiciones, deducciones no respaldadas o datos inventados.
-   * Si un dato, proceso, regla o parámetro no está escrito textualmente o descrito de forma explícita en los documentos .md provistos, NO EXISTE para ti.
-2. **Manejo estricto de vacíos o consultas no documentadas**:
-   * Si la consulta del usuario no figura en los documentos .md, o si la información es insuficiente, responde invariablemente con amabilidad y honestidad:
-     "La información solicitada no se encuentra disponible en la documentación técnica del sistema."
-   * Bajo ninguna circunstancia intentes "completar" o adivinar lo que falta con conocimiento general.
-
-PRINCIPIOS DE EXPERIENCIA DE USUARIO (UX) Y DISEÑO DE INFORMACIÓN:
-- **Scanability inmediata (Lectura rápida sin fricción)**:
-  * Inicia siempre con una frase introductoria directa que responda al núcleo de la pregunta en 1 o 2 líneas.
-  * Organiza el contenido en secciones claras utilizando subtítulos limpios (###) y espaciado armónico.
-  * Emplea listas con viñetas cortas y conceptos clave resaltados en **negrita** para guiar la mirada del usuario.
-  * Evita bloques densos o muros de texto de más de 3 líneas continuas.
-- **Explicación pedagógica y estructuración de contrastes**:
-  * No te limites a transcribir datos: explica el "qué", el "cómo" y el "por qué" de manera digerible para perfiles tanto técnicos como de negocio.
-  * Cuando se comparen elementos, entidades, estados o procesos, desglosa individual y ordenadamente cada parte comparada, identificando con precisión sus características y diferencias clave.
-  * Si la comparación involucra múltiples variables o dimensiones, sintetiza la información mediante una tabla Markdown compacta o viñetas enfrentadas.
-- **PROHIBIDO EL USO DE CÓDIGO LATEX O SÍMBOLOS MATEMÁTICOS CRUDOS**:
-  * Jamás utilices delimitadores de dólar (\$...\$ o \$\$...\$\$), comandos de formateo técnico (como \\text{}, \\mathbf{}) ni operadores simbólicos de LaTeX (\\ge, \\le, \\times, etc.).
-  * **Regla universal de traducción a lenguaje natural**: Cualquier fórmula, expresión matemática, variable, ecuación o condición técnica presente en los documentos de origen DEBE traducirse y redactarse 100% en español coloquial y profesional para que sea inmediatamente legible por cualquier persona.
-- **SECCIÓN FINAL OBLIGATORIA (FUENTE CONSULTADA)**:
-  * Al final de TODA respuesta exitosa, incluye obligatoriamente una línea de pie con la fuente exacta del archivo donde se fundamenta la información, con este formato:
-    ---
-    📁 **Fuente:** \`nombre_del_documento.md\` (o los documentos utilizados).
-`.trim();
 
   constructor() {
     // Ruta de la carpeta documentacion en la raíz del backend
@@ -114,23 +91,7 @@ PRINCIPIOS DE EXPERIENCIA DE USUARIO (UX) Y DISEÑO DE INFORMACIÓN:
 
     try {
       const contextoDoc = this.obtenerContextoBase();
-
-      let contenidoPrompt = '';
-      if (contextoDoc) {
-        contenidoPrompt += `BASE DE CONOCIMIENTO:\n${contextoDoc}\n\n`;
-      }
-
-      if (historial && historial.length > 0) {
-        const ultimos = historial.slice(-2);
-        contenidoPrompt +=
-          'HISTORIAL RECIENTE:\n' +
-          ultimos
-            .map((m: any) => `${m.rol === 'usuario' ? 'U' : 'A'}: ${m.contenido.trim()}`)
-            .join('\n') +
-          '\n\n';
-      }
-
-      contenidoPrompt += `Pregunta: ${mensaje.trim()}`;
+      const contenidoPrompt = construirPromptConsultaRAG(mensaje, contextoDoc, historial);
 
       this.logger.log(`Procesando chat con modelo: ${modeloFinal}`);
 
@@ -138,7 +99,7 @@ PRINCIPIOS DE EXPERIENCIA DE USUARIO (UX) Y DISEÑO DE INFORMACIÓN:
         model: modeloFinal,
         contents: contenidoPrompt,
         config: {
-          systemInstruction: this.instruccionSistema,
+          systemInstruction: PROMPT_ASISTENTE_DOCUMENTACION,
           temperature: 0.1,
           maxOutputTokens: 2048,
         },
@@ -173,6 +134,62 @@ PRINCIPIOS DE EXPERIENCIA DE USUARIO (UX) Y DISEÑO DE INFORMACIÓN:
       this.logger.error(`Error en Gemini: ${error.message}`, error.stack);
       throw new InternalServerErrorException(
         `Error al consultar la IA de Gemini: ${error.message}`,
+      );
+    }
+  }
+
+  async generarDocumentacionDesdeDiff(
+    dto: GenerarDocGitDiffDto,
+  ): Promise<RespuestaDocGitDiffDto> {
+    const { diff, contextoAdicional, clavePersonalizada, modeloPersonalizado } = dto;
+
+    if (!diff || !diff.trim()) {
+      throw new BadRequestException('El contenido del Git Diff es obligatorio.');
+    }
+
+    const claveFinal = clavePersonalizada ? clavePersonalizada.trim() : '';
+    const modeloFinal = (modeloPersonalizado && modeloPersonalizado.trim()) || 'gemini-2.5-flash';
+
+    if (!claveFinal) {
+      throw new ServiceUnavailableException(
+        'No hay ninguna clave API configurada. Configura tu API Key en los Ajustes de la aplicación.',
+      );
+    }
+
+    const clienteFinal = new GoogleGenAI({ apiKey: claveFinal });
+    const contenidoUsuario = construirPromptUsuarioGitDiff(diff, contextoAdicional);
+
+    try {
+      this.logger.log(`Generando documentación desde diff con modelo: ${modeloFinal}`);
+      const respuestaAi = await clienteFinal.models.generateContent({
+        model: modeloFinal,
+        contents: contenidoUsuario,
+        config: {
+          systemInstruction: PROMPT_GENERADOR_DOC_GIT_DIFF,
+          temperature: 0.2,
+          maxOutputTokens: 4096,
+        },
+      });
+
+      let textoGenerado =
+        respuestaAi.text ||
+        respuestaAi.candidates?.[0]?.content?.parts?.[0]?.text ||
+        '# Documentación\n\nNo se pudo generar la documentación a partir del diff provisto.';
+
+      // Si el modelo envolvió todo en bloque de markdown ```markdown ... ``` lo extraemos limpiamente
+      if (textoGenerado.startsWith('```markdown')) {
+        textoGenerado = textoGenerado.replace(/^```markdown\s*/i, '').replace(/```\s*$/i, '');
+      } else if (textoGenerado.startsWith('```md')) {
+        textoGenerado = textoGenerado.replace(/^```md\s*/i, '').replace(/```\s*$/i, '');
+      }
+
+      return {
+        documentacionMarkdown: this.sanitizarTextoRespuesta(textoGenerado.trim()),
+      };
+    } catch (error: any) {
+      this.logger.error(`Error generando documentación desde diff: ${error.message}`, error.stack);
+      throw new InternalServerErrorException(
+        `Error al generar la documentación con IA: ${error.message}`,
       );
     }
   }

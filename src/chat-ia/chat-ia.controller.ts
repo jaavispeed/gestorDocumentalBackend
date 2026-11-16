@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Query, HttpCode, HttpStatus } from '@nestj
 import { ChatIaService } from './chat-ia.service.js';
 import { ConsultaChatDto } from '../common/dto/consulta-chat.dto.js';
 import type { EstadoServidorDto, RespuestaChatDto } from '../common/dto/chat-respuestas.dto.js';
+import { GenerarDocGitDiffDto, RespuestaDocGitDiffDto } from '../common/dto/git-diff-doc.dto.js';
 
 @Controller()
 export class ChatIaController {
@@ -19,5 +20,11 @@ export class ChatIaController {
   @HttpCode(HttpStatus.OK)
   async enviarChat(@Body() consulta: ConsultaChatDto): Promise<RespuestaChatDto> {
     return this.chatIaService.procesarMensaje(consulta);
+  }
+
+  @Post('api/ia/generar-doc-diff')
+  @HttpCode(HttpStatus.OK)
+  async generarDocDiff(@Body() dto: GenerarDocGitDiffDto): Promise<RespuestaDocGitDiffDto> {
+    return this.chatIaService.generarDocumentacionDesdeDiff(dto);
   }
 }
