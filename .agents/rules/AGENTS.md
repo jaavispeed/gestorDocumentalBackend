@@ -12,6 +12,7 @@ Este proyecto sigue una arquitectura modular en NestJS enfocada en legibilidad, 
    - Separación estricta de responsabilidades:
      - **Controller:** Maneja exclusivamente las peticiones HTTP, rutas, códigos de estado y validación de entrada.
      - **Service:** Contiene la lógica de negocio y llamadas externas (lectura de disco, API de Gemini, etc.).
+     - **Prompts (`src/prompts/`):** Prompts desacoplados por feature y optimizados estrictamente en tokens (ver `optimizacion-tokens.md`).
      - **DTOs (`common/dto` o `<modulo>/dto`):** Tipado estricto y validaciones con `class-validator` y `class-transformer`.
      - **Module:** Agrupa y exporta los controladores y servicios correspondientes.
 

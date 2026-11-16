@@ -90,10 +90,11 @@ export class ChatIaService {
     const clienteFinal = new GoogleGenAI({ apiKey: claveFinal });
 
     try {
-      const contextoDoc = this.obtenerContextoBase();
+      // Filtrado semántico rápido por términos clave en el nombre del documento o contenido
+      const contextoDoc = this.obtenerContextoBase(mensaje);
       const contenidoPrompt = construirPromptConsultaRAG(mensaje, contextoDoc, historial);
 
-      this.logger.log(`Procesando chat con modelo: ${modeloFinal}`);
+      this.logger.log(`Procesando chat con modelo: ${modeloFinal} (tokens de contexto podados)`);
 
       const promesaConsulta = clienteFinal.models.generateContent({
         model: modeloFinal,
@@ -101,7 +102,7 @@ export class ChatIaService {
         config: {
           systemInstruction: PROMPT_ASISTENTE_DOCUMENTACION,
           temperature: 0.1,
-          maxOutputTokens: 2048,
+          maxOutputTokens: 1536,
         },
       });
 
@@ -222,7 +223,12 @@ export class ChatIaService {
     );
   }
 
-  private obtenerContextoBase(): string {
+  /**
+   * Obtiene la base de conocimiento optimizada en tokens.
+   * Si la consulta es específica, prioriza y filtra los documentos relevantes,
+   * compactando saltos de línea superfluos para no saturar el prompt.
+   */
+  private obtenerContextoBase(pregunta?: string): string {
     if (!fs.existsSync(this.rutaDocumentacion)) {
       return '';
     }
@@ -232,11 +238,39 @@ export class ChatIaService {
       return '';
     }
 
-    return archivos
+    let archivosSeleccionados = archivos;
+
+    if (pregunta && pregunta.trim()) {
+      const terminos = pregunta
+        .toLowerCase()
+        .replace(/[^\w\s]/gi, '')
+        .split(/\s+/)
+        .filter((t) => t.length > 2);
+
+      // Si hay términos identificables, priorizamos los documentos coincidentes
+      if (terminos.length > 0) {
+        const coincidentes = archivos.filter((archivo) => {
+          const nombreNormalizado = archivo.nombre.toLowerCase();
+          const contenidoNormalizado = archivo.contenido.toLowerCase();
+          return terminos.some((t) => nombreNormalizado.includes(t) || contenidoNormalizado.includes(t));
+        });
+
+        if (coincidentes.length > 0) {
+          archivosSeleccionados = coincidentes;
+        }
+      }
+    }
+
+    return archivosSeleccionados
       .map((archivo) => {
-        return `=== DOCUMENTO: ${archivo.nombre} ===\n${archivo.contenido}\n`;
+        // Poda de tokens: colapsar múltiples saltos de línea y espacios en blanco redundantes
+        const contenidoPodado = archivo.contenido
+          .replace(/\r\n/g, '\n')
+          .replace(/\n{3,}/g, '\n\n')
+          .trim();
+        return `[DOC: ${archivo.nombre}]\n${contenidoPodado}`;
       })
-      .join('\n');
+      .join('\n\n');
   }
 
   private leerArchivosMd(
