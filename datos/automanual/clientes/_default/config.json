@@ -1,0 +1,43 @@
+{
+  "id": "_default",
+  "name": "Cliente Predeterminado",
+  "appUrl": "http://localhost:3000",
+  "startCommand": "npm run dev",
+  "theme": {
+    "primaryColor": "#2563eb",
+    "secondaryColor": "#0f172a",
+    "accentColor": "#38bdf8",
+    "fontFamily": "Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
+    "logoPath": "default-logo.svg"
+  },
+  "modules": [
+    {
+      "id": "backoffice",
+      "title": "Módulo de Backoffice",
+      "description": "Administración central y control de operaciones del sistema.",
+      "sections": [
+        {
+          "id": "operaciones",
+          "title": "Gestión de Operaciones",
+          "route": "/backoffice/operaciones",
+          "description": "Monitoreo, filtros y ejecución de transacciones operativas.",
+          "codePaths": [
+            "src/modules/backoffice/operaciones/**"
+          ],
+          "name": "Gestión de Operaciones"
+        },
+        {
+          "id": "usuarios",
+          "title": "Control de Usuarios y Roles",
+          "route": "/backoffice/usuarios",
+          "description": "Gestión de accesos, permisos y perfiles de usuarios.",
+          "codePaths": [
+            "src/modules/backoffice/usuarios/**"
+          ],
+          "name": "Control de Usuarios y Roles"
+        }
+      ],
+      "name": "Módulo de Backoffice"
+    }
+  ]
+}

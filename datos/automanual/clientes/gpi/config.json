@@ -1,0 +1,1003 @@
+{
+  "id": "gpi",
+  "name": "gpi",
+  "appUrl": "https://gpicb.creasys.cl",
+  "theme": {
+    "primaryColor": "#e10e0e",
+    "secondaryColor": "#0000ff",
+    "fontFamily": "-apple-system, BlinkMacSystemFont, \"SF Pro Text\", sans-serif",
+    "logoPath": "logo.jpg"
+  },
+  "modules": [
+    {
+      "id": "documentos",
+      "name": "Documentos",
+      "title": "Documentos",
+      "description": "Módulo de Documentos en la plataforma.",
+      "sections": [
+        {
+          "id": "documentos",
+          "name": "Documentos",
+          "title": "Documentos",
+          "route": "/back-office/documentos-comercial",
+          "menuPath": [
+            "Documentos",
+            "Documentos"
+          ],
+          "description": "Vista de Documentos."
+        },
+        {
+          "id": "carga-de-documentos",
+          "name": "Carga de documentos",
+          "title": "Carga de documentos",
+          "route": "/back-office/carga-documentos",
+          "menuPath": [
+            "Documentos",
+            "Carga de documentos"
+          ],
+          "description": "Vista de Carga de documentos."
+        }
+      ]
+    },
+    {
+      "id": "bice-connect",
+      "name": "BICE Connect",
+      "title": "BICE Connect",
+      "description": "Módulo de BICE Connect en la plataforma.",
+      "sections": [
+        {
+          "id": "transacciones",
+          "name": "Transacciones",
+          "title": "Transacciones",
+          "route": "/back-office/bice-connect/transacciones",
+          "menuPath": [
+            "BICE Connect",
+            "Transacciones"
+          ],
+          "description": "Vista de Transacciones."
+        }
+      ]
+    },
+    {
+      "id": "monitores",
+      "name": "Monitores",
+      "title": "Monitores",
+      "description": "Módulo de Monitores en la plataforma.",
+      "sections": [
+        {
+          "id": "mesa-negocio",
+          "name": "Mesa Negocio",
+          "title": "Mesa Negocio",
+          "route": "/back-office/mesa-negocio/configuracion",
+          "menuPath": [
+            "Monitores",
+            "Mesa Negocio"
+          ],
+          "description": "Vista de Mesa Negocio."
+        },
+        {
+          "id": "monitor-de-logs",
+          "name": "Monitor de Logs",
+          "title": "Monitor de Logs",
+          "route": "/back-office/sis-registro-log",
+          "menuPath": [
+            "Monitores",
+            "Monitor de Logs"
+          ],
+          "description": "Vista de Monitor de Logs."
+        }
+      ]
+    },
+    {
+      "id": "operaciones",
+      "name": "Operaciones",
+      "title": "Operaciones",
+      "description": "Módulo de Operaciones en la plataforma.",
+      "sections": [
+        {
+          "id": "carga-de-operaciones",
+          "name": "Carga de operaciones",
+          "title": "Carga de operaciones",
+          "route": "/back-office/carga-operaciones",
+          "menuPath": [
+            "Operaciones",
+            "Carga de operaciones"
+          ],
+          "description": "Vista de Carga de operaciones."
+        },
+        {
+          "id": "traspaso-clientes-agfcdb",
+          "name": "Traspaso Clientes Agf/Cdb",
+          "title": "Traspaso Clientes Agf/Cdb",
+          "route": "/back-office/carga-masiva-principal",
+          "menuPath": [
+            "Operaciones",
+            "Traspaso Clientes Agf/Cdb"
+          ],
+          "description": "Vista de Traspaso Clientes Agf/Cdb."
+        },
+        {
+          "id": "forward",
+          "name": "Forward",
+          "title": "Forward",
+          "route": "/back-office/forward/new",
+          "menuPath": [
+            "Operaciones",
+            "Forward"
+          ],
+          "description": "Vista de Forward."
+        },
+        {
+          "id": "operaciones-spot",
+          "name": "Operaciones Spot",
+          "title": "Operaciones Spot",
+          "route": "/back-office/operaciones-spot",
+          "menuPath": [
+            "Operaciones",
+            "Operaciones Spot"
+          ],
+          "description": "Vista de Operaciones Spot."
+        },
+        {
+          "id": "valorizacion-rf",
+          "name": "Valorización RF",
+          "title": "Valorización RF",
+          "route": "/back-office/valorizacionrf",
+          "menuPath": [
+            "Operaciones",
+            "Valorización RF"
+          ],
+          "description": "Vista de Valorización RF."
+        }
+      ]
+    },
+    {
+      "id": "facturacion",
+      "name": "Facturación",
+      "title": "Facturación",
+      "description": "Módulo de Facturación en la plataforma.",
+      "sections": [
+        {
+          "id": "facturacion-manual",
+          "name": "Facturación Manual",
+          "title": "Facturación Manual",
+          "route": "/back-office/facturacion-manual",
+          "menuPath": [
+            "Facturación",
+            "Facturación Manual"
+          ],
+          "description": "Vista de Facturación Manual."
+        },
+        {
+          "id": "reporte-facturacion",
+          "name": "Reporte Facturación",
+          "title": "Reporte Facturación",
+          "route": "/back-office/facturacion-manual/reporte",
+          "menuPath": [
+            "Facturación",
+            "Reporte Facturación"
+          ],
+          "description": "Vista de Reporte Facturación."
+        }
+      ]
+    },
+    {
+      "id": "tesoreria",
+      "name": "Tesorería",
+      "title": "Tesorería",
+      "description": "Módulo de Tesorería en la plataforma.",
+      "sections": [
+        {
+          "id": "movimientos",
+          "name": "Movimientos",
+          "title": "Movimientos",
+          "route": "/back-office/movimiento-caja",
+          "menuPath": [
+            "Tesorería",
+            "Movimientos"
+          ],
+          "description": "Vista de Movimientos."
+        },
+        {
+          "id": "saldos",
+          "name": "Saldos",
+          "title": "Saldos",
+          "route": "/back-office/flujo-caja",
+          "menuPath": [
+            "Tesorería",
+            "Saldos"
+          ],
+          "description": "Vista de Saldos."
+        },
+        {
+          "id": "propuestas",
+          "name": "Propuestas",
+          "title": "Propuestas",
+          "route": "/back-office/monitor-propuestas",
+          "menuPath": [
+            "Tesorería",
+            "Propuestas"
+          ],
+          "description": "Vista de Propuestas."
+        }
+      ]
+    },
+    {
+      "id": "multibanco-bci",
+      "name": "Multibanco BCI",
+      "title": "Multibanco BCI",
+      "description": "Módulo de Multibanco BCI en la plataforma.",
+      "sections": [
+        {
+          "id": "nomina-de-cobros",
+          "name": "Nómina de Cobros",
+          "title": "Nómina de Cobros",
+          "route": "/back-office/multibanco-bci/nomina-cobros",
+          "menuPath": [
+            "Multibanco BCI",
+            "Nómina de Cobros"
+          ],
+          "description": "Vista de Nómina de Cobros."
+        },
+        {
+          "id": "universo-de-mandatos",
+          "name": "Universo de Mandatos",
+          "title": "Universo de Mandatos",
+          "route": "/back-office/multibanco-bci/universo-mandatos",
+          "menuPath": [
+            "Multibanco BCI",
+            "Universo de Mandatos"
+          ],
+          "description": "Vista de Universo de Mandatos."
+        },
+        {
+          "id": "rendicion-de-pagos",
+          "name": "Rendición de Pagos",
+          "title": "Rendición de Pagos",
+          "route": "/back-office/multibanco-bci/rendicion-pagos",
+          "menuPath": [
+            "Multibanco BCI",
+            "Rendición de Pagos"
+          ],
+          "description": "Vista de Rendición de Pagos."
+        }
+      ]
+    },
+    {
+      "id": "reportes",
+      "name": "Reportes",
+      "title": "Reportes",
+      "description": "Módulo de Reportes en la plataforma.",
+      "sections": [
+        {
+          "id": "cartera",
+          "name": "Cartera",
+          "title": "Cartera",
+          "route": "/back-office/cartera-historica",
+          "menuPath": [
+            "Reportes",
+            "Cartera"
+          ],
+          "description": "Vista de Cartera."
+        },
+        {
+          "id": "forward",
+          "name": "Forward",
+          "title": "Forward",
+          "route": "/back-office/forward/new",
+          "menuPath": [
+            "Reportes",
+            "Forward"
+          ],
+          "description": "Vista de Forward."
+        },
+        {
+          "id": "spot",
+          "name": "Spot",
+          "title": "Spot",
+          "route": "/back-office/operaciones-spot/reporte",
+          "menuPath": [
+            "Reportes",
+            "Spot"
+          ],
+          "description": "Vista de Spot."
+        },
+        {
+          "id": "firmas",
+          "name": "Firmas",
+          "title": "Firmas",
+          "route": "/back-office/control-firmas",
+          "menuPath": [
+            "Reportes",
+            "Firmas"
+          ],
+          "description": "Vista de Firmas."
+        },
+        {
+          "id": "simultaneas",
+          "name": "Simultáneas",
+          "title": "Simultáneas",
+          "route": "/back-office/reporte-simultaneas",
+          "menuPath": [
+            "Reportes",
+            "Simultáneas"
+          ],
+          "description": "Vista de Simultáneas."
+        },
+        {
+          "id": "comisiones-por-cuenta",
+          "name": "Comisiones por cuenta",
+          "title": "Comisiones por cuenta",
+          "route": "/back-office/grupo-comisiones/reporte/cuentas",
+          "menuPath": [
+            "Reportes",
+            "Comisiones por cuenta"
+          ],
+          "description": "Vista de Comisiones por cuenta."
+        },
+        {
+          "id": "operaciones-y-ordenes",
+          "name": "Operaciones y Ordenes",
+          "title": "Operaciones y Ordenes",
+          "route": "/back-office/operaciones-ordenes",
+          "menuPath": [
+            "Reportes",
+            "Operaciones y Ordenes"
+          ],
+          "description": "Vista de Operaciones y Ordenes."
+        },
+        {
+          "id": "balanceo",
+          "name": "Balanceo",
+          "title": "Balanceo",
+          "route": "/back-office/balanceo/reporte-balanceo",
+          "menuPath": [
+            "Reportes",
+            "Balanceo"
+          ],
+          "description": "Vista de Balanceo."
+        },
+        {
+          "id": "por-tipo-inversionista",
+          "name": "Por Tipo Inversionista",
+          "title": "Por Tipo Inversionista",
+          "route": "/back-office/custodia/reporte-tipo-inversionista",
+          "menuPath": [
+            "Reportes",
+            "Por Tipo Inversionista"
+          ],
+          "description": "Vista de Por Tipo Inversionista."
+        },
+        {
+          "id": "cuadratura-custodia",
+          "name": "Cuadratura Custodia",
+          "title": "Cuadratura Custodia",
+          "route": "/back-office/custodia/reporte-cuadratura-custodia",
+          "menuPath": [
+            "Reportes",
+            "Cuadratura Custodia"
+          ],
+          "description": "Vista de Cuadratura Custodia."
+        },
+        {
+          "id": "custodia-externa",
+          "name": "Custodia Externa",
+          "title": "Custodia Externa",
+          "route": "/back-office/custodia-externa",
+          "menuPath": [
+            "Reportes",
+            "Custodia Externa"
+          ],
+          "description": "Vista de Custodia Externa."
+        },
+        {
+          "id": "conciliador",
+          "name": "Conciliador",
+          "title": "Conciliador",
+          "route": "/back-office/conciliador",
+          "menuPath": [
+            "Reportes",
+            "Conciliador"
+          ],
+          "description": "Vista de Conciliador."
+        }
+      ]
+    },
+    {
+      "id": "cartolas",
+      "name": "Cartolas",
+      "title": "Cartolas",
+      "description": "Módulo de Cartolas en la plataforma.",
+      "sections": [
+        {
+          "id": "cartola-consolidada",
+          "name": "Cartola Consolidada",
+          "title": "Cartola Consolidada",
+          "route": "/back-office/informe-consolidado",
+          "menuPath": [
+            "Cartolas",
+            "Cartola Consolidada"
+          ],
+          "description": "Vista de Cartola Consolidada."
+        }
+      ]
+    },
+    {
+      "id": "mantenedores",
+      "name": "Mantenedores",
+      "title": "Mantenedores",
+      "description": "Módulo de Mantenedores en la plataforma.",
+      "sections": [
+        {
+          "id": "asesores",
+          "name": "Asesores",
+          "title": "Asesores",
+          "route": "/back-office/asesores",
+          "menuPath": [
+            "Mantenedores",
+            "Asesores"
+          ],
+          "description": "Vista de Asesores."
+        },
+        {
+          "id": "bancos",
+          "name": "Bancos",
+          "title": "Bancos",
+          "route": "/back-office/bancos/configuracion",
+          "menuPath": [
+            "Mantenedores",
+            "Bancos"
+          ],
+          "description": "Vista de Bancos."
+        },
+        {
+          "id": "carga-masiva",
+          "name": "Carga Masiva",
+          "title": "Carga Masiva",
+          "route": "/back-office/carga-masiva",
+          "menuPath": [
+            "Mantenedores",
+            "Carga Masiva"
+          ],
+          "description": "Vista de Carga Masiva."
+        },
+        {
+          "id": "clientes",
+          "name": "Clientes",
+          "title": "Clientes",
+          "route": "/back-office/clientes",
+          "menuPath": [
+            "Mantenedores",
+            "Clientes"
+          ],
+          "description": "Vista de Clientes."
+        },
+        {
+          "id": "conceptos-externos",
+          "name": "Conceptos Externos",
+          "title": "Conceptos Externos",
+          "route": "/back-office/conceptos-preimportador/configuracion",
+          "menuPath": [
+            "Mantenedores",
+            "Conceptos Externos"
+          ],
+          "description": "Vista de Conceptos Externos."
+        },
+        {
+          "id": "contrapartes",
+          "name": "Contrapartes",
+          "title": "Contrapartes",
+          "route": "/back-office/contrapartes/configuracion",
+          "menuPath": [
+            "Mantenedores",
+            "Contrapartes"
+          ],
+          "description": "Vista de Contrapartes."
+        },
+        {
+          "id": "control-de-firmas",
+          "name": "Control de Firmas",
+          "title": "Control de Firmas",
+          "route": "/back-office/contratos",
+          "menuPath": [
+            "Mantenedores",
+            "Control de Firmas"
+          ],
+          "description": "Vista de Control de Firmas."
+        },
+        {
+          "id": "cuentas",
+          "name": "Cuentas",
+          "title": "Cuentas",
+          "route": "/back-office/cuentas",
+          "menuPath": [
+            "Mantenedores",
+            "Cuentas"
+          ],
+          "description": "Vista de Cuentas."
+        },
+        {
+          "id": "cuentas-dcv",
+          "name": "Cuentas DCV",
+          "title": "Cuentas DCV",
+          "route": "/back-office/cuentas-dcv/configuracion",
+          "menuPath": [
+            "Mantenedores",
+            "Cuentas DCV"
+          ],
+          "description": "Vista de Cuentas DCV."
+        },
+        {
+          "id": "declaraciones",
+          "name": "Declaraciones",
+          "title": "Declaraciones",
+          "route": "/back-office/declaraciones-enrolador",
+          "menuPath": [
+            "Mantenedores",
+            "Declaraciones"
+          ],
+          "description": "Vista de Declaraciones."
+        },
+        {
+          "id": "dias-feriados",
+          "name": "Días Feriados",
+          "title": "Días Feriados",
+          "route": "/back-office/dia-feriado/configuracion",
+          "menuPath": [
+            "Mantenedores",
+            "Días Feriados"
+          ],
+          "description": "Vista de Días Feriados."
+        },
+        {
+          "id": "emisor",
+          "name": "Emisor",
+          "title": "Emisor",
+          "route": "/back-office/emisores/configuracion",
+          "menuPath": [
+            "Mantenedores",
+            "Emisor"
+          ],
+          "description": "Vista de Emisor."
+        },
+        {
+          "id": "entradas",
+          "name": "Entradas",
+          "title": "Entradas",
+          "route": "/back-office/entradas-enrolador",
+          "menuPath": [
+            "Mantenedores",
+            "Entradas"
+          ],
+          "description": "Vista de Entradas."
+        },
+        {
+          "id": "estrategias-de-inversion",
+          "name": "Estrategias de Inversión",
+          "title": "Estrategias de Inversión",
+          "route": "/back-office/estrategia-inversion/configuracion",
+          "menuPath": [
+            "Mantenedores",
+            "Estrategias de Inversión"
+          ],
+          "description": "Vista de Estrategias de Inversión."
+        },
+        {
+          "id": "eventos-de-capital",
+          "name": "Eventos de Capital",
+          "title": "Eventos de Capital",
+          "route": "/back-office/evento-capital?desde=2026-11-17&hasta=2026-11-17",
+          "menuPath": [
+            "Mantenedores",
+            "Eventos de Capital"
+          ],
+          "description": "Vista de Eventos de Capital."
+        },
+        {
+          "id": "grupos-cuenta",
+          "name": "Grupos Cuenta",
+          "title": "Grupos Cuenta",
+          "route": "/back-office/grupos-cuenta",
+          "menuPath": [
+            "Mantenedores",
+            "Grupos Cuenta"
+          ],
+          "description": "Vista de Grupos Cuenta."
+        },
+        {
+          "id": "grupos-de-comisiones",
+          "name": "Grupos de Comisiones",
+          "title": "Grupos de Comisiones",
+          "route": "/back-office/grupo-comisiones/configuracion",
+          "menuPath": [
+            "Mantenedores",
+            "Grupos de Comisiones"
+          ],
+          "description": "Vista de Grupos de Comisiones."
+        },
+        {
+          "id": "instrumentos",
+          "name": "Instrumentos",
+          "title": "Instrumentos",
+          "route": "/back-office/mantenedor-instrumento",
+          "menuPath": [
+            "Mantenedores",
+            "Instrumentos"
+          ],
+          "description": "Vista de Instrumentos."
+        },
+        {
+          "id": "operacion-concepto",
+          "name": "Operacion Concepto",
+          "title": "Operacion Concepto",
+          "route": "/back-office/operacion-concepto/configuracion",
+          "menuPath": [
+            "Mantenedores",
+            "Operacion Concepto"
+          ],
+          "description": "Vista de Operacion Concepto."
+        },
+        {
+          "id": "parametros-de-negocio",
+          "name": "Parámetros de Negocio",
+          "title": "Parámetros de Negocio",
+          "route": "/back-office/parametro-negocio/configuracion",
+          "menuPath": [
+            "Mantenedores",
+            "Parámetros de Negocio"
+          ],
+          "description": "Vista de Parámetros de Negocio."
+        },
+        {
+          "id": "parametros-de-sistema",
+          "name": "Parámetros de Sistema",
+          "title": "Parámetros de Sistema",
+          "route": "/back-office/parametro-sistema/configuracion",
+          "menuPath": [
+            "Mantenedores",
+            "Parámetros de Sistema"
+          ],
+          "description": "Vista de Parámetros de Sistema."
+        },
+        {
+          "id": "perfiles-de-riesgo",
+          "name": "Perfiles de Riesgo",
+          "title": "Perfiles de Riesgo",
+          "route": "/back-office/perfil-riesgo/configuracion",
+          "menuPath": [
+            "Mantenedores",
+            "Perfiles de Riesgo"
+          ],
+          "description": "Vista de Perfiles de Riesgo."
+        },
+        {
+          "id": "personas",
+          "name": "Personas",
+          "title": "Personas",
+          "route": "/back-office/personas",
+          "menuPath": [
+            "Mantenedores",
+            "Personas"
+          ],
+          "description": "Vista de Personas."
+        },
+        {
+          "id": "plantillas-de-correo",
+          "name": "Plantillas de Correo",
+          "title": "Plantillas de Correo",
+          "route": "/back-office/email-template/configuracion",
+          "menuPath": [
+            "Mantenedores",
+            "Plantillas de Correo"
+          ],
+          "description": "Vista de Plantillas de Correo."
+        },
+        {
+          "id": "posicion-mesa-spot",
+          "name": "Posición Mesa Spot",
+          "title": "Posición Mesa Spot",
+          "route": "/back-office/posicion-mesa",
+          "menuPath": [
+            "Mantenedores",
+            "Posición Mesa Spot"
+          ],
+          "description": "Vista de Posición Mesa Spot."
+        },
+        {
+          "id": "posicion-punta",
+          "name": "Posición Punta",
+          "title": "Posición Punta",
+          "route": "/back-office/posicion-punta",
+          "menuPath": [
+            "Mantenedores",
+            "Posición Punta"
+          ],
+          "description": "Vista de Posición Punta."
+        },
+        {
+          "id": "pre-importador",
+          "name": "Pre Importador",
+          "title": "Pre Importador",
+          "route": "/back-office/pre-importador",
+          "menuPath": [
+            "Mantenedores",
+            "Pre Importador"
+          ],
+          "description": "Vista de Pre Importador."
+        },
+        {
+          "id": "precios-de-instrumentos",
+          "name": "Precios de Instrumentos",
+          "title": "Precios de Instrumentos",
+          "route": "/back-office/precios-instrumentos/configuracion",
+          "menuPath": [
+            "Mantenedores",
+            "Precios de Instrumentos"
+          ],
+          "description": "Vista de Precios de Instrumentos."
+        },
+        {
+          "id": "tipos-cambio",
+          "name": "Tipos Cambio",
+          "title": "Tipos Cambio",
+          "route": "/back-office/tipo-cambio/configuracion",
+          "menuPath": [
+            "Mantenedores",
+            "Tipos Cambio"
+          ],
+          "description": "Vista de Tipos Cambio."
+        },
+        {
+          "id": "tipos-de-contraparte",
+          "name": "Tipos de Contraparte",
+          "title": "Tipos de Contraparte",
+          "route": "/back-office/tipo-contraparte/configuracion",
+          "menuPath": [
+            "Mantenedores",
+            "Tipos de Contraparte"
+          ],
+          "description": "Vista de Tipos de Contraparte."
+        },
+        {
+          "id": "transacciones-preimportador",
+          "name": "Transacciones Preimportador",
+          "title": "Transacciones Preimportador",
+          "route": "/back-office/transacciones-preimportador/configuracion",
+          "menuPath": [
+            "Mantenedores",
+            "Transacciones Preimportador"
+          ],
+          "description": "Vista de Transacciones Preimportador."
+        }
+      ]
+    },
+    {
+      "id": "normativos",
+      "name": "Normativos",
+      "title": "Normativos",
+      "description": "Módulo de Normativos en la plataforma.",
+      "sections": [
+        {
+          "id": "registro-de-operaciones",
+          "name": "Registro de Operaciones",
+          "title": "Registro de Operaciones",
+          "route": "/back-office/registro-operaciones",
+          "menuPath": [
+            "Normativos",
+            "Registro de Operaciones"
+          ],
+          "description": "Vista de Registro de Operaciones."
+        },
+        {
+          "id": "registro-de-asignaciones",
+          "name": "Registro de Asignaciones",
+          "title": "Registro de Asignaciones",
+          "route": "/back-office/registro-asignaciones",
+          "menuPath": [
+            "Normativos",
+            "Registro de Asignaciones"
+          ],
+          "description": "Vista de Registro de Asignaciones."
+        },
+        {
+          "id": "registro-de-ordenes",
+          "name": "Registro de Órdenes",
+          "title": "Registro de Órdenes",
+          "route": "/back-office/registro-ordenes",
+          "menuPath": [
+            "Normativos",
+            "Registro de Órdenes"
+          ],
+          "description": "Vista de Registro de Órdenes."
+        },
+        {
+          "id": "registro-de-clientes",
+          "name": "Registro de Clientes",
+          "title": "Registro de Clientes",
+          "route": "/back-office/registro-clientes",
+          "menuPath": [
+            "Normativos",
+            "Registro de Clientes"
+          ],
+          "description": "Vista de Registro de Clientes."
+        },
+        {
+          "id": "registro-de-personas-autorizadas",
+          "name": "Registro de Personas Autorizadas",
+          "title": "Registro de Personas Autorizadas",
+          "route": "/back-office/registro-personas-autorizadas",
+          "menuPath": [
+            "Normativos",
+            "Registro de Personas Autorizadas"
+          ],
+          "description": "Vista de Registro de Personas Autorizadas."
+        },
+        {
+          "id": "registro-facturacion",
+          "name": "Registro Facturación",
+          "title": "Registro Facturación",
+          "route": "/back-office/registro-facturacion",
+          "menuPath": [
+            "Normativos",
+            "Registro Facturación"
+          ],
+          "description": "Vista de Registro Facturación."
+        },
+        {
+          "id": "activos-terceros-en-deposito-o-custodia",
+          "name": "Activos Terceros en Deposito o Custodia",
+          "title": "Activos Terceros en Deposito o Custodia",
+          "route": "/back-office/registro-activos-terceros-en-depositos-o-custodias",
+          "menuPath": [
+            "Normativos",
+            "Activos Terceros en Deposito o Custodia"
+          ],
+          "description": "Vista de Activos Terceros en Deposito o Custodia."
+        },
+        {
+          "id": "registro-de-ejecutivos-y-trabajadores",
+          "name": "Registro de Ejecutivos y Trabajadores",
+          "title": "Registro de Ejecutivos y Trabajadores",
+          "route": "/back-office/registro-de-ejecutivos-y-trabajadores",
+          "menuPath": [
+            "Normativos",
+            "Registro de Ejecutivos y Trabajadores"
+          ],
+          "description": "Vista de Registro de Ejecutivos y Trabajadores."
+        }
+      ]
+    },
+    {
+      "id": "procesos",
+      "name": "Procesos",
+      "title": "Procesos",
+      "description": "Módulo de Procesos en la plataforma.",
+      "sections": [
+        {
+          "id": "cierre",
+          "name": "Cierre",
+          "title": "Cierre",
+          "route": "/back-office/cierre",
+          "menuPath": [
+            "Procesos",
+            "Cierre"
+          ],
+          "description": "Vista de Cierre."
+        },
+        {
+          "id": "balanceo",
+          "name": "Balanceo",
+          "title": "Balanceo",
+          "route": "/back-office/balanceo/reporte-balanceo",
+          "menuPath": [
+            "Procesos",
+            "Balanceo"
+          ],
+          "description": "Vista de Balanceo."
+        },
+        {
+          "id": "generacion-masiva-documentos",
+          "name": "Generación Masiva documentos",
+          "title": "Generación Masiva documentos",
+          "route": "/back-office/generacion-masiva-documentos",
+          "menuPath": [
+            "Procesos",
+            "Generación Masiva documentos"
+          ],
+          "description": "Vista de Generación Masiva documentos."
+        },
+        {
+          "id": "carga-masiva-ordenes",
+          "name": "Carga Masiva Órdenes",
+          "title": "Carga Masiva Órdenes",
+          "route": "/back-office/carga-masiva-ordenes",
+          "menuPath": [
+            "Procesos",
+            "Carga Masiva Órdenes"
+          ],
+          "description": "Vista de Carga Masiva Órdenes."
+        }
+      ]
+    },
+    {
+      "id": "allfunds-bank",
+      "name": "AllFunds Bank",
+      "title": "AllFunds Bank",
+      "description": "Módulo de AllFunds Bank en la plataforma.",
+      "sections": [
+        {
+          "id": "mantenedor-de-archivos",
+          "name": "Mantenedor de Archivos",
+          "title": "Mantenedor de Archivos",
+          "route": "/back-office/mantenedor-archivos-afb",
+          "menuPath": [
+            "AllFunds Bank",
+            "Mantenedor de Archivos"
+          ],
+          "description": "Vista de Mantenedor de Archivos."
+        },
+        {
+          "id": "horario-de-corte",
+          "name": "Horario de Corte",
+          "title": "Horario de Corte",
+          "route": "/back-office/horario-corte",
+          "menuPath": [
+            "AllFunds Bank",
+            "Horario de Corte"
+          ],
+          "description": "Vista de Horario de Corte."
+        },
+        {
+          "id": "generacion-de-archivo",
+          "name": "Generación de Archivo",
+          "title": "Generación de Archivo",
+          "route": "/back-office/generacion-archivo-allfunds",
+          "menuPath": [
+            "AllFunds Bank",
+            "Generación de Archivo"
+          ],
+          "description": "Vista de Generación de Archivo."
+        },
+        {
+          "id": "lectura-de-aceptacion",
+          "name": "Lectura de Aceptación",
+          "title": "Lectura de Aceptación",
+          "route": "/back-office/mantenedor-archivos-afb/proceso-aceptacion",
+          "menuPath": [
+            "AllFunds Bank",
+            "Lectura de Aceptación"
+          ],
+          "description": "Vista de Lectura de Aceptación."
+        },
+        {
+          "id": "lectura-de-confirmacion",
+          "name": "Lectura de Confirmación",
+          "title": "Lectura de Confirmación",
+          "route": "/back-office/mantenedor-archivos-afb/proceso-confirmacion",
+          "menuPath": [
+            "AllFunds Bank",
+            "Lectura de Confirmación"
+          ],
+          "description": "Vista de Lectura de Confirmación."
+        },
+        {
+          "id": "resumen-de-eventos-de-capital",
+          "name": "Resumen de Eventos de Capital",
+          "title": "Resumen de Eventos de Capital",
+          "route": "/back-office/resumen-evento-capital",
+          "menuPath": [
+            "AllFunds Bank",
+            "Resumen de Eventos de Capital"
+          ],
+          "description": "Vista de Resumen de Eventos de Capital."
+        }
+      ]
+    }
+  ],
+  "hasSession": true,
+  "hasManual": true,
+  "auth": {
+    "username": "feroadesa",
+    "password": "Creasys2018."
+  }
+}

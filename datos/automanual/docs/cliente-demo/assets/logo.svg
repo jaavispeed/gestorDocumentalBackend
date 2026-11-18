@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 44" width="220" height="44" fill="none">
+  <rect width="36" height="36" x="4" y="4" rx="10" fill="#0062cc"/>
+  <path d="M14 26L20 16L24 22L30 12" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="30" cy="12" r="2" fill="#ffffff"/>
+  <text x="48" y="27" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif" font-size="17" font-weight="700" fill="#1d1d1f" letter-spacing="-0.3">Fintech<tspan fill="#0062cc" font-weight="600">Express</tspan></text>
+</svg>

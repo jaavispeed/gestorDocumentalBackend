@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChatIaModule } from './chat-ia/chat-ia.module.js';
 import { DocumentacionModule } from './documentacion/documentacion.module.js';
 import { DocumentosModule } from './documentos/documentos.module.js';
+import { AutomanualModule } from './automanual/automanual.module.js';
 import { Documento } from './documentos/entities/documento.entity.js';
 import { DocumentoFragmento } from './documentos/entities/documento-fragmento.entity.js';
 import { DocumentoHistorial } from './documentos/entities/documento-historial.entity.js';
@@ -44,6 +45,7 @@ import { DocumentoHistorial } from './documentos/entities/documento-historial.en
     ChatIaModule,
     DocumentacionModule,
     DocumentosModule,
+    AutomanualModule,
   ],
 })
 export class AppModule {}

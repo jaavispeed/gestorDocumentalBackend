@@ -1,3 +1,5 @@
+import * as path from 'path';
+import express from 'express';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module.js';
@@ -17,6 +19,9 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  const directorioDocs = path.join(process.cwd(), 'datos', 'automanual', 'docs');
+  app.use('/manuals', express.static(directorioDocs));
 
   const puerto = process.env.PORT ?? 3000;
   await app.listen(puerto);
