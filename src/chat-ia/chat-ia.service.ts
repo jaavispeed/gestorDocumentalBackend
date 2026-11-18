@@ -14,9 +14,12 @@ import { GenerarDocGitDiffDto, RespuestaDocGitDiffDto } from '../common/dto/git-
 import {
   PROMPT_ASISTENTE_DOCUMENTACION,
   PROMPT_GENERADOR_DOC_GIT_DIFF,
+  PROMPT_COMPILADOR_MANUAL_UX,
   construirPromptConsultaRAG,
   construirPromptUsuarioGitDiff,
+  construirPromptGenerarManual,
 } from '../prompts/index.js';
+import { CompilarManualIaDto } from '../common/dto/compilar-manual.dto.js';
 
 @Injectable()
 export class ChatIaService {
@@ -271,6 +274,55 @@ export class ChatIaService {
         return `[DOC: ${archivo.nombre}]\n${contenidoPodado}`;
       })
       .join('\n\n');
+  }
+
+  async compilarManualConIa(
+    dto: CompilarManualIaDto,
+    clavePropia?: string,
+    modeloPropio?: string,
+  ): Promise<{ titulo: string; manualMarkdown: string }> {
+    const claveFinal =
+      (clavePropia && clavePropia.trim()) ||
+      process.env.GEMINI_API_KEY ||
+      '';
+    const modeloFinal =
+      (modeloPropio && modeloPropio.trim()) ||
+      process.env.GEMINI_MODELO ||
+      'gemini-2.5-flash';
+
+    if (!claveFinal || claveFinal === 'tu_clave_gemini_aqui') {
+      throw new ServiceUnavailableException(
+        'Se requiere una API Key de Gemini para compilar el manual con IA.',
+      );
+    }
+
+    try {
+      const cliente = new GoogleGenAI({ apiKey: claveFinal });
+      const promptUsuario = construirPromptGenerarManual({
+        tituloManual: dto.tituloManual,
+        publicoObjetivo: dto.publicoObjetivo,
+        documentos: dto.documentos,
+      });
+
+      const respuesta = await cliente.models.generateContent({
+        model: modeloFinal,
+        contents: promptUsuario,
+        config: {
+          systemInstruction: PROMPT_COMPILADOR_MANUAL_UX,
+          temperature: 0.2,
+        },
+      });
+
+      return {
+        titulo: dto.tituloManual,
+        manualMarkdown: respuesta.text?.trim() || '',
+      };
+    } catch (error: any) {
+      this.logger.error('Error al compilar manual con IA:', error);
+      throw new InternalServerErrorException(
+        'Error al procesar la documentación con IA: ' + (error.message || 'Error desconocido'),
+      );
+    }
   }
 
   private leerArchivosMd(

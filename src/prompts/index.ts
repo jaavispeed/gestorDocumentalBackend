@@ -4,3 +4,4 @@
 
 export * from './asistente-documental.prompt.js';
 export * from './git-diff-doc.prompt.js';
+export * from './generador-manual-ux.prompt.js';
