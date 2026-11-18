@@ -20,3 +20,7 @@ Este proyecto sigue una arquitectura modular en NestJS enfocada en legibilidad, 
    - Prefiere nombres autoexplicativos sobre nombres abreviados o crípticos.
    - Métodos cortos con una única responsabilidad.
    - Manejo adecuado de excepciones HTTP nativas de NestJS (`BadRequestException`, `NotFoundException`, `InternalServerErrorException`).
+
+4. **[Arquitectura y Separación por Módulo](./arquitectura-modulos.md):**
+   - El backend provee servicios desacoplados para los 3 pilares del ecosistema: **Gestor Documental** (dev/código), **AutoManual** (Playwright/procesos) y **Chatbot** (consumo/RAG).
+   - Los documentos generados convergen en el repositorio central de documentación.
