@@ -22,8 +22,11 @@ export class DocumentosController {
 
   // 1. Guardar documento vía JSON directo
   @Post()
-  create(@Body() crearDocumentoDto: CrearDocumentoDto) {
-    return this.documentosService.create(crearDocumentoDto);
+  create(
+    @Body() crearDocumentoDto: CrearDocumentoDto,
+    @Headers('x-gemini-key') apiKey?: string,
+  ) {
+    return this.documentosService.create(crearDocumentoDto, apiKey);
   }
 
   // 2. Subir archivo físico .md (Multipart / Form-Data)
@@ -32,8 +35,9 @@ export class DocumentosController {
   uploadFile(
     @UploadedFile() file: Express.Multer.File,
     @Body('categoria') categoria?: string,
+    @Headers('x-gemini-key') apiKey?: string,
   ) {
-    return this.documentosService.procesarArchivoSubido(file, categoria);
+    return this.documentosService.procesarArchivoSubido(file, categoria, apiKey);
   }
 
   // 3. Listar todos los documentos

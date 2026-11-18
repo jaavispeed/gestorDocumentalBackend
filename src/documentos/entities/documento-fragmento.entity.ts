@@ -32,8 +32,8 @@ export class DocumentoFragmento {
   @Column('text')
   contenido: string;
 
-  // Vector embedding de 384 dimensiones generado localmente con all-MiniLM-L6-v2
-  @Column({ type: 'vector', length: 384, nullable: true })
+  // Vector embedding de 768 dimensiones (Google Gemini)
+  @Column({ type: 'vector', length: 768, nullable: true })
   @Index({ where: 'embedding IS NOT NULL' })
   embedding?: string;
 

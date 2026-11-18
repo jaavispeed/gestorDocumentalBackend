@@ -1,40 +1,40 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { FlagEmbedding, EmbeddingModel } from 'fastembed';
+import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { GoogleGenAI } from '@google/genai';
 
 @Injectable()
-export class EmbeddingsService implements OnModuleInit {
+export class EmbeddingsService {
   private readonly logger = new Logger('EmbeddingsService');
-  private modelo: any = null;
 
-  async onModuleInit() {
-    try {
-      this.logger.log('Inicializando modelo local de embeddings (FastEmbed - BGE Small EN)...');
-      this.modelo = await FlagEmbedding.init({
-        model: EmbeddingModel.BGESmallENV15,
-      });
-      this.logger.log('Modelo local de embeddings listo (384 dimensiones).');
-    } catch (error) {
-      this.logger.error('Error al precargar el modelo local:', error);
-    }
-  }
+  constructor(private readonly configService: ConfigService) {}
 
-  async generarEmbedding(texto: string): Promise<number[] | null> {
+  async generarEmbedding(texto: string, claveAlternativa?: string): Promise<number[] | null> {
     if (!texto || !texto.trim()) {
       return null;
     }
 
-    try {
-      if (!this.modelo) {
-        this.modelo = await FlagEmbedding.init({
-          model: EmbeddingModel.BGESmallENV15,
-        });
-      }
+    const apiKey =
+      claveAlternativa ||
+      this.configService.get<string>('GEMINI_API_KEY');
 
-      // Genera el vector de 384 dimensiones directamente en la CPU
-      const vector = await this.modelo.queryEmbed(texto);
-      return Array.from(vector);
+    if (!apiKey || apiKey === 'tu_clave_gemini_aqui') {
+      this.logger.warn('No hay GEMINI_API_KEY configurada. Se omitirá el embedding vectorial.');
+      return null;
+    }
+
+    try {
+      const ai = new GoogleGenAI({ apiKey });
+      const resultado = await ai.models.embedContent({
+        model: 'text-embedding-004',
+        contents: texto,
+      });
+
+      if (resultado && resultado.embeddings && resultado.embeddings.length > 0) {
+        return resultado.embeddings[0].values || null;
+      }
+      return null;
     } catch (error) {
-      this.logger.error('Error al generar embedding local:', error);
+      this.logger.error('Error al generar embedding con Gemini:', error);
       return null;
     }
   }

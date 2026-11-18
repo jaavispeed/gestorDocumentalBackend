@@ -27,7 +27,7 @@ export class DocumentosService {
     private readonly embeddingsService: EmbeddingsService,
   ) {}
 
-  async create(crearDocumentoDto: CrearDocumentoDto) {
+  async create(crearDocumentoDto: CrearDocumentoDto, apiKeyHeader?: string) {
     try {
       // 1. Guardar el documento completo
       const documento = this.documentoRepository.create({
@@ -42,12 +42,13 @@ export class DocumentosService {
       // 2. Dividir en fragmentos (chunking inteligente por secciones Markdown)
       const bloques = dividirMarkdownPorSecciones(guardado.contenido);
 
-      // 3. Generar embeddings locales y guardar cada fragmento
+      // 3. Generar embeddings y guardar cada fragmento
       const fragmentosEntidades: DocumentoFragmento[] = [];
 
       for (const bloque of bloques) {
         const vectorNumeros = await this.embeddingsService.generarEmbedding(
           bloque.contenido,
+          apiKeyHeader,
         );
 
         // Formato vector de Postgres: "[0.12, -0.05, ...]"
@@ -77,6 +78,7 @@ export class DocumentosService {
   async procesarArchivoSubido(
     archivo: Express.Multer.File,
     categoria?: string,
+    apiKeyHeader?: string,
   ) {
     if (!archivo) {
       throw new BadRequestException('No se ha proporcionado ningún archivo.');
@@ -92,12 +94,15 @@ export class DocumentosService {
       .replace(/_/g, ' ')
       .trim();
 
-    return this.create({
-      titulo,
-      nombreArchivo: archivo.originalname,
-      categoria: categoria || 'General',
-      contenido,
-    });
+    return this.create(
+      {
+        titulo,
+        nombreArchivo: archivo.originalname,
+        categoria: categoria || 'General',
+        contenido,
+      },
+      apiKeyHeader,
+    );
   }
 
   findAll() {
