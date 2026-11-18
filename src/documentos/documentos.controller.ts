@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Patch,
   Delete,
   Body,
   Param,
@@ -15,6 +16,7 @@ import type { Express } from 'express';
 import 'multer';
 import { DocumentosService } from './documentos.service.js';
 import { CrearDocumentoDto } from './dto/crear-documento.dto.js';
+import { ActualizarDocumentoDto } from './dto/actualizar-documento.dto.js';
 
 @Controller('documentos')
 export class DocumentosController {
@@ -29,7 +31,7 @@ export class DocumentosController {
     return this.documentosService.create(crearDocumentoDto, apiKey);
   }
 
-  // 2. Subir archivo físico .md (Multipart / Form-Data)
+  // 2. Subir archivo físico .md
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(
@@ -40,21 +42,43 @@ export class DocumentosController {
     return this.documentosService.procesarArchivoSubido(file, categoria, apiKey);
   }
 
-  // 3. Listar todos los documentos
+  // 3. Listar todos los documentos activos
   @Get()
   findAll() {
     return this.documentosService.findAll();
   }
 
-  // 4. Obtener documento por ID con sus fragmentos vectoriales
+  // 4. Obtener documento por ID
   @Get(':id')
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.documentosService.findOne(id);
   }
 
-  // 5. Eliminar documento (y sus fragmentos en cascada)
+  // 5. Obtener historial de versiones de un documento
+  @Get(':id/historial')
+  obtenerHistorial(@Param('id', ParseUUIDPipe) id: string) {
+    return this.documentosService.obtenerHistorial(id);
+  }
+
+  // 6. Actualizar documento (genera nueva versión en historial y recalcula vectores)
+  @Patch(':id')
+  update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: ActualizarDocumentoDto,
+    @Headers('x-gemini-key') apiKey?: string,
+  ) {
+    return this.documentosService.update(id, dto, apiKey);
+  }
+
+  // 7. Soft Delete (Eliminación lógica)
   @Delete(':id')
   remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.documentosService.remove(id);
+    return this.documentosService.softDelete(id);
+  }
+
+  // 8. Restaurar documento eliminado
+  @Patch(':id/restaurar')
+  restore(@Param('id', ParseUUIDPipe) id: string) {
+    return this.documentosService.restore(id);
   }
 }

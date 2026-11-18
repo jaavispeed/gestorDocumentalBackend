@@ -6,6 +6,7 @@ import { DocumentacionModule } from './documentacion/documentacion.module.js';
 import { DocumentosModule } from './documentos/documentos.module.js';
 import { Documento } from './documentos/entities/documento.entity.js';
 import { DocumentoFragmento } from './documentos/entities/documento-fragmento.entity.js';
+import { DocumentoHistorial } from './documentos/entities/documento-historial.entity.js';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { DocumentoFragmento } from './documentos/entities/documento-fragmento.en
           return {
             type: 'postgres',
             url: dbUrl,
-            entities: [Documento, DocumentoFragmento],
+            entities: [Documento, DocumentoFragmento, DocumentoHistorial],
             synchronize: true,
             ssl: { rejectUnauthorized: false },
           };
@@ -35,7 +36,7 @@ import { DocumentoFragmento } from './documentos/entities/documento-fragmento.en
           username: configService.get<string>('DB_USER', 'postgres'),
           password: configService.get<string>('DB_PASSWORD'),
           database: configService.get<string>('DB_NAME'),
-          entities: [Documento, DocumentoFragmento],
+          entities: [Documento, DocumentoFragmento, DocumentoHistorial],
           synchronize: true,
         };
       },
