@@ -454,8 +454,8 @@ export class ChatIaService {
   }
 
   /**
-   * Sanitiza residuos de notación matemática LaTeX que el modelo pudiera filtrar.
-   * Transforma de forma general cualquier comando LaTeX y expresión entre signos $ a texto plano.
+   * Sanitiza residuos de notación matemática LaTeX y limpia caracteres markdown agresivos (como encabezados ###)
+   * para asegurar que el texto sea perfectamente legible tanto en clientes de texto plano como en frontends con markdown.
    */
   private sanitizarTextoRespuesta(texto: string): string {
     if (!texto) return '';
@@ -478,6 +478,17 @@ export class ChatIaService {
         // Normalizar espaciados en sumas y restas de variables (ej: T+1 -> T + 1, T-1 -> T - 1)
         .replace(/([A-Za-z])\+([A-Za-z0-9])/g, '$1 + $2')
         .replace(/([A-Za-z])\-([A-Za-z0-9])/g, '$1 - $2')
+        // Limpiar encabezados markdown (#, ##, ###, etc.) y convertirlos a texto en negrita limpio
+        // Por ejemplo: "### Características" -> "**Características**"
+        .replace(/^[ \t]*#{1,6}[ \t]+([^\r\n]+)/gm, (_match, titulo) => {
+          const limpio = titulo.trim().replace(/^\*\*|\*\*$/g, '');
+          return `**${limpio}**`;
+        })
+        // Limpiar residuos tipo "\n\n###" o "# " inline que hayan quedado atrapados
+        .replace(/(^|\n)#{1,6}\s+/g, '$1')
+        // Colapsar saltos de línea excesivos
+        .replace(/\n{3,}/g, '\n\n')
+        .trim()
     );
   }
 
