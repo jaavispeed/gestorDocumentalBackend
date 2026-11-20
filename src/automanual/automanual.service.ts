@@ -466,7 +466,10 @@ export class AutomanualService {
       ai: {
         hasApiKey,
         apiKeyMasked,
-        model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
+        model:
+          process.env.GEMINI_MODELO ||
+          process.env.GEMINI_MODEL ||
+          'gemini-3.1-flash-lite',
         temperature: obtenerTemperaturaEfectiva(),
         visionPrompt: promptConfig.visionPrompt,
         defaultVisionPrompt: PROMPT_VISION_PREDETERMINADO,
@@ -474,19 +477,24 @@ export class AutomanualService {
       },
       availableModels: [
         {
+          id: 'gemini-3.1-flash-lite',
+          name: 'Gemini 3.1 Flash Lite (Por Defecto)',
+          description: 'Ultra-rápido, eficiente en tokens y ágil.',
+        },
+        {
           id: 'gemini-2.5-flash',
-          name: 'Gemini 2.5 Flash (Recomendado)',
+          name: 'Gemini 2.5 Flash',
           description: 'Rápido, multimodal y de alta precisión.',
         },
         {
           id: 'gemini-2.5-flash-lite',
           name: 'Gemini 2.5 Flash Lite',
-          description: 'Ultra-rápido para análisis ágil.',
+          description: 'Modelo ligero de generación 2.5.',
         },
         {
           id: 'gemini-2.0-flash',
           name: 'Gemini 2.0 Flash',
-          description: 'Modelo multimodal estable.',
+          description: 'Modelo multimodal estándar.',
         },
         {
           id: 'gemini-2.5-pro',
@@ -521,19 +529,24 @@ export class AutomanualService {
     const key = apiKey || process.env.GEMINI_API_KEY;
     const modelosPorDefecto = [
       {
+        id: 'gemini-3.1-flash-lite',
+        name: 'Gemini 3.1 Flash Lite (Por Defecto)',
+        description: 'Ultra-rápido, eficiente en tokens y ágil.',
+      },
+      {
         id: 'gemini-2.5-flash',
-        name: 'Gemini 2.5 Flash (Recomendado)',
+        name: 'Gemini 2.5 Flash',
         description: 'Rápido, multimodal y de alta precisión.',
       },
       {
         id: 'gemini-2.5-flash-lite',
         name: 'Gemini 2.5 Flash Lite',
-        description: 'Ultra-rápido para análisis ágil.',
+        description: 'Modelo ligero de generación 2.5.',
       },
       {
         id: 'gemini-2.0-flash',
         name: 'Gemini 2.0 Flash',
-        description: 'Modelo multimodal estable.',
+        description: 'Modelo multimodal estándar.',
       },
       {
         id: 'gemini-2.5-pro',

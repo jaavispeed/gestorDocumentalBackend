@@ -9,9 +9,10 @@ import {
   Headers,
   UseInterceptors,
   UploadedFile,
+  UploadedFiles,
   ParseUUIDPipe,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import type { Express } from 'express';
 import 'multer';
 import { DocumentosService } from './documentos.service.js';
@@ -27,22 +28,68 @@ export class DocumentosController {
   create(
     @Body() crearDocumentoDto: CrearDocumentoDto,
     @Headers('x-gemini-key') apiKey?: string,
+    @Headers('x-gemini-embedding-model') modeloEmbedding?: string,
   ) {
-    return this.documentosService.create(crearDocumentoDto, apiKey);
+    return this.documentosService.create(crearDocumentoDto, apiKey, modeloEmbedding);
   }
 
-  // 2. Subir archivo físico .md
+  // 2. Subir archivo físico .md individual
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(
     @UploadedFile() file: Express.Multer.File,
     @Body('categoria') categoria?: string,
     @Headers('x-gemini-key') apiKey?: string,
+    @Headers('x-gemini-embedding-model') modeloEmbedding?: string,
   ) {
     return this.documentosService.procesarArchivoSubido(
       file,
       categoria,
       apiKey,
+      modeloEmbedding,
+    );
+  }
+
+  // 2.1 Subir múltiples archivos físicos .md
+  @Post('upload-multiple')
+  @UseInterceptors(FilesInterceptor('files', 20))
+  uploadMultipleFiles(
+    @UploadedFiles() files: Express.Multer.File[],
+    @Body('categorias') categorias?: string | string[],
+    @Headers('x-gemini-key') apiKey?: string,
+    @Headers('x-gemini-embedding-model') modeloEmbedding?: string,
+  ) {
+    return this.documentosService.procesarMultiplesArchivos(
+      files,
+      categorias,
+      apiKey,
+      modeloEmbedding,
+    );
+  }
+
+  // 2.2 Regenerar embeddings para todos los documentos existentes
+  @Post('regenerar-embeddings')
+  regenerarTodosEmbeddings(
+    @Headers('x-gemini-key') apiKey?: string,
+    @Headers('x-gemini-embedding-model') modeloEmbedding?: string,
+  ) {
+    return this.documentosService.regenerarEmbeddingsExistentes(
+      apiKey,
+      modeloEmbedding,
+    );
+  }
+
+  // 2.3 Regenerar embeddings para un documento específico
+  @Post(':id/regenerar-embeddings')
+  regenerarEmbeddingsDocumento(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Headers('x-gemini-key') apiKey?: string,
+    @Headers('x-gemini-embedding-model') modeloEmbedding?: string,
+  ) {
+    return this.documentosService.regenerarEmbeddingsPorDocumento(
+      id,
+      apiKey,
+      modeloEmbedding,
     );
   }
 
@@ -70,8 +117,9 @@ export class DocumentosController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: ActualizarDocumentoDto,
     @Headers('x-gemini-key') apiKey?: string,
+    @Headers('x-gemini-embedding-model') modeloEmbedding?: string,
   ) {
-    return this.documentosService.update(id, dto, apiKey);
+    return this.documentosService.update(id, dto, apiKey, modeloEmbedding);
   }
 
   // 7. Soft Delete (Eliminación lógica)

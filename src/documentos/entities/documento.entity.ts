@@ -16,7 +16,7 @@ export enum EstadoDocumento {
   ELIMINADO = 'ELIMINADO',
 }
 
-@Entity()
+@Entity({ name: 'documentos' })
 export class Documento {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -24,7 +24,7 @@ export class Documento {
   @Column('text')
   titulo: string;
 
-  @Column('text', { nullable: true })
+  @Column('text', { name: 'nombre_archivo', nullable: true })
   nombreArchivo?: string;
 
   @Column('text', { nullable: true })
@@ -53,12 +53,12 @@ export class Documento {
   })
   historial: DocumentoHistorial[];
 
-  @CreateDateColumn({ type: 'timestamptz' })
-  createdAt: Date;
+  @CreateDateColumn({ name: 'fecha_creacion', type: 'timestamptz' })
+  fechaCreacion: Date;
 
-  @UpdateDateColumn({ type: 'timestamptz' })
-  updatedAt: Date;
+  @UpdateDateColumn({ name: 'fecha_actualizacion', type: 'timestamptz' })
+  fechaActualizacion: Date;
 
-  @DeleteDateColumn({ type: 'timestamptz', nullable: true })
-  deletedAt?: Date;
+  @DeleteDateColumn({ name: 'fecha_eliminacion', type: 'timestamptz', nullable: true })
+  fechaEliminacion?: Date;
 }

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ChatIaModule } from './chat-ia/chat-ia.module.js';
 import { DocumentacionModule } from './documentacion/documentacion.module.js';
@@ -8,6 +9,7 @@ import { AutomanualModule } from './automanual/automanual.module.js';
 import { Documento } from './documentos/entities/documento.entity.js';
 import { DocumentoFragmento } from './documentos/entities/documento-fragmento.entity.js';
 import { DocumentoHistorial } from './documentos/entities/documento-historial.entity.js';
+import { BearerAuthGuard } from './common/guards/bearer-auth.guard.js';
 
 @Module({
   imports: [
@@ -46,6 +48,12 @@ import { DocumentoHistorial } from './documentos/entities/documento-historial.en
     DocumentacionModule,
     DocumentosModule,
     AutomanualModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: BearerAuthGuard,
+    },
   ],
 })
 export class AppModule {}

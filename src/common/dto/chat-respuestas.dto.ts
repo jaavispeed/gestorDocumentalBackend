@@ -6,5 +6,16 @@ export interface EstadoServidorDto {
 }
 
 export interface RespuestaChatDto {
+  // Nuevo formato detallado
+  answer: string;
+  foundInManual: boolean;
+  citations: string[];
+  suggestedFollowUps: string[];
+  strategyUsed: string;
+  modelUsed: string;
+  contextCharsSent: number;
+  latencyMs: number;
+
+  // Retrocompatibilidad con clientes anteriores
   respuesta: string;
 }

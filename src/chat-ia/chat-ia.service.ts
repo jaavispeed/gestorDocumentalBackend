@@ -37,13 +37,29 @@ export class ChatIaService {
     this.rutaDocumentacion = path.resolve(process.cwd(), 'documentacion');
   }
 
+  private extraerMensajeLimpioError(error: any): string {
+    let mensaje = error?.message || 'Error desconocido';
+    try {
+      if (typeof error?.message === 'string' && error.message.includes('{')) {
+        const jsonStart = error.message.indexOf('{');
+        const parseado = JSON.parse(error.message.substring(jsonStart));
+        if (parseado?.error?.message) {
+          return parseado.error.message;
+        }
+      }
+    } catch {}
+    return mensaje;
+  }
+
   async obtenerEstado(
     clavePersonalizada?: string,
     modeloPersonalizado?: string,
   ): Promise<EstadoServidorDto> {
     const claveFinal = clavePersonalizada ? clavePersonalizada.trim() : '';
     const modeloFinal =
-      (modeloPersonalizado && modeloPersonalizado.trim()) || 'gemini-2.5-flash';
+      (modeloPersonalizado && modeloPersonalizado.trim()) ||
+      process.env.GEMINI_MODELO ||
+      'gemini-3.1-flash-lite';
 
     if (!claveFinal) {
       return {
@@ -83,25 +99,47 @@ export class ChatIaService {
     }
   }
 
-  async procesarMensaje(consulta: ConsultaChatDto): Promise<RespuestaChatDto> {
-    const {
-      mensaje,
-      historial = [],
-      clavePersonalizada,
-      modeloPersonalizado,
-    } = consulta;
+  async procesarMensaje(
+    consulta: ConsultaChatDto,
+    apiKeyHeader?: string,
+    modeloHeader?: string,
+  ): Promise<RespuestaChatDto> {
+    const inicioTiempo = Date.now();
 
-    if (!mensaje || !mensaje.trim()) {
-      throw new BadRequestException('El mensaje es obligatorio');
+    // Normalización de pregunta ("question" o "mensaje")
+    const preguntaTexto = (consulta.question || consulta.mensaje || '').trim();
+
+    if (!preguntaTexto) {
+      throw new BadRequestException(
+        'El campo question (o mensaje) es obligatorio',
+      );
     }
 
-    const claveFinal = clavePersonalizada ? clavePersonalizada.trim() : '';
-    const modeloFinal =
-      (modeloPersonalizado && modeloPersonalizado.trim()) || 'gemini-2.5-flash';
+    // Normalización de historial (soporta {role, text} o {rol, contenido})
+    const listaHistorialCruda = consulta.history || consulta.historial || [];
+    const historialNormalizado = listaHistorialCruda.map((item) => {
+      const rol = item.role === 'assistant' || item.rol === 'asistente' ? 'asistente' : 'usuario';
+      const contenido = (item.text || item.contenido || '').trim();
+      return { rol: rol as 'usuario' | 'asistente', contenido };
+    });
 
-    if (!claveFinal) {
+    const strategyUsed = consulta.mode || 'direct';
+
+    const claveFinal =
+      apiKeyHeader ||
+      consulta.clavePersonalizada ||
+      process.env.GEMINI_API_KEY ||
+      '';
+
+    const modeloFinal =
+      modeloHeader ||
+      consulta.modeloPersonalizado ||
+      process.env.GEMINI_MODELO ||
+      'gemini-3.1-flash-lite';
+
+    if (!claveFinal || claveFinal === 'tu_clave_gemini_aqui') {
       throw new ServiceUnavailableException(
-        'No hay ninguna clave API configurada. Configura tu API Key en los Ajustes de la aplicación.',
+        'No hay ninguna clave API de Gemini configurada. Configura GEMINI_API_KEY en las variables de entorno o en la cabecera x-gemini-key.',
       );
     }
 
@@ -109,15 +147,17 @@ export class ChatIaService {
 
     try {
       // Filtrado semántico rápido por términos clave en el nombre del documento o contenido
-      const contextoDoc = this.obtenerContextoBase(mensaje);
+      const contextoDoc = this.obtenerContextoBase(preguntaTexto);
       const contenidoPrompt = construirPromptConsultaRAG(
-        mensaje,
+        preguntaTexto,
         contextoDoc,
-        historial,
+        historialNormalizado,
       );
 
+      const contextCharsSent = contenidoPrompt.length;
+
       this.logger.log(
-        `Procesando chat con modelo: ${modeloFinal} (tokens de contexto podados)`,
+        `Procesando chat [modo: ${strategyUsed}] con modelo: ${modeloFinal} (${contextCharsSent} caracteres)`,
       );
 
       const promesaConsulta = clienteFinal.models.generateContent({
@@ -152,15 +192,81 @@ export class ChatIaService {
       // Sanitización defensiva de posibles residuos LaTeX en la respuesta
       const respuestaLimpia = this.sanitizarTextoRespuesta(textoRespuesta);
 
+      const latenciaMs = Date.now() - inicioTiempo;
+
+      // Detección de si se encontró en el manual
+      const noEncontrado = respuestaLimpia.includes(
+        'La información solicitada no se encuentra disponible',
+      );
+      const foundInManual = !noEncontrado && !!contextoDoc;
+
+      // Extracción de citas del texto si existen referencias a archivos .md
+      const matchesCitas = respuestaLimpia.match(/`([a-zA-Z0-9_\-./\\]+\.md)`/g) || [];
+      const citations = Array.from(
+        new Set(matchesCitas.map((m) => m.replace(/`/g, ''))),
+      );
+
+      // Preguntas de seguimiento sugeridas
+      const suggestedFollowUps = this.generarSugerenciasSeguimiento(
+        preguntaTexto,
+        contextoDoc,
+      );
+
       return {
+        answer: respuestaLimpia,
+        foundInManual,
+        citations,
+        suggestedFollowUps,
+        strategyUsed,
+        modelUsed: modeloFinal,
+        contextCharsSent,
+        latencyMs: latenciaMs,
         respuesta: respuestaLimpia,
       };
     } catch (error: any) {
-      this.logger.error(`Error en Gemini: ${error.message}`, error.stack);
-      throw new InternalServerErrorException(
-        `Error al consultar la IA de Gemini: ${error.message}`,
+      const msjLimpio = this.extraerMensajeLimpioError(error);
+      this.logger.error(`Error en Gemini: ${msjLimpio}`, error.stack);
+      throw new BadRequestException(
+        `Error al consultar la IA de Gemini: ${msjLimpio}`,
       );
     }
+  }
+
+  private generarSugerenciasSeguimiento(
+    pregunta: string,
+    contexto?: string,
+  ): string[] {
+    const pLower = pregunta.toLowerCase();
+
+    if (pLower.includes('orden') || pLower.includes('servicio')) {
+      return [
+        '¿Cuáles son los estados permitidos para una orden de servicio?',
+        '¿Cómo se asigna un responsable a una orden?',
+        '¿Cómo exportar el reporte de órdenes a PDF?',
+      ];
+    }
+
+    if (pLower.includes('offline') || pLower.includes('sincroniz')) {
+      return [
+        '¿Cómo funciona el modo offline y la sincronización?',
+        '¿Qué sucede si se interrumpe la conexión a internet?',
+        '¿Dónde se almacenan los datos de forma local?',
+      ];
+    }
+
+    if (pLower.includes('instal') || pLower.includes('pwa') || pLower.includes('app')) {
+      return [
+        '¿Cómo instalo la aplicación en Android o iOS?',
+        '¿Cuáles son los requisitos de navegador recomendados?',
+        '¿Cómo actualizar a la última versión disponible?',
+      ];
+    }
+
+    return [
+      '¿Cuáles son las reglas de negocio clave del sistema?',
+      '¿Cómo exportar la documentación técnica completa?',
+      '¿Cómo consultar los manuales operativos paso a paso?',
+    ];
   }
 
   async generarDocumentacionDesdeDiff(
@@ -177,7 +283,9 @@ export class ChatIaService {
 
     const claveFinal = clavePersonalizada ? clavePersonalizada.trim() : '';
     const modeloFinal =
-      (modeloPersonalizado && modeloPersonalizado.trim()) || 'gemini-2.5-flash';
+      (modeloPersonalizado && modeloPersonalizado.trim()) ||
+      process.env.GEMINI_MODELO ||
+      'gemini-3.1-flash-lite';
 
     if (!claveFinal) {
       throw new ServiceUnavailableException(
@@ -227,12 +335,13 @@ export class ChatIaService {
         ),
       };
     } catch (error: any) {
+      const msjLimpio = this.extraerMensajeLimpioError(error);
       this.logger.error(
-        `Error generando documentación desde diff: ${error.message}`,
+        `Error generando documentación desde diff: ${msjLimpio}`,
         error.stack,
       );
-      throw new InternalServerErrorException(
-        `Error al generar la documentación con IA: ${error.message}`,
+      throw new BadRequestException(
+        `Error al generar la documentación con IA: ${msjLimpio}`,
       );
     }
   }
@@ -328,7 +437,7 @@ export class ChatIaService {
     const modeloFinal =
       (modeloPropio && modeloPropio.trim()) ||
       process.env.GEMINI_MODELO ||
-      'gemini-2.5-flash';
+      'gemini-3.1-flash-lite';
 
     if (!claveFinal || claveFinal === 'tu_clave_gemini_aqui') {
       throw new ServiceUnavailableException(
@@ -358,10 +467,10 @@ export class ChatIaService {
         manualMarkdown: respuesta.text?.trim() || '',
       };
     } catch (error: any) {
-      this.logger.error('Error al compilar manual con IA:', error);
-      throw new InternalServerErrorException(
-        'Error al procesar la documentación con IA: ' +
-          (error.message || 'Error desconocido'),
+      const msjLimpio = this.extraerMensajeLimpioError(error);
+      this.logger.error('Error al compilar manual con IA:', msjLimpio);
+      throw new BadRequestException(
+        'Error al procesar la documentación con IA: ' + msjLimpio,
       );
     }
   }

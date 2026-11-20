@@ -31,7 +31,11 @@ export class DocumentosService {
     private readonly embeddingsService: EmbeddingsService,
   ) {}
 
-  async create(crearDocumentoDto: CrearDocumentoDto, apiKeyHeader?: string) {
+  async create(
+    crearDocumentoDto: CrearDocumentoDto,
+    apiKeyHeader?: string,
+    modeloEmbeddingHeader?: string,
+  ) {
     try {
       const documento = this.documentoRepository.create({
         titulo: crearDocumentoDto.titulo,
@@ -42,12 +46,22 @@ export class DocumentosService {
         estado: EstadoDocumento.ACTIVO,
       });
 
+      // El documento siempre se guarda primero para preservar el archivo .md
       const guardado = await this.documentoRepository.save(documento);
-      await this.regenerarVectores(
-        guardado.id,
-        guardado.contenido,
-        apiKeyHeader,
-      );
+
+      // Intentar generar los vectores del documento; si la IA falla, no se aborta la subida
+      try {
+        await this.regenerarVectores(
+          guardado.id,
+          guardado.contenido,
+          apiKeyHeader,
+          modeloEmbeddingHeader,
+        );
+      } catch (vectorError: any) {
+        this.logger.warn(
+          `Documento guardado pero ocurrió un error al generar embeddings: ${vectorError.message}`,
+        );
+      }
 
       return this.findOne(guardado.id);
     } catch (error: any) {
@@ -55,7 +69,12 @@ export class DocumentosService {
     }
   }
 
-  async update(id: string, dto: ActualizarDocumentoDto, apiKeyHeader?: string) {
+  async update(
+    id: string,
+    dto: ActualizarDocumentoDto,
+    apiKeyHeader?: string,
+    modeloEmbeddingHeader?: string,
+  ) {
     const documento = await this.findOne(id);
 
     // 1. Si hay cambios en el contenido o título, guardamos snapshot en historial
@@ -87,11 +106,18 @@ export class DocumentosService {
 
     // 2. Si cambió el contenido, se recalculan los vectores RAG
     if (dto.contenido) {
-      await this.regenerarVectores(
-        actualizado.id,
-        actualizado.contenido,
-        apiKeyHeader,
-      );
+      try {
+        await this.regenerarVectores(
+          actualizado.id,
+          actualizado.contenido,
+          apiKeyHeader,
+          modeloEmbeddingHeader,
+        );
+      } catch (vectorError: any) {
+        this.logger.warn(
+          `Documento actualizado pero falló el recálculo de embeddings: ${vectorError.message}`,
+        );
+      }
     }
 
     return this.findOne(actualizado.id);
@@ -101,6 +127,7 @@ export class DocumentosService {
     archivo: Express.Multer.File,
     categoria?: string,
     apiKeyHeader?: string,
+    modeloEmbeddingHeader?: string,
   ) {
     if (!archivo) {
       throw new BadRequestException('No se ha proporcionado ningún archivo.');
@@ -126,14 +153,48 @@ export class DocumentosService {
         contenido,
       },
       apiKeyHeader,
+      modeloEmbeddingHeader,
     );
   }
 
+  async procesarMultiplesArchivos(
+    archivos: Express.Multer.File[],
+    categorias?: string | string[],
+    apiKeyHeader?: string,
+    modeloEmbeddingHeader?: string,
+  ) {
+    if (!archivos || archivos.length === 0) {
+      throw new BadRequestException('No se han proporcionado archivos.');
+    }
+
+    const categoriasArray = Array.isArray(categorias)
+      ? categorias
+      : typeof categorias === 'string'
+        ? [categorias]
+        : [];
+
+    const resultados = [];
+    for (let i = 0; i < archivos.length; i++) {
+      const archivo = archivos[i];
+      const categoria = categoriasArray[i] || categoriasArray[0] || 'General';
+      const doc = await this.procesarArchivoSubido(
+        archivo,
+        categoria,
+        apiKeyHeader,
+        modeloEmbeddingHeader,
+      );
+      resultados.push(doc);
+    }
+
+    return resultados;
+  }
+
   findAll() {
-    // find() por defecto respeta @DeleteDateColumn e ignora eliminados lógicamente
+    // Retorna solo documentos con estado ACTIVO sin importar si tienen o no fecha de eliminación (withDeleted: true)
     return this.documentoRepository.find({
       where: { estado: EstadoDocumento.ACTIVO },
-      order: { createdAt: 'DESC' },
+      order: { fechaCreacion: 'DESC' },
+      withDeleted: true,
     });
   }
 
@@ -141,6 +202,7 @@ export class DocumentosService {
     const documento = await this.documentoRepository.findOne({
       where: { id },
       relations: { fragmentos: true, historial: true },
+      withDeleted: true,
     });
 
     if (!documento) {
@@ -190,6 +252,7 @@ export class DocumentosService {
     documentoId: string,
     contenido: string,
     apiKeyHeader?: string,
+    modeloEmbeddingHeader?: string,
   ) {
     // Eliminar fragmentos anteriores
     await this.fragmentoRepository.delete({ documentoId });
@@ -202,6 +265,7 @@ export class DocumentosService {
       const vectorNumeros = await this.embeddingsService.generarEmbedding(
         bloque.contenido,
         apiKeyHeader,
+        modeloEmbeddingHeader,
       );
 
       const vectorString = vectorNumeros
@@ -222,6 +286,62 @@ export class DocumentosService {
     if (fragmentosEntidades.length > 0) {
       await this.fragmentoRepository.save(fragmentosEntidades);
     }
+  }
+
+  async regenerarEmbeddingsExistentes(
+    apiKeyHeader?: string,
+    modeloEmbeddingHeader?: string,
+  ) {
+    const documentos = await this.documentoRepository.find({
+      where: { estado: EstadoDocumento.ACTIVO },
+      withDeleted: true,
+    });
+
+    try {
+      for (const doc of documentos) {
+        await this.regenerarVectores(
+          doc.id,
+          doc.contenido,
+          apiKeyHeader,
+          modeloEmbeddingHeader,
+        );
+      }
+    } catch (error: any) {
+      throw new BadRequestException(
+        `Error al regenerar embeddings: ${error.message}`,
+      );
+    }
+
+    return {
+      message: `Se han regenerado los vectores RAG para ${documentos.length} documento(s).`,
+      totalDocumentos: documentos.length,
+    };
+  }
+
+  async regenerarEmbeddingsPorDocumento(
+    id: string,
+    apiKeyHeader?: string,
+    modeloEmbeddingHeader?: string,
+  ) {
+    const doc = await this.findOne(id);
+    try {
+      await this.regenerarVectores(
+        doc.id,
+        doc.contenido,
+        apiKeyHeader,
+        modeloEmbeddingHeader,
+      );
+    } catch (error: any) {
+      throw new BadRequestException(
+        `Error al regenerar embeddings para "${doc.titulo}": ${error.message}`,
+      );
+    }
+
+    return {
+      message: `Vectores RAG regenerados correctamente para "${doc.titulo}".`,
+      id: doc.id,
+      titulo: doc.titulo,
+    };
   }
 
   private handleDBExceptions(error: any) {

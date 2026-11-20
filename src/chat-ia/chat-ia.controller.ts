@@ -39,8 +39,10 @@ export class ChatIaController {
   @HttpCode(HttpStatus.OK)
   async enviarChat(
     @Body() consulta: ConsultaChatDto,
+    @Headers('x-gemini-key') apiKey?: string,
+    @Headers('x-gemini-model') modelo?: string,
   ): Promise<RespuestaChatDto> {
-    return this.chatIaService.procesarMensaje(consulta);
+    return this.chatIaService.procesarMensaje(consulta, apiKey, modelo);
   }
 
   @Post('api/ia/generar-doc-diff')

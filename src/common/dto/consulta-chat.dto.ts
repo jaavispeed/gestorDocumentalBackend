@@ -1,6 +1,5 @@
 import {
   IsString,
-  IsNotEmpty,
   IsOptional,
   IsArray,
   ValidateNested,
@@ -8,19 +7,44 @@ import {
 import { Type } from 'class-transformer';
 
 export class MensajeHistorialDto {
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  rol: 'usuario' | 'asistente';
+  rol?: 'usuario' | 'asistente' | string;
 
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  contenido: string;
+  role?: 'user' | 'assistant' | string;
+
+  @IsOptional()
+  @IsString()
+  contenido?: string;
+
+  @IsOptional()
+  @IsString()
+  text?: string;
 }
 
 export class ConsultaChatDto {
+  // Soporta "question" (nuevo formato) o "mensaje" (formato previo)
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  mensaje: string;
+  question?: string;
+
+  @IsOptional()
+  @IsString()
+  mensaje?: string;
+
+  // Soporta "mode" (ej. "direct")
+  @IsOptional()
+  @IsString()
+  mode?: string;
+
+  // Soporta "history" (nuevo formato) o "historial" (formato previo)
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => MensajeHistorialDto)
+  history?: MensajeHistorialDto[];
 
   @IsOptional()
   @IsArray()
