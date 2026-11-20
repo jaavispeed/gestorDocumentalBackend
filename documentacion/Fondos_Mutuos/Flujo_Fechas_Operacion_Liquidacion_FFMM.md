@@ -30,7 +30,7 @@ Una vez que la `Fecha de Operación` está definida, el comportamiento para calc
 
 ### A. Rescates (IngresarOrdenFondosMutuosRescate)
 
-Para los rescates, la regla es fija: **Fecha de Operación + 1 día hábil**. 
+Para los rescates, la regla es fija: **Fecha de Operación + 1 día hábil**.
 Como partimos de la `fechaOperacion` ya calculada, si el mercado estaba cerrado y la operación se pasó para mañana, la liquidación será "mañana + 1 día hábil".
 
 ```csharp
@@ -42,6 +42,7 @@ DateTime fechaLiquidacion = await diasFeriadosService.GetDiaHabilSiguienteInclus
 
 > **Modalidad de Precio y Rescate Total:**
 > En los rescates de Fondos Mutuos, el indicador de límite de precio (`FlgLimitePrecio`) clasifica si la orden es por monto o por cuotas:
+>
 > - **Rescate Total (`flgVendeTodo == 'S'`)**: Al rescatar todo el saldo disponible, se opera sobre la totalidad de las cuotas, marcándose como **Límite (`'L'`)** (lo que representa orden fijada por cantidad/cuotas).
 > - **Rescate por Cuotas (`flgCantidad == true`)**: Se marca como **Límite (`'L'`)**.
 > - **Rescate por Monto (`flgCantidad == false`)**: Se marca como **Mercado (`'M'`)**.
@@ -52,15 +53,15 @@ Las inversiones en Fondos Mutuos se delegan en el método `CalcularFechaLiquidac
 
 1. **Días de Retención (DRI > 0):**
    - Si el instrumento tiene configurado el atributo `DRI` con un valor numérico mayor a cero, se proyectan exactamente esa cantidad de días hábiles bancarios a partir de la fecha de operación:
-   $$\text{FechaLiquidacion} = \text{ProyectarDiasHabiles}(\text{fechaOperacion}, \text{DRI})$$
+     $$\text{FechaLiquidacion} = \text{ProyectarDiasHabiles}(\text{fechaOperacion}, \text{DRI})$$
 
 2. **Sin Días de Retención (DRI = 0 o nulo) y Cuota Desconocida (VCD):**
-   - Si el instrumento **NO** tiene días de retención pero tiene asociado el atributo `VCD` (*Valor Cuota Desconocido*), requiere esperar al cierre y cálculo de cuota del día siguiente, por lo que liquida a **$T+1$ día hábil**:
-   $$\text{FechaLiquidacion} = \text{ProyectarDiasHabiles}(\text{fechaOperacion}, 1)$$
+   - Si el instrumento **NO** tiene días de retención pero tiene asociado el atributo `VCD` (_Valor Cuota Desconocido_), requiere esperar al cierre y cálculo de cuota del día siguiente, por lo que liquida a **$T+1$ día hábil**:
+     $$\text{FechaLiquidacion} = \text{ProyectarDiasHabiles}(\text{fechaOperacion}, 1)$$
 
 3. **Sin Días de Retención (DRI = 0 o nulo) y Cuota Conocida (sin VCD):**
    - Si el instrumento **NO** tiene días de retención y tampoco tiene atributo de cuota desconocida, la operación se liquida en el mismo día (**$T+0$**):
-   $$\text{FechaLiquidacion} = \text{fechaOperacion.Date}$$
+     $$\text{FechaLiquidacion} = \text{fechaOperacion.Date}$$
 
 De esta manera, las inversiones respetan los plazos exigidos por el fondo según la naturaleza de su cuota y sus días de retención.
 
@@ -69,20 +70,21 @@ De esta manera, las inversiones respetan los plazos exigidos por el fondo según
 Aunque la lógica permite trasladar las fechas al día hábil siguiente cuando el mercado está cerrado, esto está condicionado estrictamente por parámetros del sistema (\sis_parametro\). Estos parámetros dictan si el negocio permite ingresar órdenes diferidas o si simplemente se debe bloquear la operación hasta que el mercado vuelva a abrir.
 
 Se validan los siguientes parámetros según la pantalla:
+
 - **Inversión (Aporte):** \VALIDA_HORARIO_INVERSION\
 - **Rescate:** \VALIDA_HORARIO_RESCATE\
 - **Rescate con Reinversión:** \VALIDA_HORARIO_INSTRUMENTO\
 
 ### Comportamiento según el valor del parámetro:
 
-1. **Parámetro Activo ('S' o ausente):** 
+1. **Parámetro Activo ('S' o ausente):**
    - El sistema **bloquea** estrictamente la operación si el mercado se encuentra cerrado.
-   - En la interfaz, la alerta se muestra en color rojo (\error\) con el texto: *"Cerrado - Fuera de horario"*.
+   - En la interfaz, la alerta se muestra en color rojo (\error\) con el texto: _"Cerrado - Fuera de horario"_.
    - No se permite avanzar con el formulario (botón Generar deshabilitado o bloqueado por validación).
 
-2. **Parámetro Inactivo ('N'):** 
+2. **Parámetro Inactivo ('N'):**
    - El sistema **permite diferir** la orden. La fecha de operación pasará al siguiente día hábil (y por ende la de liquidación se adaptará como fue explicado en los puntos anteriores).
-   - En la interfaz, la alerta se muestra en color amarillo/naranja (\moderate / warning\) con el texto: *"Cerrado - La operación pasará al siguiente día hábil"*.
+   - En la interfaz, la alerta se muestra en color amarillo/naranja (\moderate / warning\) con el texto: _"Cerrado - La operación pasará al siguiente día hábil"_.
    - Se permite continuar y generar la orden con normalidad.
 
 Esta flexibilidad permite activar o desactivar el bloqueo por horario en caliente desde la base de datos sin necesidad de redesplegar el código, adaptando instantáneamente las validaciones visuales y de persistencia.

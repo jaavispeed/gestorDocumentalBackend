@@ -45,7 +45,8 @@ export class AutomanualController {
 
   @Get('clientes/:id/logo')
   async obtenerLogo(@Param('id') id: string, @Res() res: Response) {
-    const { stream, contentType } = await this.automanualService.obtenerFlujoLogo(id);
+    const { stream, contentType } =
+      await this.automanualService.obtenerFlujoLogo(id);
     res.setHeader('Content-Type', contentType);
     res.setHeader('Cache-Control', 'public, max-age=60');
     stream.pipe(res);

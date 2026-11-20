@@ -33,16 +33,19 @@ DB_PASSWORD=postgres
 Dentro del directorio `gestor-documental-backend`:
 
 ### 1. Iniciar el contenedor de PostgreSQL con `pgvector`
+
 ```bash
 docker compose up -d
 ```
 
 ### 2. Verificar el estado del contenedor
+
 ```bash
 docker compose ps
 ```
 
 ### 3. Ver los logs de la base de datos
+
 ```bash
 docker compose logs -f db
 # o directamente por el nombre del contenedor:
@@ -50,6 +53,7 @@ docker logs -f gestor_db
 ```
 
 ### 4. Detener el contenedor
+
 ```bash
 docker compose down
 ```
@@ -79,6 +83,7 @@ npm run start:prod
 ## Endpoints de la Base de Datos (Documentos & RAG)
 
 ### 1. Subir un archivo `.md` físico (Recomendado para el Frontend)
+
 - **`POST /documentos/upload`**
 - **Content-Type:** `multipart/form-data`
 - **Campos:**
@@ -88,11 +93,12 @@ npm run start:prod
   - `x-gemini-key`: Clave API de Gemini si el usuario la provee desde el frontend.
 - **Acción:**
   1. Guarda el documento en la tabla `documento`.
-  2. Ejecuta *chunking* inteligente por encabezados (`#`, `##`, `###`).
+  2. Ejecuta _chunking_ inteligente por encabezados (`#`, `##`, `###`).
   3. Genera embeddings vectoriales de 768 dimensiones con Gemini.
   4. Guarda los fragmentos y vectores en `documento_fragmento`.
 
 ### 2. Crear documento vía JSON directo
+
 - **`POST /documentos`**
 - **Body (JSON):**
   ```json
@@ -105,12 +111,15 @@ npm run start:prod
   ```
 
 ### 3. Listar todos los documentos
+
 - **`GET /documentos`**: Retorna el listado completo de documentos registrados en Postgres.
 
 ### 4. Consultar un documento con sus vectores
+
 - **`GET /documentos/:id`**: Retorna el documento junto con todos sus fragmentos y estado vectorial.
 
 ### 5. Eliminar un documento
+
 - **`DELETE /documentos/:id`**: Elimina el documento y todos sus vectores asociados en cascada.
 
 ---

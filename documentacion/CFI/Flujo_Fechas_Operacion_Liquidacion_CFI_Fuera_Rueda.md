@@ -7,6 +7,7 @@ Este documento describe la arquitectura técnica, las bifurcaciones de negocio, 
 ## 1. Arquitectura Base y Reutilización (Pipeline Transversal)
 
 Los CFI Fuera de Rueda comparten la **misma tubería transaccional base** que los Fondos Mutuos (FFMM) dentro de `OrdenTrxService`:
+
 - Métodos compartidos: `IngresarOrdenFondosMutuosInversion` e `IngresarOrdenFondosMutuosRescate`.
 - Validación de cuentas (bloqueos, estado vigente, permiso de sobregiro).
 - Consulta de precios de mercado (`publicadorPrecioService.GetPrecio`).
@@ -45,15 +46,17 @@ Los CFI Fuera de Rueda comparten la **misma tubería transaccional base** que lo
 En inversión, el comportamiento depende del resultado de `ordenService.GetFondoPropioPorInstrumento`:
 
 ### 3.1 CFI Fondo Propio
+
 - **Modalidad de Ingreso:** Exclusivamente por **Cuotas** (`cuotas > 0`). Si no viene cuotas, arroja `OrdenErrors.OrdenCantidadCero`.
 - **Cálculo de Monto:**
   $$\text{MontoOrden} = \text{Round}(\text{Cuotas} \times \text{Precio}, \text{decimalesMoneda})$$
-  *(0 decimales para CLP, 2 decimales para otras monedas).*
+  _(0 decimales para CLP, 2 decimales para otras monedas)._
 - **Doble Validación de Monto:** Si el cliente envía `monto > 0`, se compara contra `MontoOrden`. Si no coinciden, se rechaza con `OrdenErrors.DobleValidacionMonto`.
 - **Límite de Precio:** Se fija como Límite (`"L"`).
 - **Fecha de Liquidación:** Liquida inmediatamente en **$T+0$** ($\text{FechaLiquidacion} = \text{FechaOperacion.Date}$).
 
 ### 3.2 CFI No Propio (Terceros)
+
 - **Modalidad de Ingreso:** Exclusivamente por **Monto** (`monto > 0`). Si no viene monto, arroja `OrdenErrors.OrdenMontoCero`.
 - **Cálculo de Cuotas:**
   $$\text{CantidadOrden} = \text{Round}\left(\frac{\text{Monto}}{\text{Precio}}, 6\right)$$
@@ -68,6 +71,7 @@ En inversión, el comportamiento depende del resultado de `ordenService.GetFondo
 A diferencia de los fondos mutuos, el rescate de un CFI se ingresa **siempre por Cuotas**:
 
 ### 4.1 Reglas de Cantidad y Monto
+
 - **Por Cuotas (`vendeTodo == false`):** El campo `cuotas` es obligatorio y debe ser $> 0$.
   $$\text{CantidadOrden} = \text{cuotas}$$
 - **Vende Todo (`vendeTodo == true`):** Se toma el total disponible en cartera:
@@ -77,6 +81,7 @@ A diferencia de los fondos mutuos, el rescate de un CFI se ingresa **siempre por
 - **Límite de Precio:** Se fija invariablemente como Límite (`"L"`).
 
 ### 4.2 Fecha de Liquidación Flexible y Validaciones
+
 - **Base por Defecto:** Siguiente día hábil tras la operación ($T+1$).
 - **Fecha Solicitada por el Usuario:** El request puede enviar una `fechaLiquidacion` específica:
   1. **Piso mínimo:** $\text{FechaLiquidacionFinal} \ge \text{FechaOperacion.Date}$. Si es menor, se rechaza con `OrdenErrors.FechaLiquidacionInvalida`.

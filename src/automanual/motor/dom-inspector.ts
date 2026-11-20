@@ -1,5 +1,9 @@
 import { Page } from 'playwright';
-import { CampoFormularioUsuario, InformacionTablaDescubierta, AccionPantallaUsuario } from './tipos.js';
+import {
+  CampoFormularioUsuario,
+  InformacionTablaDescubierta,
+  AccionPantallaUsuario,
+} from './tipos.js';
 
 export interface InspeccionPaginaEnVivo {
   pageTitle: string;
@@ -81,12 +85,17 @@ export class InspectorDom {
           )
         )
           continue;
-        if (el.tagName.toLowerCase() !== 'gpi-select' && el.closest('gpi-select')) continue;
+        if (
+          el.tagName.toLowerCase() !== 'gpi-select' &&
+          el.closest('gpi-select')
+        )
+          continue;
 
         const rect = el.getBoundingClientRect();
         if (rect.width === 0 && rect.height === 0) continue;
 
-        const input = el as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+        const input = el as
+          HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
         let labelText = '';
 
         if (el.getAttribute('label')) {
@@ -106,7 +115,9 @@ export class InspectorDom {
         if (!labelText) {
           const matField = input.closest('mat-form-field');
           if (matField) {
-            const matLbl = matField.querySelector('mat-label, label, mat-placeholder');
+            const matLbl = matField.querySelector(
+              'mat-label, label, mat-placeholder',
+            );
             if (matLbl) labelText = matLbl.textContent?.trim() || '';
           }
         }
@@ -114,8 +125,14 @@ export class InspectorDom {
         if (!labelText) {
           let parent = input.parentElement;
           for (let i = 0; i < 4 && parent && parent !== contentArea; i++) {
-            const candidate = parent.querySelector('label, .label, .form-label, span.title');
-            if (candidate && candidate !== input && !candidate.contains(input)) {
+            const candidate = parent.querySelector(
+              'label, .label, .form-label, span.title',
+            );
+            if (
+              candidate &&
+              candidate !== input &&
+              !candidate.contains(input)
+            ) {
               const t = candidate.textContent?.trim();
               if (t && t.length < 50) {
                 labelText = t;
@@ -140,10 +157,7 @@ export class InspectorDom {
 
         if (!labelText) continue;
 
-        labelText = labelText
-          .replace(/[*:]/g, '')
-          .replace(/\s+/g, ' ')
-          .trim();
+        labelText = labelText.replace(/[*:]/g, '').replace(/\s+/g, ' ').trim();
         if (!labelText || labelText.length > 50) continue;
 
         const key = labelText.toLowerCase();
@@ -161,7 +175,11 @@ export class InspectorDom {
           const selectEl = input as HTMLSelectElement;
           Array.from(selectEl.options).forEach((opt) => {
             const optText = opt.text.trim();
-            if (optText && !optText.toLowerCase().includes('seleccione') && !options.includes(optText)) {
+            if (
+              optText &&
+              !optText.toLowerCase().includes('seleccione') &&
+              !options.includes(optText)
+            ) {
               options.push(optText);
             }
           });
@@ -208,7 +226,9 @@ export class InspectorDom {
       }
 
       const tables: InformacionTablaDescubierta[] = [];
-      const tableElements = Array.from(contentArea.querySelectorAll('table, mat-table'));
+      const tableElements = Array.from(
+        contentArea.querySelectorAll('table, mat-table'),
+      );
 
       for (const tbl of tableElements) {
         const columns = Array.from(
@@ -272,7 +292,8 @@ export class InspectorDom {
       fields: Array.from(mapaCampos.values()).slice(0, 30),
       actions: Array.from(mapaAcciones.values()).slice(0, 15),
       notes: Array.from(new Set([...base.notes, ...extra.notes])).slice(0, 6),
-      tables: base.tables.length >= extra.tables.length ? base.tables : extra.tables,
+      tables:
+        base.tables.length >= extra.tables.length ? base.tables : extra.tables,
     };
   }
 }

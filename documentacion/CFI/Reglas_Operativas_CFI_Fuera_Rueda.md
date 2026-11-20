@@ -16,6 +16,7 @@
 ## 2. Operatoria de CFI Fuera de Rueda
 
 ### A. Inversión (Compra / Suscripción)
+
 La forma de ingreso y el plazo de liquidación dependen de si el fondo es propio de la corredora o de terceros:
 
 - **Fondo Propio ($T+0$):**
@@ -31,6 +32,7 @@ La forma de ingreso y el plazo de liquidación dependen de si el fondo es propio
   - **Doble Validación:** Si se envían cuotas, se valida contra $\text{Round}(\text{Monto} / \text{Precio}, 6)$.
 
 ### B. Rescate (Venta / Liquidación)
+
 A diferencia de los fondos mutuos, el rescate de un CFI se ingresa **siempre por Cuotas** (o seleccionando "Vende Todo"):
 
 - **Entrada:** Siempre por **Cuotas** (`cuotas > 0` o `flgVendeTodo = "S"`).
@@ -41,11 +43,11 @@ A diferencia de los fondos mutuos, el rescate de un CFI se ingresa **siempre por
 
 ## 3. Cuadro Resumen Operativo
 
-| Operación | ¿Cómo se ingresa? | Tipo de Precio | Fecha de Liquidación | Doble Validación Aplicable |
-| :--- | :--- | :--- | :--- | :--- |
-| **CFI Fuera de Rueda - Fondo Propio (Inversión)** | Por **Cuotas** | Límite (`"L"`) | **$T + 0$** (Mismo día) | Valida monto recibido contra $\text{Cuotas} \times \text{Precio}$ |
-| **CFI Fuera de Rueda - Fondo Terceros (Inversión)** | Por **Monto** | Mercado (`"M"`) | **$T + 1$ hábil** | Valida cuotas recibidas contra $\text{Monto} / \text{Precio}$ |
-| **CFI Fuera de Rueda - Rescate** | Siempre por **Cuotas** | Límite (`"L"`) | **$T + 1$ hábil** (o fecha hábil elegida $\ge T$) | Monto calculado $\text{Cuotas} \times \text{Precio}$ |
+| Operación                                           | ¿Cómo se ingresa?      | Tipo de Precio  | Fecha de Liquidación                              | Doble Validación Aplicable                                        |
+| :-------------------------------------------------- | :--------------------- | :-------------- | :------------------------------------------------ | :---------------------------------------------------------------- |
+| **CFI Fuera de Rueda - Fondo Propio (Inversión)**   | Por **Cuotas**         | Límite (`"L"`)  | **$T + 0$** (Mismo día)                           | Valida monto recibido contra $\text{Cuotas} \times \text{Precio}$ |
+| **CFI Fuera de Rueda - Fondo Terceros (Inversión)** | Por **Monto**          | Mercado (`"M"`) | **$T + 1$ hábil**                                 | Valida cuotas recibidas contra $\text{Monto} / \text{Precio}$     |
+| **CFI Fuera de Rueda - Rescate**                    | Siempre por **Cuotas** | Límite (`"L"`)  | **$T + 1$ hábil** (o fecha hábil elegida $\ge T$) | Monto calculado $\text{Cuotas} \times \text{Precio}$              |
 
 ---
 

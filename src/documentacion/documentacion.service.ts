@@ -28,8 +28,13 @@ export class DocumentacionService {
         for (const archivo of archivos) {
           if (archivo.isFile() && archivo.name.endsWith('.md')) {
             const nombreArchivo = archivo.name;
-            const rutaRelativa = path.join(entrada.name, nombreArchivo).replace(/\\/g, '/');
-            const id = nombreArchivo.replace(/\.md$/, '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            const rutaRelativa = path
+              .join(entrada.name, nombreArchivo)
+              .replace(/\\/g, '/');
+            const id = nombreArchivo
+              .replace(/\.md$/, '')
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-');
             const titulo = this.formatearTitulo(nombreArchivo);
 
             documentos.push({
@@ -42,7 +47,9 @@ export class DocumentacionService {
         }
 
         if (documentos.length > 0) {
-          const idCarpeta = entrada.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+          const idCarpeta = entrada.name
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-');
           carpetas.push({
             id: idCarpeta,
             nombre: entrada.name.replace(/_/g, ' '),
@@ -56,16 +63,23 @@ export class DocumentacionService {
   }
 
   obtenerDocumentoPorRuta(rutaRelativa: string): DetalleDocumentoDto {
-    const rutaNormalizada = path.normalize(rutaRelativa).replace(/^(\.\.(\/|\\|$))+/, '');
+    const rutaNormalizada = path
+      .normalize(rutaRelativa)
+      .replace(/^(\.\.(\/|\\|$))+/, '');
     const rutaCompleta = path.join(this.rutaBase, rutaNormalizada);
 
     if (!fs.existsSync(rutaCompleta) || !fs.statSync(rutaCompleta).isFile()) {
-      throw new NotFoundException(`El documento "${rutaRelativa}" no fue encontrado.`);
+      throw new NotFoundException(
+        `El documento "${rutaRelativa}" no fue encontrado.`,
+      );
     }
 
     const contenido = fs.readFileSync(rutaCompleta, 'utf-8');
     const nombreArchivo = path.basename(rutaCompleta);
-    const id = nombreArchivo.replace(/\.md$/, '').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const id = nombreArchivo
+      .replace(/\.md$/, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-');
 
     return {
       id,

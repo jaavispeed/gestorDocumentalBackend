@@ -8,17 +8,21 @@ export class EmbeddingsService {
 
   constructor(private readonly configService: ConfigService) {}
 
-  async generarEmbedding(texto: string, claveAlternativa?: string): Promise<number[] | null> {
+  async generarEmbedding(
+    texto: string,
+    claveAlternativa?: string,
+  ): Promise<number[] | null> {
     if (!texto || !texto.trim()) {
       return null;
     }
 
     const apiKey =
-      claveAlternativa ||
-      this.configService.get<string>('GEMINI_API_KEY');
+      claveAlternativa || this.configService.get<string>('GEMINI_API_KEY');
 
     if (!apiKey || apiKey === 'tu_clave_gemini_aqui') {
-      this.logger.warn('No hay GEMINI_API_KEY configurada. Se omitirá el embedding vectorial.');
+      this.logger.warn(
+        'No hay GEMINI_API_KEY configurada. Se omitirá el embedding vectorial.',
+      );
       return null;
     }
 
@@ -29,7 +33,11 @@ export class EmbeddingsService {
         contents: texto,
       });
 
-      if (resultado && resultado.embeddings && resultado.embeddings.length > 0) {
+      if (
+        resultado &&
+        resultado.embeddings &&
+        resultado.embeddings.length > 0
+      ) {
         return resultado.embeddings[0].values || null;
       }
       return null;

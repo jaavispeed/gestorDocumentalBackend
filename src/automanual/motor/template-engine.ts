@@ -3,7 +3,10 @@ import { ConfiguracionCliente, SeccionDocGenerada } from './tipos.js';
 import { resolverTema } from './theme.js';
 
 export class MotorPlantillas {
-  public generarPortada(configCliente: ConfiguracionCliente, _totalCapturas: number): string {
+  public generarPortada(
+    configCliente: ConfiguracionCliente,
+    _totalCapturas: number,
+  ): string {
     const tema = resolverTema(configCliente.theme);
     const nombreArchivoLogo = path.basename(tema.logoPath);
 
@@ -15,7 +18,8 @@ export class MotorPlantillas {
         const tarjetasSecciones = mod.sections
           .map((sec) => {
             const secHref = `${mod.id}/${sec.id}/index.html`;
-            const descripcion = sec.description || 'Procedimientos operativos y parámetros.';
+            const descripcion =
+              sec.description || 'Procedimientos operativos y parámetros.';
             return `
             <a href="${secHref}" class="apple-card" data-title="${escaparHtml(sec.title)}" data-desc="${escaparHtml(descripcion)}" data-module="${escaparHtml(mod.title)}">
               <div>
@@ -147,7 +151,10 @@ export class MotorPlantillas {
 </html>`;
   }
 
-  public generarPaginaSeccion(configCliente: ConfiguracionCliente, seccion: SeccionDocGenerada): string {
+  public generarPaginaSeccion(
+    configCliente: ConfiguracionCliente,
+    seccion: SeccionDocGenerada,
+  ): string {
     const tema = resolverTema(configCliente.theme);
     const nombreArchivoLogo = path.basename(tema.logoPath);
 
@@ -156,7 +163,8 @@ export class MotorPlantillas {
         const opciones = mod.sections
           .map((s) => {
             const relPath = `../../${mod.id}/${s.id}/index.html`;
-            const estaSeleccionada = mod.id === seccion.moduleId && s.id === seccion.id;
+            const estaSeleccionada =
+              mod.id === seccion.moduleId && s.id === seccion.id;
             return `<option value="${relPath}" ${estaSeleccionada ? 'selected' : ''}>${escaparHtml(mod.title)} &rsaquo; ${escaparHtml(s.title)}</option>`;
           })
           .join('\n');
@@ -262,7 +270,10 @@ export class MotorPlantillas {
                   <div class="field-options-tags">
                     ${f.options
                       .slice(0, 8)
-                      .map((opt) => `<span class="option-tag">${escaparHtml(opt)}</span>`)
+                      .map(
+                        (opt) =>
+                          `<span class="option-tag">${escaparHtml(opt)}</span>`,
+                      )
                       .join('')}
                     ${f.options.length > 8 ? `<span class="option-tag-more">+${f.options.length - 8} más</span>` : ''}
                   </div>

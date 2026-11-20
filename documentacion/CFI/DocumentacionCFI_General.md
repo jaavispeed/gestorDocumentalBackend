@@ -7,6 +7,7 @@ Este documento describe la arquitectura, directrices de diseño, reglas de negoc
 ## 1. Principio Arquitectónico DRY (Pipeline Compartido con FFMM)
 
 Los CFI Fuera de Rueda **reutilizan el mismo motor transaccional de Fondos Mutuos** (`IngresarOrdenFondosMutuosInversion` e `IngresarOrdenFondosMutuosRescate`), evitando duplicidad de servicios:
+
 - **Discriminación de Instrumento:** Si `CodSubClaseInstrumentoNavigation?.CodClaseInstrumento == "FFMM_NAC"` se bifurca hacia las reglas de Fondos Mutuos tradicionales; en caso contrario, se procesan como vehículos de inversión alternativa (**CFI Fuera de Rueda**).
 - **Estado Inicial:** Ingresan como órdenes fuera de rueda en estado **`P` (Pendiente)** y `TipoBolsa = "F"` (Fondos) para posterior asignación y confirmación.
 - **Exclusión de Atributos DRI y VCD:** A los CFI **NO se les consultan ni aplican los atributos `DRI` ni `VCD`**. Sus reglas de liquidación dependen exclusivamente de si el fondo es **Propio** o de **Terceros**.
@@ -15,20 +16,21 @@ Los CFI Fuera de Rueda **reutilizan el mismo motor transaccional de Fondos Mutuo
 
 ## 2. Matriz Comparativa: Fondos Mutuos vs CFI Fuera de Rueda
 
-| Dimensión Operativa | Fondos Mutuos (FFMM) | CFI Fondo Propio | CFI No Propio (Terceros) |
-| :--- | :--- | :--- | :--- |
-| **Entrada en Inversión** | Obligatorio por **Monto** | Obligatorio por **Cuotas** | Obligatorio por **Monto** |
-| **Tipo de Límite Inversión** | Mercado (`"M"`) | Límite (`"L"`) | Mercado (`"M"`) |
-| **Liquidación Inversión** | $T+\text{DRI}$, $T+1$ (VCD) o $T+0$ | **$T+0$** (Mismo día hábil) | **$T+1$ día hábil** |
-| **Entrada en Rescate** | Por Monto o por Cuotas | Exclusivamente por **Cuotas** | Exclusivamente por **Cuotas** |
-| **Tipo de Límite Rescate** | `"L"` (si cuotas) o `"M"` (monto) | Límite (`"L"`) | Límite (`"L"`) |
-| **Liquidación Rescate** | Base fija **$T+1$ hábil** | Base **$T+1$ hábil** (Fecha editable $\ge T$) | Base **$T+1$ hábil** (Fecha editable $\ge T$) |
+| Dimensión Operativa          | Fondos Mutuos (FFMM)                | CFI Fondo Propio                              | CFI No Propio (Terceros)                      |
+| :--------------------------- | :---------------------------------- | :-------------------------------------------- | :-------------------------------------------- |
+| **Entrada en Inversión**     | Obligatorio por **Monto**           | Obligatorio por **Cuotas**                    | Obligatorio por **Monto**                     |
+| **Tipo de Límite Inversión** | Mercado (`"M"`)                     | Límite (`"L"`)                                | Mercado (`"M"`)                               |
+| **Liquidación Inversión**    | $T+\text{DRI}$, $T+1$ (VCD) o $T+0$ | **$T+0$** (Mismo día hábil)                   | **$T+1$ día hábil**                           |
+| **Entrada en Rescate**       | Por Monto o por Cuotas              | Exclusivamente por **Cuotas**                 | Exclusivamente por **Cuotas**                 |
+| **Tipo de Límite Rescate**   | `"L"` (si cuotas) o `"M"` (monto)   | Límite (`"L"`)                                | Límite (`"L"`)                                |
+| **Liquidación Rescate**      | Base fija **$T+1$ hábil**           | Base **$T+1$ hábil** (Fecha editable $\ge T$) | Base **$T+1$ hábil** (Fecha editable $\ge T$) |
 
 ---
 
 ## 3. Detección de Fondo Propio (`GetFondoPropioPorInstrumento`)
 
 El sistema evalúa internamente si el instrumento corresponde a un fondo administrado internamente por la corredora:
+
 - **Si es Fondo Propio (`esFondoPropio == true`):**
   - La inversión entra por **Cuotas**.
   - Liquida en **$T+0$**.

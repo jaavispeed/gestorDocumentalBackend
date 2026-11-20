@@ -43,7 +43,11 @@ export class DocumentosService {
       });
 
       const guardado = await this.documentoRepository.save(documento);
-      await this.regenerarVectores(guardado.id, guardado.contenido, apiKeyHeader);
+      await this.regenerarVectores(
+        guardado.id,
+        guardado.contenido,
+        apiKeyHeader,
+      );
 
       return this.findOne(guardado.id);
     } catch (error: any) {
@@ -65,7 +69,8 @@ export class DocumentosService {
         version: documento.version,
         tituloAnterior: documento.titulo,
         contenidoAnterior: documento.contenido,
-        resumenCambio: dto.resumenCambio || `Edición a versión ${documento.version + 1}`,
+        resumenCambio:
+          dto.resumenCambio || `Edición a versión ${documento.version + 1}`,
         modificadoPor: dto.modificadoPor || 'Usuario',
       });
       await this.historialRepository.save(snapshot);
@@ -82,7 +87,11 @@ export class DocumentosService {
 
     // 2. Si cambió el contenido, se recalculan los vectores RAG
     if (dto.contenido) {
-      await this.regenerarVectores(actualizado.id, actualizado.contenido, apiKeyHeader);
+      await this.regenerarVectores(
+        actualizado.id,
+        actualizado.contenido,
+        apiKeyHeader,
+      );
     }
 
     return this.findOne(actualizado.id);
@@ -98,7 +107,9 @@ export class DocumentosService {
     }
 
     if (!archivo.originalname.endsWith('.md')) {
-      throw new BadRequestException('Solo se permiten archivos en formato Markdown (.md).');
+      throw new BadRequestException(
+        'Solo se permiten archivos en formato Markdown (.md).',
+      );
     }
 
     const contenido = archivo.buffer.toString('utf-8');
@@ -193,7 +204,9 @@ export class DocumentosService {
         apiKeyHeader,
       );
 
-      const vectorString = vectorNumeros ? `[${vectorNumeros.join(',')}]` : undefined;
+      const vectorString = vectorNumeros
+        ? `[${vectorNumeros.join(',')}]`
+        : undefined;
 
       const fragmento = this.fragmentoRepository.create({
         documentoId,

@@ -17,7 +17,7 @@ Este documento detalla las validaciones, reglas de negocio y flujos para la gest
   - Misma Moneda (`CodMoneda`).
   - Mismo Tipo de Comisión (`IdTipoComision`).
   - Mismo porcentaje de cobro (truncado a 4 decimales) en su comisión activa de tipo Administración o Adicional.
-  - *Si se detecta un grupo activo que iguala estos valores, se rechaza la operación para no duplicar reglas.*
+  - _Si se detecta un grupo activo que iguala estos valores, se rechaza la operación para no duplicar reglas._
 - **Nombre Duplicado:** Valida que no exista en la base de datos ningún grupo que posea la misma `DscGrupoComisiones` de manera idéntica (`GrupoComisionYaExiste`).
 - **Validación de Cuentas Asociadas:** Valida la existencia y la vigencia de las cuentas seleccionadas mediante el servicio HTTP externo en `ValidarCuentasAsociadasAsync`.
 
@@ -46,6 +46,7 @@ Este documento detalla las validaciones, reglas de negocio y flujos para la gest
 ## 3. Impacto en Base de Datos (Modelo de Datos)
 
 ### Tablas Afectadas (Escritura)
+
 - `GrupoComisiones`: Información central de cada grupo creado.
 - `RelCuentaGrupoComisiones`: Asignación de cuentas específicas al grupo.
 - `Comision` y `ComisionCalculo`: Registro donde reside el porcentaje de administración (y su historial si éste es modificado en el tiempo).

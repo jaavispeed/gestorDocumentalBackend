@@ -71,13 +71,20 @@ export class RastreadorNavegador {
     console.log(pc.blue(`  🌐 Navegando a ${targetUrl}...`));
 
     try {
-      await page.goto(targetUrl, { waitUntil: 'domcontentloaded', timeout: 15000 });
+      await page.goto(targetUrl, {
+        waitUntil: 'domcontentloaded',
+        timeout: 15000,
+      });
     } catch (err: any) {
-      console.log(pc.yellow(`  ⚠ Aviso al cargar ${targetUrl}: ${err.message}`));
+      console.log(
+        pc.yellow(`  ⚠ Aviso al cargar ${targetUrl}: ${err.message}`),
+      );
     }
 
     if (section.waitForSelector) {
-      await page.waitForSelector(section.waitForSelector, { timeout: 6000 }).catch(() => {});
+      await page
+        .waitForSelector(section.waitForSelector, { timeout: 6000 })
+        .catch(() => {});
     }
 
     await page.waitForTimeout(1500);
@@ -117,10 +124,14 @@ export class RastreadorNavegador {
       caption: liveDom.pageTitle || `Vista general: ${section.title}`,
       kind: 'main',
     });
-    console.log(pc.green(`    📸 Capturada vista principal -> ${mainShotName}`));
+    console.log(
+      pc.green(`    📸 Capturada vista principal -> ${mainShotName}`),
+    );
 
     const effectiveExploreConfig =
-      section.autoExplore !== undefined ? section.autoExplore : autoExploreConfig;
+      section.autoExplore !== undefined
+        ? section.autoExplore
+        : autoExploreConfig;
 
     const explored = await this.autoExplorer.explore({
       page,
@@ -136,14 +147,20 @@ export class RastreadorNavegador {
       for (const action of section.actions) {
         try {
           if (action.triggerSelector) {
-            console.log(pc.cyan(`    ⚡ Disparando acción manual: "${action.name}" (${action.triggerSelector})...`));
+            console.log(
+              pc.cyan(
+                `    ⚡ Disparando acción manual: "${action.name}" (${action.triggerSelector})...`,
+              ),
+            );
             const trigger = page.locator(action.triggerSelector);
             if (await trigger.isVisible({ timeout: 4000 })) {
               await trigger.click();
               await page.waitForTimeout(600);
 
               if (action.waitForSelector) {
-                await page.waitForSelector(action.waitForSelector, { timeout: 4000 });
+                await page.waitForSelector(action.waitForSelector, {
+                  timeout: 4000,
+                });
               }
 
               const nextIndex = String(screenshots.length + 1).padStart(2, '0');
@@ -162,7 +179,10 @@ export class RastreadorNavegador {
               }
 
               const modalDom = await this.domInspector.inspeccionarPagina(page);
-              liveDom = this.domInspector.fusionarInspecciones(liveDom, modalDom);
+              liveDom = this.domInspector.fusionarInspecciones(
+                liveDom,
+                modalDom,
+              );
 
               screenshots.push({
                 fileName: shotName,
@@ -173,7 +193,11 @@ export class RastreadorNavegador {
             }
           }
         } catch {
-          console.log(pc.yellow(`    ⚠ Acción "${action.name}" no encontrada en esta pantalla.`));
+          console.log(
+            pc.yellow(
+              `    ⚠ Acción "${action.name}" no encontrada en esta pantalla.`,
+            ),
+          );
         }
       }
     }

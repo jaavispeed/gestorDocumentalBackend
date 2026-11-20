@@ -1,77 +1,132 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manual de Usuario | gpi</title>
-  <link rel="stylesheet" href="assets/theme.css">
-  <link rel="stylesheet" href="assets/styles.css">
-</head>
-<body>
-
-  <header class="top-navbar">
-    <div class="nav-left">
-      <a href="index.html" class="brand-link">
-        <img src="assets/logo.jpg" alt="Logo" class="brand-logo" onerror="this.style.display='none'">
-        <span>gpi</span>
-      </a>
-      <div class="nav-divider"></div>
-      <span class="nav-location">Manual de Operación</span>
-    </div>
-    <div class="nav-right">
-      <span class="badge-counter">80 pantallas documentadas</span>
-    </div>
-  </header>
-
-  <main class="main-container">
-    
-    <div class="apple-hero">
-      <h1 class="apple-hero-title">Manual de Usuario</h1>
-      <p class="apple-hero-subtitle">Guía visual de operaciones, pantallas y flujos de trabajo.</p>
-
-      <div class="search-wrapper">
-        <svg class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-        <input type="text" id="searchInput" class="apple-search-input" placeholder="Buscar pantalla por nombre o ruta..." autocomplete="off">
-        <span class="search-kbd-hint">/</span>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manual de Usuario | gpi</title>
+    <link rel="stylesheet" href="assets/theme.css" />
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <header class="top-navbar">
+      <div class="nav-left">
+        <a href="index.html" class="brand-link">
+          <img
+            src="assets/logo.jpg"
+            alt="Logo"
+            class="brand-logo"
+            onerror="this.style.display = 'none'"
+          />
+          <span>gpi</span>
+        </a>
+        <div class="nav-divider"></div>
+        <span class="nav-location">Manual de Operación</span>
       </div>
-    </div>
+      <div class="nav-right">
+        <span class="badge-counter">80 pantallas documentadas</span>
+      </div>
+    </header>
 
-    <div id="modulesContainer">
-      
+    <main class="main-container">
+      <div class="apple-hero">
+        <h1 class="apple-hero-title">Manual de Usuario</h1>
+        <p class="apple-hero-subtitle">
+          Guía visual de operaciones, pantallas y flujos de trabajo.
+        </p>
+
+        <div class="search-wrapper">
+          <svg
+            class="search-icon-svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input
+            type="text"
+            id="searchInput"
+            class="apple-search-input"
+            placeholder="Buscar pantalla por nombre o ruta..."
+            autocomplete="off"
+          />
+          <span class="search-kbd-hint">/</span>
+        </div>
+      </div>
+
+      <div id="modulesContainer">
         <section class="module-group" data-module="Documentos">
           <div class="module-header">
             <h2 class="module-title">Documentos</h2>
             <span class="module-count">2 pantallas</span>
           </div>
           <div class="cards-grid">
-            
-            <a href="documentos/documentos/index.html" class="apple-card" data-title="Documentos" data-desc="Vista de Documentos." data-module="Documentos">
+            <a
+              href="documentos/documentos/index.html"
+              class="apple-card"
+              data-title="Documentos"
+              data-desc="Vista de Documentos."
+              data-module="Documentos"
+            >
               <div>
                 <h3 class="card-title">Documentos</h3>
                 <p class="card-desc">Vista de Documentos.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/documentos-comercial</span>
+                <span class="card-route-pill"
+                  >/back-office/documentos-comercial</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="documentos/carga-de-documentos/index.html" class="apple-card" data-title="Carga de documentos" data-desc="Vista de Carga de documentos." data-module="Documentos">
+            <a
+              href="documentos/carga-de-documentos/index.html"
+              class="apple-card"
+              data-title="Carga de documentos"
+              data-desc="Vista de Carga de documentos."
+              data-module="Documentos"
+            >
               <div>
                 <h3 class="card-title">Carga de documentos</h3>
                 <p class="card-desc">Vista de Carga de documentos.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/carga-documentos</span>
+                <span class="card-route-pill"
+                  >/back-office/carga-documentos</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
@@ -84,17 +139,35 @@
             <span class="module-count">1 pantalla</span>
           </div>
           <div class="cards-grid">
-            
-            <a href="bice-connect/transacciones/index.html" class="apple-card" data-title="Transacciones" data-desc="Vista de Transacciones." data-module="BICE Connect">
+            <a
+              href="bice-connect/transacciones/index.html"
+              class="apple-card"
+              data-title="Transacciones"
+              data-desc="Vista de Transacciones."
+              data-module="BICE Connect"
+            >
               <div>
                 <h3 class="card-title">Transacciones</h3>
                 <p class="card-desc">Vista de Transacciones.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/bice-connect/transacciones</span>
+                <span class="card-route-pill"
+                  >/back-office/bice-connect/transacciones</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
@@ -107,31 +180,68 @@
             <span class="module-count">2 pantallas</span>
           </div>
           <div class="cards-grid">
-            
-            <a href="monitores/mesa-negocio/index.html" class="apple-card" data-title="Mesa Negocio" data-desc="Vista de Mesa Negocio." data-module="Monitores">
+            <a
+              href="monitores/mesa-negocio/index.html"
+              class="apple-card"
+              data-title="Mesa Negocio"
+              data-desc="Vista de Mesa Negocio."
+              data-module="Monitores"
+            >
               <div>
                 <h3 class="card-title">Mesa Negocio</h3>
                 <p class="card-desc">Vista de Mesa Negocio.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/mesa-negocio/configuracion</span>
+                <span class="card-route-pill"
+                  >/back-office/mesa-negocio/configuracion</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="monitores/monitor-de-logs/index.html" class="apple-card" data-title="Monitor de Logs" data-desc="Vista de Monitor de Logs." data-module="Monitores">
+            <a
+              href="monitores/monitor-de-logs/index.html"
+              class="apple-card"
+              data-title="Monitor de Logs"
+              data-desc="Vista de Monitor de Logs."
+              data-module="Monitores"
+            >
               <div>
                 <h3 class="card-title">Monitor de Logs</h3>
                 <p class="card-desc">Vista de Monitor de Logs.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/sis-registro-log</span>
+                <span class="card-route-pill"
+                  >/back-office/sis-registro-log</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
@@ -144,36 +254,79 @@
             <span class="module-count">5 pantallas</span>
           </div>
           <div class="cards-grid">
-            
-            <a href="operaciones/carga-de-operaciones/index.html" class="apple-card" data-title="Carga de operaciones" data-desc="Vista de Carga de operaciones." data-module="Operaciones">
+            <a
+              href="operaciones/carga-de-operaciones/index.html"
+              class="apple-card"
+              data-title="Carga de operaciones"
+              data-desc="Vista de Carga de operaciones."
+              data-module="Operaciones"
+            >
               <div>
                 <h3 class="card-title">Carga de operaciones</h3>
                 <p class="card-desc">Vista de Carga de operaciones.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/carga-operaciones</span>
+                <span class="card-route-pill"
+                  >/back-office/carga-operaciones</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="operaciones/traspaso-clientes-agfcdb/index.html" class="apple-card" data-title="Traspaso Clientes Agf/Cdb" data-desc="Vista de Traspaso Clientes Agf/Cdb." data-module="Operaciones">
+            <a
+              href="operaciones/traspaso-clientes-agfcdb/index.html"
+              class="apple-card"
+              data-title="Traspaso Clientes Agf/Cdb"
+              data-desc="Vista de Traspaso Clientes Agf/Cdb."
+              data-module="Operaciones"
+            >
               <div>
                 <h3 class="card-title">Traspaso Clientes Agf/Cdb</h3>
                 <p class="card-desc">Vista de Traspaso Clientes Agf/Cdb.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/carga-masiva-principal</span>
+                <span class="card-route-pill"
+                  >/back-office/carga-masiva-principal</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="operaciones/forward/index.html" class="apple-card" data-title="Forward" data-desc="Vista de Forward." data-module="Operaciones">
+            <a
+              href="operaciones/forward/index.html"
+              class="apple-card"
+              data-title="Forward"
+              data-desc="Vista de Forward."
+              data-module="Operaciones"
+            >
               <div>
                 <h3 class="card-title">Forward</h3>
                 <p class="card-desc">Vista de Forward.</p>
@@ -182,26 +335,62 @@
                 <span class="card-route-pill">/back-office/forward/new</span>
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="operaciones/operaciones-spot/index.html" class="apple-card" data-title="Operaciones Spot" data-desc="Vista de Operaciones Spot." data-module="Operaciones">
+            <a
+              href="operaciones/operaciones-spot/index.html"
+              class="apple-card"
+              data-title="Operaciones Spot"
+              data-desc="Vista de Operaciones Spot."
+              data-module="Operaciones"
+            >
               <div>
                 <h3 class="card-title">Operaciones Spot</h3>
                 <p class="card-desc">Vista de Operaciones Spot.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/operaciones-spot</span>
+                <span class="card-route-pill"
+                  >/back-office/operaciones-spot</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="operaciones/valorizacion-rf/index.html" class="apple-card" data-title="Valorización RF" data-desc="Vista de Valorización RF." data-module="Operaciones">
+            <a
+              href="operaciones/valorizacion-rf/index.html"
+              class="apple-card"
+              data-title="Valorización RF"
+              data-desc="Vista de Valorización RF."
+              data-module="Operaciones"
+            >
               <div>
                 <h3 class="card-title">Valorización RF</h3>
                 <p class="card-desc">Vista de Valorización RF.</p>
@@ -210,7 +399,18 @@
                 <span class="card-route-pill">/back-office/valorizacionrf</span>
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
@@ -223,31 +423,68 @@
             <span class="module-count">2 pantallas</span>
           </div>
           <div class="cards-grid">
-            
-            <a href="facturacion/facturacion-manual/index.html" class="apple-card" data-title="Facturación Manual" data-desc="Vista de Facturación Manual." data-module="Facturación">
+            <a
+              href="facturacion/facturacion-manual/index.html"
+              class="apple-card"
+              data-title="Facturación Manual"
+              data-desc="Vista de Facturación Manual."
+              data-module="Facturación"
+            >
               <div>
                 <h3 class="card-title">Facturación Manual</h3>
                 <p class="card-desc">Vista de Facturación Manual.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/facturacion-manual</span>
+                <span class="card-route-pill"
+                  >/back-office/facturacion-manual</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="facturacion/reporte-facturacion/index.html" class="apple-card" data-title="Reporte Facturación" data-desc="Vista de Reporte Facturación." data-module="Facturación">
+            <a
+              href="facturacion/reporte-facturacion/index.html"
+              class="apple-card"
+              data-title="Reporte Facturación"
+              data-desc="Vista de Reporte Facturación."
+              data-module="Facturación"
+            >
               <div>
                 <h3 class="card-title">Reporte Facturación</h3>
                 <p class="card-desc">Vista de Reporte Facturación.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/facturacion-manual/reporte</span>
+                <span class="card-route-pill"
+                  >/back-office/facturacion-manual/reporte</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
@@ -260,22 +497,46 @@
             <span class="module-count">3 pantallas</span>
           </div>
           <div class="cards-grid">
-            
-            <a href="tesoreria/movimientos/index.html" class="apple-card" data-title="Movimientos" data-desc="Vista de Movimientos." data-module="Tesorería">
+            <a
+              href="tesoreria/movimientos/index.html"
+              class="apple-card"
+              data-title="Movimientos"
+              data-desc="Vista de Movimientos."
+              data-module="Tesorería"
+            >
               <div>
                 <h3 class="card-title">Movimientos</h3>
                 <p class="card-desc">Vista de Movimientos.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/movimiento-caja</span>
+                <span class="card-route-pill"
+                  >/back-office/movimiento-caja</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="tesoreria/saldos/index.html" class="apple-card" data-title="Saldos" data-desc="Vista de Saldos." data-module="Tesorería">
+            <a
+              href="tesoreria/saldos/index.html"
+              class="apple-card"
+              data-title="Saldos"
+              data-desc="Vista de Saldos."
+              data-module="Tesorería"
+            >
               <div>
                 <h3 class="card-title">Saldos</h3>
                 <p class="card-desc">Vista de Saldos.</p>
@@ -284,21 +545,51 @@
                 <span class="card-route-pill">/back-office/flujo-caja</span>
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="tesoreria/propuestas/index.html" class="apple-card" data-title="Propuestas" data-desc="Vista de Propuestas." data-module="Tesorería">
+            <a
+              href="tesoreria/propuestas/index.html"
+              class="apple-card"
+              data-title="Propuestas"
+              data-desc="Vista de Propuestas."
+              data-module="Tesorería"
+            >
               <div>
                 <h3 class="card-title">Propuestas</h3>
                 <p class="card-desc">Vista de Propuestas.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/monitor-propuestas</span>
+                <span class="card-route-pill"
+                  >/back-office/monitor-propuestas</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
@@ -311,45 +602,101 @@
             <span class="module-count">3 pantallas</span>
           </div>
           <div class="cards-grid">
-            
-            <a href="multibanco-bci/nomina-de-cobros/index.html" class="apple-card" data-title="Nómina de Cobros" data-desc="Vista de Nómina de Cobros." data-module="Multibanco BCI">
+            <a
+              href="multibanco-bci/nomina-de-cobros/index.html"
+              class="apple-card"
+              data-title="Nómina de Cobros"
+              data-desc="Vista de Nómina de Cobros."
+              data-module="Multibanco BCI"
+            >
               <div>
                 <h3 class="card-title">Nómina de Cobros</h3>
                 <p class="card-desc">Vista de Nómina de Cobros.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/multibanco-bci/nomina-cobros</span>
+                <span class="card-route-pill"
+                  >/back-office/multibanco-bci/nomina-cobros</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="multibanco-bci/universo-de-mandatos/index.html" class="apple-card" data-title="Universo de Mandatos" data-desc="Vista de Universo de Mandatos." data-module="Multibanco BCI">
+            <a
+              href="multibanco-bci/universo-de-mandatos/index.html"
+              class="apple-card"
+              data-title="Universo de Mandatos"
+              data-desc="Vista de Universo de Mandatos."
+              data-module="Multibanco BCI"
+            >
               <div>
                 <h3 class="card-title">Universo de Mandatos</h3>
                 <p class="card-desc">Vista de Universo de Mandatos.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/multibanco-bci/universo-mandatos</span>
+                <span class="card-route-pill"
+                  >/back-office/multibanco-bci/universo-mandatos</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="multibanco-bci/rendicion-de-pagos/index.html" class="apple-card" data-title="Rendición de Pagos" data-desc="Vista de Rendición de Pagos." data-module="Multibanco BCI">
+            <a
+              href="multibanco-bci/rendicion-de-pagos/index.html"
+              class="apple-card"
+              data-title="Rendición de Pagos"
+              data-desc="Vista de Rendición de Pagos."
+              data-module="Multibanco BCI"
+            >
               <div>
                 <h3 class="card-title">Rendición de Pagos</h3>
                 <p class="card-desc">Vista de Rendición de Pagos.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/multibanco-bci/rendicion-pagos</span>
+                <span class="card-route-pill"
+                  >/back-office/multibanco-bci/rendicion-pagos</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
@@ -362,22 +709,46 @@
             <span class="module-count">12 pantallas</span>
           </div>
           <div class="cards-grid">
-            
-            <a href="reportes/cartera/index.html" class="apple-card" data-title="Cartera" data-desc="Vista de Cartera." data-module="Reportes">
+            <a
+              href="reportes/cartera/index.html"
+              class="apple-card"
+              data-title="Cartera"
+              data-desc="Vista de Cartera."
+              data-module="Reportes"
+            >
               <div>
                 <h3 class="card-title">Cartera</h3>
                 <p class="card-desc">Vista de Cartera.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/cartera-historica</span>
+                <span class="card-route-pill"
+                  >/back-office/cartera-historica</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="reportes/forward/index.html" class="apple-card" data-title="Forward" data-desc="Vista de Forward." data-module="Reportes">
+            <a
+              href="reportes/forward/index.html"
+              class="apple-card"
+              data-title="Forward"
+              data-desc="Vista de Forward."
+              data-module="Reportes"
+            >
               <div>
                 <h3 class="card-title">Forward</h3>
                 <p class="card-desc">Vista de Forward.</p>
@@ -386,26 +757,62 @@
                 <span class="card-route-pill">/back-office/forward/new</span>
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="reportes/spot/index.html" class="apple-card" data-title="Spot" data-desc="Vista de Spot." data-module="Reportes">
+            <a
+              href="reportes/spot/index.html"
+              class="apple-card"
+              data-title="Spot"
+              data-desc="Vista de Spot."
+              data-module="Reportes"
+            >
               <div>
                 <h3 class="card-title">Spot</h3>
                 <p class="card-desc">Vista de Spot.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/operaciones-spot/reporte</span>
+                <span class="card-route-pill"
+                  >/back-office/operaciones-spot/reporte</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="reportes/firmas/index.html" class="apple-card" data-title="Firmas" data-desc="Vista de Firmas." data-module="Reportes">
+            <a
+              href="reportes/firmas/index.html"
+              class="apple-card"
+              data-title="Firmas"
+              data-desc="Vista de Firmas."
+              data-module="Reportes"
+            >
               <div>
                 <h3 class="card-title">Firmas</h3>
                 <p class="card-desc">Vista de Firmas.</p>
@@ -414,110 +821,260 @@
                 <span class="card-route-pill">/back-office/control-firmas</span>
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="reportes/simultaneas/index.html" class="apple-card" data-title="Simultáneas" data-desc="Vista de Simultáneas." data-module="Reportes">
+            <a
+              href="reportes/simultaneas/index.html"
+              class="apple-card"
+              data-title="Simultáneas"
+              data-desc="Vista de Simultáneas."
+              data-module="Reportes"
+            >
               <div>
                 <h3 class="card-title">Simultáneas</h3>
                 <p class="card-desc">Vista de Simultáneas.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/reporte-simultaneas</span>
+                <span class="card-route-pill"
+                  >/back-office/reporte-simultaneas</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="reportes/comisiones-por-cuenta/index.html" class="apple-card" data-title="Comisiones por cuenta" data-desc="Vista de Comisiones por cuenta." data-module="Reportes">
+            <a
+              href="reportes/comisiones-por-cuenta/index.html"
+              class="apple-card"
+              data-title="Comisiones por cuenta"
+              data-desc="Vista de Comisiones por cuenta."
+              data-module="Reportes"
+            >
               <div>
                 <h3 class="card-title">Comisiones por cuenta</h3>
                 <p class="card-desc">Vista de Comisiones por cuenta.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/grupo-comisiones/reporte/cuentas</span>
+                <span class="card-route-pill"
+                  >/back-office/grupo-comisiones/reporte/cuentas</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="reportes/operaciones-y-ordenes/index.html" class="apple-card" data-title="Operaciones y Ordenes" data-desc="Vista de Operaciones y Ordenes." data-module="Reportes">
+            <a
+              href="reportes/operaciones-y-ordenes/index.html"
+              class="apple-card"
+              data-title="Operaciones y Ordenes"
+              data-desc="Vista de Operaciones y Ordenes."
+              data-module="Reportes"
+            >
               <div>
                 <h3 class="card-title">Operaciones y Ordenes</h3>
                 <p class="card-desc">Vista de Operaciones y Ordenes.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/operaciones-ordenes</span>
+                <span class="card-route-pill"
+                  >/back-office/operaciones-ordenes</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="reportes/balanceo/index.html" class="apple-card" data-title="Balanceo" data-desc="Vista de Balanceo." data-module="Reportes">
+            <a
+              href="reportes/balanceo/index.html"
+              class="apple-card"
+              data-title="Balanceo"
+              data-desc="Vista de Balanceo."
+              data-module="Reportes"
+            >
               <div>
                 <h3 class="card-title">Balanceo</h3>
                 <p class="card-desc">Vista de Balanceo.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/balanceo/reporte-balanceo</span>
+                <span class="card-route-pill"
+                  >/back-office/balanceo/reporte-balanceo</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="reportes/por-tipo-inversionista/index.html" class="apple-card" data-title="Por Tipo Inversionista" data-desc="Vista de Por Tipo Inversionista." data-module="Reportes">
+            <a
+              href="reportes/por-tipo-inversionista/index.html"
+              class="apple-card"
+              data-title="Por Tipo Inversionista"
+              data-desc="Vista de Por Tipo Inversionista."
+              data-module="Reportes"
+            >
               <div>
                 <h3 class="card-title">Por Tipo Inversionista</h3>
                 <p class="card-desc">Vista de Por Tipo Inversionista.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/custodia/reporte-tipo-inversionista</span>
+                <span class="card-route-pill"
+                  >/back-office/custodia/reporte-tipo-inversionista</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="reportes/cuadratura-custodia/index.html" class="apple-card" data-title="Cuadratura Custodia" data-desc="Vista de Cuadratura Custodia." data-module="Reportes">
+            <a
+              href="reportes/cuadratura-custodia/index.html"
+              class="apple-card"
+              data-title="Cuadratura Custodia"
+              data-desc="Vista de Cuadratura Custodia."
+              data-module="Reportes"
+            >
               <div>
                 <h3 class="card-title">Cuadratura Custodia</h3>
                 <p class="card-desc">Vista de Cuadratura Custodia.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/custodia/reporte-cuadratura-custodia</span>
+                <span class="card-route-pill"
+                  >/back-office/custodia/reporte-cuadratura-custodia</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="reportes/custodia-externa/index.html" class="apple-card" data-title="Custodia Externa" data-desc="Vista de Custodia Externa." data-module="Reportes">
+            <a
+              href="reportes/custodia-externa/index.html"
+              class="apple-card"
+              data-title="Custodia Externa"
+              data-desc="Vista de Custodia Externa."
+              data-module="Reportes"
+            >
               <div>
                 <h3 class="card-title">Custodia Externa</h3>
                 <p class="card-desc">Vista de Custodia Externa.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/custodia-externa</span>
+                <span class="card-route-pill"
+                  >/back-office/custodia-externa</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="reportes/conciliador/index.html" class="apple-card" data-title="Conciliador" data-desc="Vista de Conciliador." data-module="Reportes">
+            <a
+              href="reportes/conciliador/index.html"
+              class="apple-card"
+              data-title="Conciliador"
+              data-desc="Vista de Conciliador."
+              data-module="Reportes"
+            >
               <div>
                 <h3 class="card-title">Conciliador</h3>
                 <p class="card-desc">Vista de Conciliador.</p>
@@ -526,7 +1083,18 @@
                 <span class="card-route-pill">/back-office/conciliador</span>
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
@@ -539,17 +1107,35 @@
             <span class="module-count">1 pantalla</span>
           </div>
           <div class="cards-grid">
-            
-            <a href="cartolas/cartola-consolidada/index.html" class="apple-card" data-title="Cartola Consolidada" data-desc="Vista de Cartola Consolidada." data-module="Cartolas">
+            <a
+              href="cartolas/cartola-consolidada/index.html"
+              class="apple-card"
+              data-title="Cartola Consolidada"
+              data-desc="Vista de Cartola Consolidada."
+              data-module="Cartolas"
+            >
               <div>
                 <h3 class="card-title">Cartola Consolidada</h3>
                 <p class="card-desc">Vista de Cartola Consolidada.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/informe-consolidado</span>
+                <span class="card-route-pill"
+                  >/back-office/informe-consolidado</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
@@ -562,8 +1148,13 @@
             <span class="module-count">31 pantallas</span>
           </div>
           <div class="cards-grid">
-            
-            <a href="mantenedores/asesores/index.html" class="apple-card" data-title="Asesores" data-desc="Vista de Asesores." data-module="Mantenedores">
+            <a
+              href="mantenedores/asesores/index.html"
+              class="apple-card"
+              data-title="Asesores"
+              data-desc="Vista de Asesores."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Asesores</h3>
                 <p class="card-desc">Vista de Asesores.</p>
@@ -572,26 +1163,62 @@
                 <span class="card-route-pill">/back-office/asesores</span>
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/bancos/index.html" class="apple-card" data-title="Bancos" data-desc="Vista de Bancos." data-module="Mantenedores">
+            <a
+              href="mantenedores/bancos/index.html"
+              class="apple-card"
+              data-title="Bancos"
+              data-desc="Vista de Bancos."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Bancos</h3>
                 <p class="card-desc">Vista de Bancos.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/bancos/configuracion</span>
+                <span class="card-route-pill"
+                  >/back-office/bancos/configuracion</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/carga-masiva/index.html" class="apple-card" data-title="Carga Masiva" data-desc="Vista de Carga Masiva." data-module="Mantenedores">
+            <a
+              href="mantenedores/carga-masiva/index.html"
+              class="apple-card"
+              data-title="Carga Masiva"
+              data-desc="Vista de Carga Masiva."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Carga Masiva</h3>
                 <p class="card-desc">Vista de Carga Masiva.</p>
@@ -600,12 +1227,29 @@
                 <span class="card-route-pill">/back-office/carga-masiva</span>
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/clientes/index.html" class="apple-card" data-title="Clientes" data-desc="Vista de Clientes." data-module="Mantenedores">
+            <a
+              href="mantenedores/clientes/index.html"
+              class="apple-card"
+              data-title="Clientes"
+              data-desc="Vista de Clientes."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Clientes</h3>
                 <p class="card-desc">Vista de Clientes.</p>
@@ -614,40 +1258,95 @@
                 <span class="card-route-pill">/back-office/clientes</span>
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/conceptos-externos/index.html" class="apple-card" data-title="Conceptos Externos" data-desc="Vista de Conceptos Externos." data-module="Mantenedores">
+            <a
+              href="mantenedores/conceptos-externos/index.html"
+              class="apple-card"
+              data-title="Conceptos Externos"
+              data-desc="Vista de Conceptos Externos."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Conceptos Externos</h3>
                 <p class="card-desc">Vista de Conceptos Externos.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/conceptos-preimportador/configuracion</span>
+                <span class="card-route-pill"
+                  >/back-office/conceptos-preimportador/configuracion</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/contrapartes/index.html" class="apple-card" data-title="Contrapartes" data-desc="Vista de Contrapartes." data-module="Mantenedores">
+            <a
+              href="mantenedores/contrapartes/index.html"
+              class="apple-card"
+              data-title="Contrapartes"
+              data-desc="Vista de Contrapartes."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Contrapartes</h3>
                 <p class="card-desc">Vista de Contrapartes.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/contrapartes/configuracion</span>
+                <span class="card-route-pill"
+                  >/back-office/contrapartes/configuracion</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/control-de-firmas/index.html" class="apple-card" data-title="Control de Firmas" data-desc="Vista de Control de Firmas." data-module="Mantenedores">
+            <a
+              href="mantenedores/control-de-firmas/index.html"
+              class="apple-card"
+              data-title="Control de Firmas"
+              data-desc="Vista de Control de Firmas."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Control de Firmas</h3>
                 <p class="card-desc">Vista de Control de Firmas.</p>
@@ -656,12 +1355,29 @@
                 <span class="card-route-pill">/back-office/contratos</span>
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/cuentas/index.html" class="apple-card" data-title="Cuentas" data-desc="Vista de Cuentas." data-module="Mantenedores">
+            <a
+              href="mantenedores/cuentas/index.html"
+              class="apple-card"
+              data-title="Cuentas"
+              data-desc="Vista de Cuentas."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Cuentas</h3>
                 <p class="card-desc">Vista de Cuentas.</p>
@@ -670,110 +1386,260 @@
                 <span class="card-route-pill">/back-office/cuentas</span>
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/cuentas-dcv/index.html" class="apple-card" data-title="Cuentas DCV" data-desc="Vista de Cuentas DCV." data-module="Mantenedores">
+            <a
+              href="mantenedores/cuentas-dcv/index.html"
+              class="apple-card"
+              data-title="Cuentas DCV"
+              data-desc="Vista de Cuentas DCV."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Cuentas DCV</h3>
                 <p class="card-desc">Vista de Cuentas DCV.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/cuentas-dcv/configuracion</span>
+                <span class="card-route-pill"
+                  >/back-office/cuentas-dcv/configuracion</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/declaraciones/index.html" class="apple-card" data-title="Declaraciones" data-desc="Vista de Declaraciones." data-module="Mantenedores">
+            <a
+              href="mantenedores/declaraciones/index.html"
+              class="apple-card"
+              data-title="Declaraciones"
+              data-desc="Vista de Declaraciones."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Declaraciones</h3>
                 <p class="card-desc">Vista de Declaraciones.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/declaraciones-enrolador</span>
+                <span class="card-route-pill"
+                  >/back-office/declaraciones-enrolador</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/dias-feriados/index.html" class="apple-card" data-title="Días Feriados" data-desc="Vista de Días Feriados." data-module="Mantenedores">
+            <a
+              href="mantenedores/dias-feriados/index.html"
+              class="apple-card"
+              data-title="Días Feriados"
+              data-desc="Vista de Días Feriados."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Días Feriados</h3>
                 <p class="card-desc">Vista de Días Feriados.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/dia-feriado/configuracion</span>
+                <span class="card-route-pill"
+                  >/back-office/dia-feriado/configuracion</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/emisor/index.html" class="apple-card" data-title="Emisor" data-desc="Vista de Emisor." data-module="Mantenedores">
+            <a
+              href="mantenedores/emisor/index.html"
+              class="apple-card"
+              data-title="Emisor"
+              data-desc="Vista de Emisor."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Emisor</h3>
                 <p class="card-desc">Vista de Emisor.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/emisores/configuracion</span>
+                <span class="card-route-pill"
+                  >/back-office/emisores/configuracion</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/entradas/index.html" class="apple-card" data-title="Entradas" data-desc="Vista de Entradas." data-module="Mantenedores">
+            <a
+              href="mantenedores/entradas/index.html"
+              class="apple-card"
+              data-title="Entradas"
+              data-desc="Vista de Entradas."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Entradas</h3>
                 <p class="card-desc">Vista de Entradas.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/entradas-enrolador</span>
+                <span class="card-route-pill"
+                  >/back-office/entradas-enrolador</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/estrategias-de-inversion/index.html" class="apple-card" data-title="Estrategias de Inversión" data-desc="Vista de Estrategias de Inversión." data-module="Mantenedores">
+            <a
+              href="mantenedores/estrategias-de-inversion/index.html"
+              class="apple-card"
+              data-title="Estrategias de Inversión"
+              data-desc="Vista de Estrategias de Inversión."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Estrategias de Inversión</h3>
                 <p class="card-desc">Vista de Estrategias de Inversión.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/estrategia-inversion/configuracion</span>
+                <span class="card-route-pill"
+                  >/back-office/estrategia-inversion/configuracion</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/eventos-de-capital/index.html" class="apple-card" data-title="Eventos de Capital" data-desc="Vista de Eventos de Capital." data-module="Mantenedores">
+            <a
+              href="mantenedores/eventos-de-capital/index.html"
+              class="apple-card"
+              data-title="Eventos de Capital"
+              data-desc="Vista de Eventos de Capital."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Eventos de Capital</h3>
                 <p class="card-desc">Vista de Eventos de Capital.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/evento-capital?desde=2026-11-17&amp;hasta=2026-11-17</span>
+                <span class="card-route-pill"
+                  >/back-office/evento-capital?desde=2026-11-17&amp;hasta=2026-11-17</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/grupos-cuenta/index.html" class="apple-card" data-title="Grupos Cuenta" data-desc="Vista de Grupos Cuenta." data-module="Mantenedores">
+            <a
+              href="mantenedores/grupos-cuenta/index.html"
+              class="apple-card"
+              data-title="Grupos Cuenta"
+              data-desc="Vista de Grupos Cuenta."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Grupos Cuenta</h3>
                 <p class="card-desc">Vista de Grupos Cuenta.</p>
@@ -782,96 +1648,227 @@
                 <span class="card-route-pill">/back-office/grupos-cuenta</span>
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/grupos-de-comisiones/index.html" class="apple-card" data-title="Grupos de Comisiones" data-desc="Vista de Grupos de Comisiones." data-module="Mantenedores">
+            <a
+              href="mantenedores/grupos-de-comisiones/index.html"
+              class="apple-card"
+              data-title="Grupos de Comisiones"
+              data-desc="Vista de Grupos de Comisiones."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Grupos de Comisiones</h3>
                 <p class="card-desc">Vista de Grupos de Comisiones.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/grupo-comisiones/configuracion</span>
+                <span class="card-route-pill"
+                  >/back-office/grupo-comisiones/configuracion</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/instrumentos/index.html" class="apple-card" data-title="Instrumentos" data-desc="Vista de Instrumentos." data-module="Mantenedores">
+            <a
+              href="mantenedores/instrumentos/index.html"
+              class="apple-card"
+              data-title="Instrumentos"
+              data-desc="Vista de Instrumentos."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Instrumentos</h3>
                 <p class="card-desc">Vista de Instrumentos.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/mantenedor-instrumento</span>
+                <span class="card-route-pill"
+                  >/back-office/mantenedor-instrumento</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/operacion-concepto/index.html" class="apple-card" data-title="Operacion Concepto" data-desc="Vista de Operacion Concepto." data-module="Mantenedores">
+            <a
+              href="mantenedores/operacion-concepto/index.html"
+              class="apple-card"
+              data-title="Operacion Concepto"
+              data-desc="Vista de Operacion Concepto."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Operacion Concepto</h3>
                 <p class="card-desc">Vista de Operacion Concepto.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/operacion-concepto/configuracion</span>
+                <span class="card-route-pill"
+                  >/back-office/operacion-concepto/configuracion</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/parametros-de-negocio/index.html" class="apple-card" data-title="Parámetros de Negocio" data-desc="Vista de Parámetros de Negocio." data-module="Mantenedores">
+            <a
+              href="mantenedores/parametros-de-negocio/index.html"
+              class="apple-card"
+              data-title="Parámetros de Negocio"
+              data-desc="Vista de Parámetros de Negocio."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Parámetros de Negocio</h3>
                 <p class="card-desc">Vista de Parámetros de Negocio.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/parametro-negocio/configuracion</span>
+                <span class="card-route-pill"
+                  >/back-office/parametro-negocio/configuracion</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/parametros-de-sistema/index.html" class="apple-card" data-title="Parámetros de Sistema" data-desc="Vista de Parámetros de Sistema." data-module="Mantenedores">
+            <a
+              href="mantenedores/parametros-de-sistema/index.html"
+              class="apple-card"
+              data-title="Parámetros de Sistema"
+              data-desc="Vista de Parámetros de Sistema."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Parámetros de Sistema</h3>
                 <p class="card-desc">Vista de Parámetros de Sistema.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/parametro-sistema/configuracion</span>
+                <span class="card-route-pill"
+                  >/back-office/parametro-sistema/configuracion</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/perfiles-de-riesgo/index.html" class="apple-card" data-title="Perfiles de Riesgo" data-desc="Vista de Perfiles de Riesgo." data-module="Mantenedores">
+            <a
+              href="mantenedores/perfiles-de-riesgo/index.html"
+              class="apple-card"
+              data-title="Perfiles de Riesgo"
+              data-desc="Vista de Perfiles de Riesgo."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Perfiles de Riesgo</h3>
                 <p class="card-desc">Vista de Perfiles de Riesgo.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/perfil-riesgo/configuracion</span>
+                <span class="card-route-pill"
+                  >/back-office/perfil-riesgo/configuracion</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/personas/index.html" class="apple-card" data-title="Personas" data-desc="Vista de Personas." data-module="Mantenedores">
+            <a
+              href="mantenedores/personas/index.html"
+              class="apple-card"
+              data-title="Personas"
+              data-desc="Vista de Personas."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Personas</h3>
                 <p class="card-desc">Vista de Personas.</p>
@@ -880,26 +1877,62 @@
                 <span class="card-route-pill">/back-office/personas</span>
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/plantillas-de-correo/index.html" class="apple-card" data-title="Plantillas de Correo" data-desc="Vista de Plantillas de Correo." data-module="Mantenedores">
+            <a
+              href="mantenedores/plantillas-de-correo/index.html"
+              class="apple-card"
+              data-title="Plantillas de Correo"
+              data-desc="Vista de Plantillas de Correo."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Plantillas de Correo</h3>
                 <p class="card-desc">Vista de Plantillas de Correo.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/email-template/configuracion</span>
+                <span class="card-route-pill"
+                  >/back-office/email-template/configuracion</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/posicion-mesa-spot/index.html" class="apple-card" data-title="Posición Mesa Spot" data-desc="Vista de Posición Mesa Spot." data-module="Mantenedores">
+            <a
+              href="mantenedores/posicion-mesa-spot/index.html"
+              class="apple-card"
+              data-title="Posición Mesa Spot"
+              data-desc="Vista de Posición Mesa Spot."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Posición Mesa Spot</h3>
                 <p class="card-desc">Vista de Posición Mesa Spot.</p>
@@ -908,12 +1941,29 @@
                 <span class="card-route-pill">/back-office/posicion-mesa</span>
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/posicion-punta/index.html" class="apple-card" data-title="Posición Punta" data-desc="Vista de Posición Punta." data-module="Mantenedores">
+            <a
+              href="mantenedores/posicion-punta/index.html"
+              class="apple-card"
+              data-title="Posición Punta"
+              data-desc="Vista de Posición Punta."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Posición Punta</h3>
                 <p class="card-desc">Vista de Posición Punta.</p>
@@ -922,12 +1972,29 @@
                 <span class="card-route-pill">/back-office/posicion-punta</span>
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/pre-importador/index.html" class="apple-card" data-title="Pre Importador" data-desc="Vista de Pre Importador." data-module="Mantenedores">
+            <a
+              href="mantenedores/pre-importador/index.html"
+              class="apple-card"
+              data-title="Pre Importador"
+              data-desc="Vista de Pre Importador."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Pre Importador</h3>
                 <p class="card-desc">Vista de Pre Importador.</p>
@@ -936,63 +2003,150 @@
                 <span class="card-route-pill">/back-office/pre-importador</span>
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/precios-de-instrumentos/index.html" class="apple-card" data-title="Precios de Instrumentos" data-desc="Vista de Precios de Instrumentos." data-module="Mantenedores">
+            <a
+              href="mantenedores/precios-de-instrumentos/index.html"
+              class="apple-card"
+              data-title="Precios de Instrumentos"
+              data-desc="Vista de Precios de Instrumentos."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Precios de Instrumentos</h3>
                 <p class="card-desc">Vista de Precios de Instrumentos.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/precios-instrumentos/configuracion</span>
+                <span class="card-route-pill"
+                  >/back-office/precios-instrumentos/configuracion</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/tipos-cambio/index.html" class="apple-card" data-title="Tipos Cambio" data-desc="Vista de Tipos Cambio." data-module="Mantenedores">
+            <a
+              href="mantenedores/tipos-cambio/index.html"
+              class="apple-card"
+              data-title="Tipos Cambio"
+              data-desc="Vista de Tipos Cambio."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Tipos Cambio</h3>
                 <p class="card-desc">Vista de Tipos Cambio.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/tipo-cambio/configuracion</span>
+                <span class="card-route-pill"
+                  >/back-office/tipo-cambio/configuracion</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/tipos-de-contraparte/index.html" class="apple-card" data-title="Tipos de Contraparte" data-desc="Vista de Tipos de Contraparte." data-module="Mantenedores">
+            <a
+              href="mantenedores/tipos-de-contraparte/index.html"
+              class="apple-card"
+              data-title="Tipos de Contraparte"
+              data-desc="Vista de Tipos de Contraparte."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Tipos de Contraparte</h3>
                 <p class="card-desc">Vista de Tipos de Contraparte.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/tipo-contraparte/configuracion</span>
+                <span class="card-route-pill"
+                  >/back-office/tipo-contraparte/configuracion</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="mantenedores/transacciones-preimportador/index.html" class="apple-card" data-title="Transacciones Preimportador" data-desc="Vista de Transacciones Preimportador." data-module="Mantenedores">
+            <a
+              href="mantenedores/transacciones-preimportador/index.html"
+              class="apple-card"
+              data-title="Transacciones Preimportador"
+              data-desc="Vista de Transacciones Preimportador."
+              data-module="Mantenedores"
+            >
               <div>
                 <h3 class="card-title">Transacciones Preimportador</h3>
                 <p class="card-desc">Vista de Transacciones Preimportador.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/transacciones-preimportador/configuracion</span>
+                <span class="card-route-pill"
+                  >/back-office/transacciones-preimportador/configuracion</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
@@ -1005,115 +2159,276 @@
             <span class="module-count">8 pantallas</span>
           </div>
           <div class="cards-grid">
-            
-            <a href="normativos/registro-de-operaciones/index.html" class="apple-card" data-title="Registro de Operaciones" data-desc="Vista de Registro de Operaciones." data-module="Normativos">
+            <a
+              href="normativos/registro-de-operaciones/index.html"
+              class="apple-card"
+              data-title="Registro de Operaciones"
+              data-desc="Vista de Registro de Operaciones."
+              data-module="Normativos"
+            >
               <div>
                 <h3 class="card-title">Registro de Operaciones</h3>
                 <p class="card-desc">Vista de Registro de Operaciones.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/registro-operaciones</span>
+                <span class="card-route-pill"
+                  >/back-office/registro-operaciones</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="normativos/registro-de-asignaciones/index.html" class="apple-card" data-title="Registro de Asignaciones" data-desc="Vista de Registro de Asignaciones." data-module="Normativos">
+            <a
+              href="normativos/registro-de-asignaciones/index.html"
+              class="apple-card"
+              data-title="Registro de Asignaciones"
+              data-desc="Vista de Registro de Asignaciones."
+              data-module="Normativos"
+            >
               <div>
                 <h3 class="card-title">Registro de Asignaciones</h3>
                 <p class="card-desc">Vista de Registro de Asignaciones.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/registro-asignaciones</span>
+                <span class="card-route-pill"
+                  >/back-office/registro-asignaciones</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="normativos/registro-de-ordenes/index.html" class="apple-card" data-title="Registro de Órdenes" data-desc="Vista de Registro de Órdenes." data-module="Normativos">
+            <a
+              href="normativos/registro-de-ordenes/index.html"
+              class="apple-card"
+              data-title="Registro de Órdenes"
+              data-desc="Vista de Registro de Órdenes."
+              data-module="Normativos"
+            >
               <div>
                 <h3 class="card-title">Registro de Órdenes</h3>
                 <p class="card-desc">Vista de Registro de Órdenes.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/registro-ordenes</span>
+                <span class="card-route-pill"
+                  >/back-office/registro-ordenes</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="normativos/registro-de-clientes/index.html" class="apple-card" data-title="Registro de Clientes" data-desc="Vista de Registro de Clientes." data-module="Normativos">
+            <a
+              href="normativos/registro-de-clientes/index.html"
+              class="apple-card"
+              data-title="Registro de Clientes"
+              data-desc="Vista de Registro de Clientes."
+              data-module="Normativos"
+            >
               <div>
                 <h3 class="card-title">Registro de Clientes</h3>
                 <p class="card-desc">Vista de Registro de Clientes.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/registro-clientes</span>
+                <span class="card-route-pill"
+                  >/back-office/registro-clientes</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="normativos/registro-de-personas-autorizadas/index.html" class="apple-card" data-title="Registro de Personas Autorizadas" data-desc="Vista de Registro de Personas Autorizadas." data-module="Normativos">
+            <a
+              href="normativos/registro-de-personas-autorizadas/index.html"
+              class="apple-card"
+              data-title="Registro de Personas Autorizadas"
+              data-desc="Vista de Registro de Personas Autorizadas."
+              data-module="Normativos"
+            >
               <div>
                 <h3 class="card-title">Registro de Personas Autorizadas</h3>
-                <p class="card-desc">Vista de Registro de Personas Autorizadas.</p>
+                <p class="card-desc">
+                  Vista de Registro de Personas Autorizadas.
+                </p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/registro-personas-autorizadas</span>
+                <span class="card-route-pill"
+                  >/back-office/registro-personas-autorizadas</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="normativos/registro-facturacion/index.html" class="apple-card" data-title="Registro Facturación" data-desc="Vista de Registro Facturación." data-module="Normativos">
+            <a
+              href="normativos/registro-facturacion/index.html"
+              class="apple-card"
+              data-title="Registro Facturación"
+              data-desc="Vista de Registro Facturación."
+              data-module="Normativos"
+            >
               <div>
                 <h3 class="card-title">Registro Facturación</h3>
                 <p class="card-desc">Vista de Registro Facturación.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/registro-facturacion</span>
+                <span class="card-route-pill"
+                  >/back-office/registro-facturacion</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="normativos/activos-terceros-en-deposito-o-custodia/index.html" class="apple-card" data-title="Activos Terceros en Deposito o Custodia" data-desc="Vista de Activos Terceros en Deposito o Custodia." data-module="Normativos">
+            <a
+              href="normativos/activos-terceros-en-deposito-o-custodia/index.html"
+              class="apple-card"
+              data-title="Activos Terceros en Deposito o Custodia"
+              data-desc="Vista de Activos Terceros en Deposito o Custodia."
+              data-module="Normativos"
+            >
               <div>
-                <h3 class="card-title">Activos Terceros en Deposito o Custodia</h3>
-                <p class="card-desc">Vista de Activos Terceros en Deposito o Custodia.</p>
+                <h3 class="card-title">
+                  Activos Terceros en Deposito o Custodia
+                </h3>
+                <p class="card-desc">
+                  Vista de Activos Terceros en Deposito o Custodia.
+                </p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/registro-activos-terceros-en-depositos-o-custodias</span>
+                <span class="card-route-pill"
+                  >/back-office/registro-activos-terceros-en-depositos-o-custodias</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="normativos/registro-de-ejecutivos-y-trabajadores/index.html" class="apple-card" data-title="Registro de Ejecutivos y Trabajadores" data-desc="Vista de Registro de Ejecutivos y Trabajadores." data-module="Normativos">
+            <a
+              href="normativos/registro-de-ejecutivos-y-trabajadores/index.html"
+              class="apple-card"
+              data-title="Registro de Ejecutivos y Trabajadores"
+              data-desc="Vista de Registro de Ejecutivos y Trabajadores."
+              data-module="Normativos"
+            >
               <div>
-                <h3 class="card-title">Registro de Ejecutivos y Trabajadores</h3>
-                <p class="card-desc">Vista de Registro de Ejecutivos y Trabajadores.</p>
+                <h3 class="card-title">
+                  Registro de Ejecutivos y Trabajadores
+                </h3>
+                <p class="card-desc">
+                  Vista de Registro de Ejecutivos y Trabajadores.
+                </p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/registro-de-ejecutivos-y-trabajadores</span>
+                <span class="card-route-pill"
+                  >/back-office/registro-de-ejecutivos-y-trabajadores</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
@@ -1126,8 +2441,13 @@
             <span class="module-count">4 pantallas</span>
           </div>
           <div class="cards-grid">
-            
-            <a href="procesos/cierre/index.html" class="apple-card" data-title="Cierre" data-desc="Vista de Cierre." data-module="Procesos">
+            <a
+              href="procesos/cierre/index.html"
+              class="apple-card"
+              data-title="Cierre"
+              data-desc="Vista de Cierre."
+              data-module="Procesos"
+            >
               <div>
                 <h3 class="card-title">Cierre</h3>
                 <p class="card-desc">Vista de Cierre.</p>
@@ -1136,49 +2456,117 @@
                 <span class="card-route-pill">/back-office/cierre</span>
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="procesos/balanceo/index.html" class="apple-card" data-title="Balanceo" data-desc="Vista de Balanceo." data-module="Procesos">
+            <a
+              href="procesos/balanceo/index.html"
+              class="apple-card"
+              data-title="Balanceo"
+              data-desc="Vista de Balanceo."
+              data-module="Procesos"
+            >
               <div>
                 <h3 class="card-title">Balanceo</h3>
                 <p class="card-desc">Vista de Balanceo.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/balanceo/reporte-balanceo</span>
+                <span class="card-route-pill"
+                  >/back-office/balanceo/reporte-balanceo</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="procesos/generacion-masiva-documentos/index.html" class="apple-card" data-title="Generación Masiva documentos" data-desc="Vista de Generación Masiva documentos." data-module="Procesos">
+            <a
+              href="procesos/generacion-masiva-documentos/index.html"
+              class="apple-card"
+              data-title="Generación Masiva documentos"
+              data-desc="Vista de Generación Masiva documentos."
+              data-module="Procesos"
+            >
               <div>
                 <h3 class="card-title">Generación Masiva documentos</h3>
                 <p class="card-desc">Vista de Generación Masiva documentos.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/generacion-masiva-documentos</span>
+                <span class="card-route-pill"
+                  >/back-office/generacion-masiva-documentos</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="procesos/carga-masiva-ordenes/index.html" class="apple-card" data-title="Carga Masiva Órdenes" data-desc="Vista de Carga Masiva Órdenes." data-module="Procesos">
+            <a
+              href="procesos/carga-masiva-ordenes/index.html"
+              class="apple-card"
+              data-title="Carga Masiva Órdenes"
+              data-desc="Vista de Carga Masiva Órdenes."
+              data-module="Procesos"
+            >
               <div>
                 <h3 class="card-title">Carga Masiva Órdenes</h3>
                 <p class="card-desc">Vista de Carga Masiva Órdenes.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/carga-masiva-ordenes</span>
+                <span class="card-route-pill"
+                  >/back-office/carga-masiva-ordenes</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
@@ -1191,22 +2579,46 @@
             <span class="module-count">6 pantallas</span>
           </div>
           <div class="cards-grid">
-            
-            <a href="allfunds-bank/mantenedor-de-archivos/index.html" class="apple-card" data-title="Mantenedor de Archivos" data-desc="Vista de Mantenedor de Archivos." data-module="AllFunds Bank">
+            <a
+              href="allfunds-bank/mantenedor-de-archivos/index.html"
+              class="apple-card"
+              data-title="Mantenedor de Archivos"
+              data-desc="Vista de Mantenedor de Archivos."
+              data-module="AllFunds Bank"
+            >
               <div>
                 <h3 class="card-title">Mantenedor de Archivos</h3>
                 <p class="card-desc">Vista de Mantenedor de Archivos.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/mantenedor-archivos-afb</span>
+                <span class="card-route-pill"
+                  >/back-office/mantenedor-archivos-afb</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="allfunds-bank/horario-de-corte/index.html" class="apple-card" data-title="Horario de Corte" data-desc="Vista de Horario de Corte." data-module="AllFunds Bank">
+            <a
+              href="allfunds-bank/horario-de-corte/index.html"
+              class="apple-card"
+              data-title="Horario de Corte"
+              data-desc="Vista de Horario de Corte."
+              data-module="AllFunds Bank"
+            >
               <div>
                 <h3 class="card-title">Horario de Corte</h3>
                 <p class="card-desc">Vista de Horario de Corte.</p>
@@ -1215,121 +2627,224 @@
                 <span class="card-route-pill">/back-office/horario-corte</span>
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="allfunds-bank/generacion-de-archivo/index.html" class="apple-card" data-title="Generación de Archivo" data-desc="Vista de Generación de Archivo." data-module="AllFunds Bank">
+            <a
+              href="allfunds-bank/generacion-de-archivo/index.html"
+              class="apple-card"
+              data-title="Generación de Archivo"
+              data-desc="Vista de Generación de Archivo."
+              data-module="AllFunds Bank"
+            >
               <div>
                 <h3 class="card-title">Generación de Archivo</h3>
                 <p class="card-desc">Vista de Generación de Archivo.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/generacion-archivo-allfunds</span>
+                <span class="card-route-pill"
+                  >/back-office/generacion-archivo-allfunds</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="allfunds-bank/lectura-de-aceptacion/index.html" class="apple-card" data-title="Lectura de Aceptación" data-desc="Vista de Lectura de Aceptación." data-module="AllFunds Bank">
+            <a
+              href="allfunds-bank/lectura-de-aceptacion/index.html"
+              class="apple-card"
+              data-title="Lectura de Aceptación"
+              data-desc="Vista de Lectura de Aceptación."
+              data-module="AllFunds Bank"
+            >
               <div>
                 <h3 class="card-title">Lectura de Aceptación</h3>
                 <p class="card-desc">Vista de Lectura de Aceptación.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/mantenedor-archivos-afb/proceso-aceptacion</span>
+                <span class="card-route-pill"
+                  >/back-office/mantenedor-archivos-afb/proceso-aceptacion</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="allfunds-bank/lectura-de-confirmacion/index.html" class="apple-card" data-title="Lectura de Confirmación" data-desc="Vista de Lectura de Confirmación." data-module="AllFunds Bank">
+            <a
+              href="allfunds-bank/lectura-de-confirmacion/index.html"
+              class="apple-card"
+              data-title="Lectura de Confirmación"
+              data-desc="Vista de Lectura de Confirmación."
+              data-module="AllFunds Bank"
+            >
               <div>
                 <h3 class="card-title">Lectura de Confirmación</h3>
                 <p class="card-desc">Vista de Lectura de Confirmación.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/mantenedor-archivos-afb/proceso-confirmacion</span>
+                <span class="card-route-pill"
+                  >/back-office/mantenedor-archivos-afb/proceso-confirmacion</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="allfunds-bank/resumen-de-eventos-de-capital/index.html" class="apple-card" data-title="Resumen de Eventos de Capital" data-desc="Vista de Resumen de Eventos de Capital." data-module="AllFunds Bank">
+            <a
+              href="allfunds-bank/resumen-de-eventos-de-capital/index.html"
+              class="apple-card"
+              data-title="Resumen de Eventos de Capital"
+              data-desc="Vista de Resumen de Eventos de Capital."
+              data-module="AllFunds Bank"
+            >
               <div>
                 <h3 class="card-title">Resumen de Eventos de Capital</h3>
                 <p class="card-desc">Vista de Resumen de Eventos de Capital.</p>
               </div>
               <div class="card-bottom-row">
-                <span class="card-route-pill">/back-office/resumen-evento-capital</span>
+                <span class="card-route-pill"
+                  >/back-office/resumen-evento-capital</span
+                >
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
           </div>
         </section>
-    </div>
+      </div>
 
-    <div id="searchEmpty" class="search-empty-state">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"></circle>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-      </svg>
-      <p>No se encontraron pantallas para tu búsqueda.</p>
-      <button class="btn btn-secondary" onclick="document.getElementById('searchInput').value=''; document.getElementById('searchInput').dispatchEvent(new Event('input'))">
-        Restablecer búsqueda
-      </button>
-    </div>
+      <div id="searchEmpty" class="search-empty-state">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <p>No se encontraron pantallas para tu búsqueda.</p>
+        <button
+          class="btn btn-secondary"
+          onclick="
+            document.getElementById('searchInput').value = '';
+            document
+              .getElementById('searchInput')
+              .dispatchEvent(new Event('input'));
+          "
+        >
+          Restablecer búsqueda
+        </button>
+      </div>
+    </main>
 
-  </main>
+    <script>
+      const searchInput = document.getElementById('searchInput');
+      const cards = document.querySelectorAll('.apple-card');
+      const moduleGroups = document.querySelectorAll('.module-group');
+      const emptyState = document.getElementById('searchEmpty');
 
-  <script>
-    const searchInput = document.getElementById('searchInput');
-    const cards = document.querySelectorAll('.apple-card');
-    const moduleGroups = document.querySelectorAll('.module-group');
-    const emptyState = document.getElementById('searchEmpty');
+      searchInput.addEventListener('input', (e) => {
+        const q = e.target.value.toLowerCase().trim();
+        let visibleCount = 0;
 
-    searchInput.addEventListener('input', (e) => {
-      const q = e.target.value.toLowerCase().trim();
-      let visibleCount = 0;
+        cards.forEach((card) => {
+          const title = card.getAttribute('data-title').toLowerCase();
+          const desc = card.getAttribute('data-desc').toLowerCase();
+          const matches = !q || title.includes(q) || desc.includes(q);
+          card.style.display = matches ? 'flex' : 'none';
+          if (matches) visibleCount++;
+        });
 
-      cards.forEach(card => {
-        const title = card.getAttribute('data-title').toLowerCase();
-        const desc = card.getAttribute('data-desc').toLowerCase();
-        const matches = !q || title.includes(q) || desc.includes(q);
-        card.style.display = matches ? 'flex' : 'none';
-        if (matches) visibleCount++;
+        moduleGroups.forEach((group) => {
+          const visibleInGroup = group.querySelectorAll(
+            '.apple-card[style="display: flex;"]',
+          );
+          const hasVisible = !q || visibleInGroup.length > 0;
+          group.style.display = hasVisible ? 'block' : 'none';
+        });
+
+        emptyState.style.display =
+          visibleCount === 0 && q.length > 0 ? 'block' : 'none';
       });
 
-      moduleGroups.forEach(group => {
-        const visibleInGroup = group.querySelectorAll('.apple-card[style="display: flex;"]');
-        const hasVisible = !q || visibleInGroup.length > 0;
-        group.style.display = hasVisible ? 'block' : 'none';
+      document.addEventListener('keydown', (e) => {
+        if (e.key === '/' && document.activeElement !== searchInput) {
+          e.preventDefault();
+          searchInput.focus();
+          searchInput.select();
+        }
+        if (e.key === 'Escape' && document.activeElement === searchInput) {
+          searchInput.blur();
+        }
       });
-
-      emptyState.style.display = (visibleCount === 0 && q.length > 0) ? 'block' : 'none';
-    });
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === '/' && document.activeElement !== searchInput) {
-        e.preventDefault();
-        searchInput.focus();
-        searchInput.select();
-      }
-      if (e.key === 'Escape' && document.activeElement === searchInput) {
-        searchInput.blur();
-      }
-    });
-  </script>
-
-</body>
+    </script>
+  </body>
 </html>

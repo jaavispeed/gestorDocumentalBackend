@@ -18,10 +18,7 @@
           "id": "documentos",
           "title": "Documentos",
           "route": "/back-office/documentos-comercial",
-          "menuPath": [
-            "Documentos",
-            "Documentos"
-          ],
+          "menuPath": ["Documentos", "Documentos"],
           "description": "Vista de Documentos.",
           "name": "Documentos"
         },
@@ -29,10 +26,7 @@
           "id": "carga-de-documentos",
           "title": "Carga de documentos",
           "route": "/back-office/carga-documentos",
-          "menuPath": [
-            "Documentos",
-            "Carga de documentos"
-          ],
+          "menuPath": ["Documentos", "Carga de documentos"],
           "description": "Vista de Carga de documentos.",
           "name": "Carga de documentos"
         }
@@ -48,10 +42,7 @@
           "id": "transacciones",
           "title": "Transacciones",
           "route": "/back-office/bice-connect/transacciones",
-          "menuPath": [
-            "BICE Connect",
-            "Transacciones"
-          ],
+          "menuPath": ["BICE Connect", "Transacciones"],
           "description": "Vista de Transacciones.",
           "name": "Transacciones"
         }
@@ -67,10 +58,7 @@
           "id": "mesa-negocio",
           "title": "Mesa Negocio",
           "route": "/back-office/mesa-negocio/configuracion",
-          "menuPath": [
-            "Monitores",
-            "Mesa Negocio"
-          ],
+          "menuPath": ["Monitores", "Mesa Negocio"],
           "description": "Vista de Mesa Negocio.",
           "name": "Mesa Negocio"
         },
@@ -78,10 +66,7 @@
           "id": "monitor-de-logs",
           "title": "Monitor de Logs",
           "route": "/back-office/sis-registro-log",
-          "menuPath": [
-            "Monitores",
-            "Monitor de Logs"
-          ],
+          "menuPath": ["Monitores", "Monitor de Logs"],
           "description": "Vista de Monitor de Logs.",
           "name": "Monitor de Logs"
         }
@@ -97,10 +82,7 @@
           "id": "carga-de-operaciones",
           "title": "Carga de operaciones",
           "route": "/back-office/carga-operaciones",
-          "menuPath": [
-            "Operaciones",
-            "Carga de operaciones"
-          ],
+          "menuPath": ["Operaciones", "Carga de operaciones"],
           "description": "Vista de Carga de operaciones.",
           "name": "Carga de operaciones"
         },
@@ -108,10 +90,7 @@
           "id": "traspaso-clientes-agfcdb",
           "title": "Traspaso Clientes Agf/Cdb",
           "route": "/back-office/carga-masiva-principal",
-          "menuPath": [
-            "Operaciones",
-            "Traspaso Clientes Agf/Cdb"
-          ],
+          "menuPath": ["Operaciones", "Traspaso Clientes Agf/Cdb"],
           "description": "Vista de Traspaso Clientes Agf/Cdb.",
           "name": "Traspaso Clientes Agf/Cdb"
         },
@@ -119,10 +98,7 @@
           "id": "forward",
           "title": "Forward",
           "route": "/back-office/forward/new",
-          "menuPath": [
-            "Operaciones",
-            "Forward"
-          ],
+          "menuPath": ["Operaciones", "Forward"],
           "description": "Vista de Forward.",
           "name": "Forward"
         },
@@ -130,10 +106,7 @@
           "id": "operaciones-spot",
           "title": "Operaciones Spot",
           "route": "/back-office/operaciones-spot",
-          "menuPath": [
-            "Operaciones",
-            "Operaciones Spot"
-          ],
+          "menuPath": ["Operaciones", "Operaciones Spot"],
           "description": "Vista de Operaciones Spot.",
           "name": "Operaciones Spot"
         },
@@ -141,10 +114,7 @@
           "id": "valorizacion-rf",
           "title": "Valorización RF",
           "route": "/back-office/valorizacionrf",
-          "menuPath": [
-            "Operaciones",
-            "Valorización RF"
-          ],
+          "menuPath": ["Operaciones", "Valorización RF"],
           "description": "Vista de Valorización RF.",
           "name": "Valorización RF"
         }
@@ -160,10 +130,7 @@
           "id": "facturacion-manual",
           "title": "Facturación Manual",
           "route": "/back-office/facturacion-manual",
-          "menuPath": [
-            "Facturación",
-            "Facturación Manual"
-          ],
+          "menuPath": ["Facturación", "Facturación Manual"],
           "description": "Vista de Facturación Manual.",
           "name": "Facturación Manual"
         },
@@ -171,10 +138,7 @@
           "id": "reporte-facturacion",
           "title": "Reporte Facturación",
           "route": "/back-office/facturacion-manual/reporte",
-          "menuPath": [
-            "Facturación",
-            "Reporte Facturación"
-          ],
+          "menuPath": ["Facturación", "Reporte Facturación"],
           "description": "Vista de Reporte Facturación.",
           "name": "Reporte Facturación"
         }
@@ -190,10 +154,7 @@
           "id": "movimientos",
           "title": "Movimientos",
           "route": "/back-office/movimiento-caja",
-          "menuPath": [
-            "Tesorería",
-            "Movimientos"
-          ],
+          "menuPath": ["Tesorería", "Movimientos"],
           "description": "Vista de Movimientos.",
           "name": "Movimientos"
         },
@@ -201,10 +162,7 @@
           "id": "saldos",
           "title": "Saldos",
           "route": "/back-office/flujo-caja",
-          "menuPath": [
-            "Tesorería",
-            "Saldos"
-          ],
+          "menuPath": ["Tesorería", "Saldos"],
           "description": "Vista de Saldos.",
           "name": "Saldos"
         },
@@ -212,10 +170,7 @@
           "id": "propuestas",
           "title": "Propuestas",
           "route": "/back-office/monitor-propuestas",
-          "menuPath": [
-            "Tesorería",
-            "Propuestas"
-          ],
+          "menuPath": ["Tesorería", "Propuestas"],
           "description": "Vista de Propuestas.",
           "name": "Propuestas"
         }
@@ -231,10 +186,7 @@
           "id": "nomina-de-cobros",
           "title": "Nómina de Cobros",
           "route": "/back-office/multibanco-bci/nomina-cobros",
-          "menuPath": [
-            "Multibanco BCI",
-            "Nómina de Cobros"
-          ],
+          "menuPath": ["Multibanco BCI", "Nómina de Cobros"],
           "description": "Vista de Nómina de Cobros.",
           "name": "Nómina de Cobros"
         },
@@ -242,10 +194,7 @@
           "id": "universo-de-mandatos",
           "title": "Universo de Mandatos",
           "route": "/back-office/multibanco-bci/universo-mandatos",
-          "menuPath": [
-            "Multibanco BCI",
-            "Universo de Mandatos"
-          ],
+          "menuPath": ["Multibanco BCI", "Universo de Mandatos"],
           "description": "Vista de Universo de Mandatos.",
           "name": "Universo de Mandatos"
         },
@@ -253,10 +202,7 @@
           "id": "rendicion-de-pagos",
           "title": "Rendición de Pagos",
           "route": "/back-office/multibanco-bci/rendicion-pagos",
-          "menuPath": [
-            "Multibanco BCI",
-            "Rendición de Pagos"
-          ],
+          "menuPath": ["Multibanco BCI", "Rendición de Pagos"],
           "description": "Vista de Rendición de Pagos.",
           "name": "Rendición de Pagos"
         }
@@ -272,10 +218,7 @@
           "id": "cartera",
           "title": "Cartera",
           "route": "/back-office/cartera-historica",
-          "menuPath": [
-            "Reportes",
-            "Cartera"
-          ],
+          "menuPath": ["Reportes", "Cartera"],
           "description": "Vista de Cartera.",
           "name": "Cartera"
         },
@@ -283,10 +226,7 @@
           "id": "forward",
           "title": "Forward",
           "route": "/back-office/forward/new",
-          "menuPath": [
-            "Reportes",
-            "Forward"
-          ],
+          "menuPath": ["Reportes", "Forward"],
           "description": "Vista de Forward.",
           "name": "Forward"
         },
@@ -294,10 +234,7 @@
           "id": "spot",
           "title": "Spot",
           "route": "/back-office/operaciones-spot/reporte",
-          "menuPath": [
-            "Reportes",
-            "Spot"
-          ],
+          "menuPath": ["Reportes", "Spot"],
           "description": "Vista de Spot.",
           "name": "Spot"
         },
@@ -305,10 +242,7 @@
           "id": "firmas",
           "title": "Firmas",
           "route": "/back-office/control-firmas",
-          "menuPath": [
-            "Reportes",
-            "Firmas"
-          ],
+          "menuPath": ["Reportes", "Firmas"],
           "description": "Vista de Firmas.",
           "name": "Firmas"
         },
@@ -316,10 +250,7 @@
           "id": "simultaneas",
           "title": "Simultáneas",
           "route": "/back-office/reporte-simultaneas",
-          "menuPath": [
-            "Reportes",
-            "Simultáneas"
-          ],
+          "menuPath": ["Reportes", "Simultáneas"],
           "description": "Vista de Simultáneas.",
           "name": "Simultáneas"
         },
@@ -327,10 +258,7 @@
           "id": "comisiones-por-cuenta",
           "title": "Comisiones por cuenta",
           "route": "/back-office/grupo-comisiones/reporte/cuentas",
-          "menuPath": [
-            "Reportes",
-            "Comisiones por cuenta"
-          ],
+          "menuPath": ["Reportes", "Comisiones por cuenta"],
           "description": "Vista de Comisiones por cuenta.",
           "name": "Comisiones por cuenta"
         },
@@ -338,10 +266,7 @@
           "id": "operaciones-y-ordenes",
           "title": "Operaciones y Ordenes",
           "route": "/back-office/operaciones-ordenes",
-          "menuPath": [
-            "Reportes",
-            "Operaciones y Ordenes"
-          ],
+          "menuPath": ["Reportes", "Operaciones y Ordenes"],
           "description": "Vista de Operaciones y Ordenes.",
           "name": "Operaciones y Ordenes"
         },
@@ -349,10 +274,7 @@
           "id": "balanceo",
           "title": "Balanceo",
           "route": "/back-office/balanceo/reporte-balanceo",
-          "menuPath": [
-            "Reportes",
-            "Balanceo"
-          ],
+          "menuPath": ["Reportes", "Balanceo"],
           "description": "Vista de Balanceo.",
           "name": "Balanceo"
         },
@@ -360,10 +282,7 @@
           "id": "por-tipo-inversionista",
           "title": "Por Tipo Inversionista",
           "route": "/back-office/custodia/reporte-tipo-inversionista",
-          "menuPath": [
-            "Reportes",
-            "Por Tipo Inversionista"
-          ],
+          "menuPath": ["Reportes", "Por Tipo Inversionista"],
           "description": "Vista de Por Tipo Inversionista.",
           "name": "Por Tipo Inversionista"
         },
@@ -371,10 +290,7 @@
           "id": "cuadratura-custodia",
           "title": "Cuadratura Custodia",
           "route": "/back-office/custodia/reporte-cuadratura-custodia",
-          "menuPath": [
-            "Reportes",
-            "Cuadratura Custodia"
-          ],
+          "menuPath": ["Reportes", "Cuadratura Custodia"],
           "description": "Vista de Cuadratura Custodia.",
           "name": "Cuadratura Custodia"
         },
@@ -382,10 +298,7 @@
           "id": "custodia-externa",
           "title": "Custodia Externa",
           "route": "/back-office/custodia-externa",
-          "menuPath": [
-            "Reportes",
-            "Custodia Externa"
-          ],
+          "menuPath": ["Reportes", "Custodia Externa"],
           "description": "Vista de Custodia Externa.",
           "name": "Custodia Externa"
         },
@@ -393,10 +306,7 @@
           "id": "conciliador",
           "title": "Conciliador",
           "route": "/back-office/conciliador",
-          "menuPath": [
-            "Reportes",
-            "Conciliador"
-          ],
+          "menuPath": ["Reportes", "Conciliador"],
           "description": "Vista de Conciliador.",
           "name": "Conciliador"
         }
@@ -412,10 +322,7 @@
           "id": "cartola-consolidada",
           "title": "Cartola Consolidada",
           "route": "/back-office/informe-consolidado",
-          "menuPath": [
-            "Cartolas",
-            "Cartola Consolidada"
-          ],
+          "menuPath": ["Cartolas", "Cartola Consolidada"],
           "description": "Vista de Cartola Consolidada.",
           "name": "Cartola Consolidada"
         }
@@ -431,10 +338,7 @@
           "id": "asesores",
           "title": "Asesores",
           "route": "/back-office/asesores",
-          "menuPath": [
-            "Mantenedores",
-            "Asesores"
-          ],
+          "menuPath": ["Mantenedores", "Asesores"],
           "description": "Vista de Asesores.",
           "name": "Asesores"
         },
@@ -442,10 +346,7 @@
           "id": "bancos",
           "title": "Bancos",
           "route": "/back-office/bancos/configuracion",
-          "menuPath": [
-            "Mantenedores",
-            "Bancos"
-          ],
+          "menuPath": ["Mantenedores", "Bancos"],
           "description": "Vista de Bancos.",
           "name": "Bancos"
         },
@@ -453,10 +354,7 @@
           "id": "carga-masiva",
           "title": "Carga Masiva",
           "route": "/back-office/carga-masiva",
-          "menuPath": [
-            "Mantenedores",
-            "Carga Masiva"
-          ],
+          "menuPath": ["Mantenedores", "Carga Masiva"],
           "description": "Vista de Carga Masiva.",
           "name": "Carga Masiva"
         },
@@ -464,10 +362,7 @@
           "id": "clientes",
           "title": "Clientes",
           "route": "/back-office/clientes",
-          "menuPath": [
-            "Mantenedores",
-            "Clientes"
-          ],
+          "menuPath": ["Mantenedores", "Clientes"],
           "description": "Vista de Clientes.",
           "name": "Clientes"
         },
@@ -475,10 +370,7 @@
           "id": "conceptos-externos",
           "title": "Conceptos Externos",
           "route": "/back-office/conceptos-preimportador/configuracion",
-          "menuPath": [
-            "Mantenedores",
-            "Conceptos Externos"
-          ],
+          "menuPath": ["Mantenedores", "Conceptos Externos"],
           "description": "Vista de Conceptos Externos.",
           "name": "Conceptos Externos"
         },
@@ -486,10 +378,7 @@
           "id": "contrapartes",
           "title": "Contrapartes",
           "route": "/back-office/contrapartes/configuracion",
-          "menuPath": [
-            "Mantenedores",
-            "Contrapartes"
-          ],
+          "menuPath": ["Mantenedores", "Contrapartes"],
           "description": "Vista de Contrapartes.",
           "name": "Contrapartes"
         },
@@ -497,10 +386,7 @@
           "id": "control-de-firmas",
           "title": "Control de Firmas",
           "route": "/back-office/contratos",
-          "menuPath": [
-            "Mantenedores",
-            "Control de Firmas"
-          ],
+          "menuPath": ["Mantenedores", "Control de Firmas"],
           "description": "Vista de Control de Firmas.",
           "name": "Control de Firmas"
         },
@@ -508,10 +394,7 @@
           "id": "cuentas",
           "title": "Cuentas",
           "route": "/back-office/cuentas",
-          "menuPath": [
-            "Mantenedores",
-            "Cuentas"
-          ],
+          "menuPath": ["Mantenedores", "Cuentas"],
           "description": "Vista de Cuentas.",
           "name": "Cuentas"
         },
@@ -519,10 +402,7 @@
           "id": "cuentas-dcv",
           "title": "Cuentas DCV",
           "route": "/back-office/cuentas-dcv/configuracion",
-          "menuPath": [
-            "Mantenedores",
-            "Cuentas DCV"
-          ],
+          "menuPath": ["Mantenedores", "Cuentas DCV"],
           "description": "Vista de Cuentas DCV.",
           "name": "Cuentas DCV"
         },
@@ -530,10 +410,7 @@
           "id": "declaraciones",
           "title": "Declaraciones",
           "route": "/back-office/declaraciones-enrolador",
-          "menuPath": [
-            "Mantenedores",
-            "Declaraciones"
-          ],
+          "menuPath": ["Mantenedores", "Declaraciones"],
           "description": "Vista de Declaraciones.",
           "name": "Declaraciones"
         },
@@ -541,10 +418,7 @@
           "id": "dias-feriados",
           "title": "Días Feriados",
           "route": "/back-office/dia-feriado/configuracion",
-          "menuPath": [
-            "Mantenedores",
-            "Días Feriados"
-          ],
+          "menuPath": ["Mantenedores", "Días Feriados"],
           "description": "Vista de Días Feriados.",
           "name": "Días Feriados"
         },
@@ -552,10 +426,7 @@
           "id": "emisor",
           "title": "Emisor",
           "route": "/back-office/emisores/configuracion",
-          "menuPath": [
-            "Mantenedores",
-            "Emisor"
-          ],
+          "menuPath": ["Mantenedores", "Emisor"],
           "description": "Vista de Emisor.",
           "name": "Emisor"
         },
@@ -563,10 +434,7 @@
           "id": "entradas",
           "title": "Entradas",
           "route": "/back-office/entradas-enrolador",
-          "menuPath": [
-            "Mantenedores",
-            "Entradas"
-          ],
+          "menuPath": ["Mantenedores", "Entradas"],
           "description": "Vista de Entradas.",
           "name": "Entradas"
         },
@@ -574,10 +442,7 @@
           "id": "estrategias-de-inversion",
           "title": "Estrategias de Inversión",
           "route": "/back-office/estrategia-inversion/configuracion",
-          "menuPath": [
-            "Mantenedores",
-            "Estrategias de Inversión"
-          ],
+          "menuPath": ["Mantenedores", "Estrategias de Inversión"],
           "description": "Vista de Estrategias de Inversión.",
           "name": "Estrategias de Inversión"
         },
@@ -585,10 +450,7 @@
           "id": "eventos-de-capital",
           "title": "Eventos de Capital",
           "route": "/back-office/evento-capital?desde=2026-11-16&hasta=2026-11-16",
-          "menuPath": [
-            "Mantenedores",
-            "Eventos de Capital"
-          ],
+          "menuPath": ["Mantenedores", "Eventos de Capital"],
           "description": "Vista de Eventos de Capital.",
           "name": "Eventos de Capital"
         },
@@ -596,10 +458,7 @@
           "id": "grupos-cuenta",
           "title": "Grupos Cuenta",
           "route": "/back-office/grupos-cuenta",
-          "menuPath": [
-            "Mantenedores",
-            "Grupos Cuenta"
-          ],
+          "menuPath": ["Mantenedores", "Grupos Cuenta"],
           "description": "Vista de Grupos Cuenta.",
           "name": "Grupos Cuenta"
         },
@@ -607,10 +466,7 @@
           "id": "grupos-de-comisiones",
           "title": "Grupos de Comisiones",
           "route": "/back-office/grupo-comisiones/configuracion",
-          "menuPath": [
-            "Mantenedores",
-            "Grupos de Comisiones"
-          ],
+          "menuPath": ["Mantenedores", "Grupos de Comisiones"],
           "description": "Vista de Grupos de Comisiones.",
           "name": "Grupos de Comisiones"
         },
@@ -618,10 +474,7 @@
           "id": "instrumentos",
           "title": "Instrumentos",
           "route": "/back-office/mantenedor-instrumento",
-          "menuPath": [
-            "Mantenedores",
-            "Instrumentos"
-          ],
+          "menuPath": ["Mantenedores", "Instrumentos"],
           "description": "Vista de Instrumentos.",
           "name": "Instrumentos"
         },
@@ -629,10 +482,7 @@
           "id": "operacion-concepto",
           "title": "Operacion Concepto",
           "route": "/back-office/operacion-concepto/configuracion",
-          "menuPath": [
-            "Mantenedores",
-            "Operacion Concepto"
-          ],
+          "menuPath": ["Mantenedores", "Operacion Concepto"],
           "description": "Vista de Operacion Concepto.",
           "name": "Operacion Concepto"
         },
@@ -640,10 +490,7 @@
           "id": "parametros-de-negocio",
           "title": "Parámetros de Negocio",
           "route": "/back-office/parametro-negocio/configuracion",
-          "menuPath": [
-            "Mantenedores",
-            "Parámetros de Negocio"
-          ],
+          "menuPath": ["Mantenedores", "Parámetros de Negocio"],
           "description": "Vista de Parámetros de Negocio.",
           "name": "Parámetros de Negocio"
         },
@@ -651,10 +498,7 @@
           "id": "parametros-de-sistema",
           "title": "Parámetros de Sistema",
           "route": "/back-office/parametro-sistema/configuracion",
-          "menuPath": [
-            "Mantenedores",
-            "Parámetros de Sistema"
-          ],
+          "menuPath": ["Mantenedores", "Parámetros de Sistema"],
           "description": "Vista de Parámetros de Sistema.",
           "name": "Parámetros de Sistema"
         },
@@ -662,10 +506,7 @@
           "id": "perfiles-de-riesgo",
           "title": "Perfiles de Riesgo",
           "route": "/back-office/perfil-riesgo/configuracion",
-          "menuPath": [
-            "Mantenedores",
-            "Perfiles de Riesgo"
-          ],
+          "menuPath": ["Mantenedores", "Perfiles de Riesgo"],
           "description": "Vista de Perfiles de Riesgo.",
           "name": "Perfiles de Riesgo"
         },
@@ -673,10 +514,7 @@
           "id": "personas",
           "title": "Personas",
           "route": "/back-office/personas",
-          "menuPath": [
-            "Mantenedores",
-            "Personas"
-          ],
+          "menuPath": ["Mantenedores", "Personas"],
           "description": "Vista de Personas.",
           "name": "Personas"
         },
@@ -684,10 +522,7 @@
           "id": "plantillas-de-correo",
           "title": "Plantillas de Correo",
           "route": "/back-office/email-template/configuracion",
-          "menuPath": [
-            "Mantenedores",
-            "Plantillas de Correo"
-          ],
+          "menuPath": ["Mantenedores", "Plantillas de Correo"],
           "description": "Vista de Plantillas de Correo.",
           "name": "Plantillas de Correo"
         },
@@ -695,10 +530,7 @@
           "id": "posicion-mesa-spot",
           "title": "Posición Mesa Spot",
           "route": "/back-office/posicion-mesa",
-          "menuPath": [
-            "Mantenedores",
-            "Posición Mesa Spot"
-          ],
+          "menuPath": ["Mantenedores", "Posición Mesa Spot"],
           "description": "Vista de Posición Mesa Spot.",
           "name": "Posición Mesa Spot"
         },
@@ -706,10 +538,7 @@
           "id": "posicion-punta",
           "title": "Posición Punta",
           "route": "/back-office/posicion-punta",
-          "menuPath": [
-            "Mantenedores",
-            "Posición Punta"
-          ],
+          "menuPath": ["Mantenedores", "Posición Punta"],
           "description": "Vista de Posición Punta.",
           "name": "Posición Punta"
         },
@@ -717,10 +546,7 @@
           "id": "pre-importador",
           "title": "Pre Importador",
           "route": "/back-office/pre-importador",
-          "menuPath": [
-            "Mantenedores",
-            "Pre Importador"
-          ],
+          "menuPath": ["Mantenedores", "Pre Importador"],
           "description": "Vista de Pre Importador.",
           "name": "Pre Importador"
         },
@@ -728,10 +554,7 @@
           "id": "precios-de-instrumentos",
           "title": "Precios de Instrumentos",
           "route": "/back-office/precios-instrumentos/configuracion",
-          "menuPath": [
-            "Mantenedores",
-            "Precios de Instrumentos"
-          ],
+          "menuPath": ["Mantenedores", "Precios de Instrumentos"],
           "description": "Vista de Precios de Instrumentos.",
           "name": "Precios de Instrumentos"
         },
@@ -739,10 +562,7 @@
           "id": "tipos-cambio",
           "title": "Tipos Cambio",
           "route": "/back-office/tipo-cambio/configuracion",
-          "menuPath": [
-            "Mantenedores",
-            "Tipos Cambio"
-          ],
+          "menuPath": ["Mantenedores", "Tipos Cambio"],
           "description": "Vista de Tipos Cambio.",
           "name": "Tipos Cambio"
         },
@@ -750,10 +570,7 @@
           "id": "tipos-de-contraparte",
           "title": "Tipos de Contraparte",
           "route": "/back-office/tipo-contraparte/configuracion",
-          "menuPath": [
-            "Mantenedores",
-            "Tipos de Contraparte"
-          ],
+          "menuPath": ["Mantenedores", "Tipos de Contraparte"],
           "description": "Vista de Tipos de Contraparte.",
           "name": "Tipos de Contraparte"
         },
@@ -761,10 +578,7 @@
           "id": "transacciones-preimportador",
           "title": "Transacciones Preimportador",
           "route": "/back-office/transacciones-preimportador/configuracion",
-          "menuPath": [
-            "Mantenedores",
-            "Transacciones Preimportador"
-          ],
+          "menuPath": ["Mantenedores", "Transacciones Preimportador"],
           "description": "Vista de Transacciones Preimportador.",
           "name": "Transacciones Preimportador"
         }
@@ -780,10 +594,7 @@
           "id": "registro-de-operaciones",
           "title": "Registro de Operaciones",
           "route": "/back-office/registro-operaciones",
-          "menuPath": [
-            "Normativos",
-            "Registro de Operaciones"
-          ],
+          "menuPath": ["Normativos", "Registro de Operaciones"],
           "description": "Vista de Registro de Operaciones.",
           "name": "Registro de Operaciones"
         },
@@ -791,10 +602,7 @@
           "id": "registro-de-asignaciones",
           "title": "Registro de Asignaciones",
           "route": "/back-office/registro-asignaciones",
-          "menuPath": [
-            "Normativos",
-            "Registro de Asignaciones"
-          ],
+          "menuPath": ["Normativos", "Registro de Asignaciones"],
           "description": "Vista de Registro de Asignaciones.",
           "name": "Registro de Asignaciones"
         },
@@ -802,10 +610,7 @@
           "id": "registro-de-ordenes",
           "title": "Registro de Órdenes",
           "route": "/back-office/registro-ordenes",
-          "menuPath": [
-            "Normativos",
-            "Registro de Órdenes"
-          ],
+          "menuPath": ["Normativos", "Registro de Órdenes"],
           "description": "Vista de Registro de Órdenes.",
           "name": "Registro de Órdenes"
         },
@@ -813,10 +618,7 @@
           "id": "registro-de-clientes",
           "title": "Registro de Clientes",
           "route": "/back-office/registro-clientes",
-          "menuPath": [
-            "Normativos",
-            "Registro de Clientes"
-          ],
+          "menuPath": ["Normativos", "Registro de Clientes"],
           "description": "Vista de Registro de Clientes.",
           "name": "Registro de Clientes"
         },
@@ -824,10 +626,7 @@
           "id": "registro-de-personas-autorizadas",
           "title": "Registro de Personas Autorizadas",
           "route": "/back-office/registro-personas-autorizadas",
-          "menuPath": [
-            "Normativos",
-            "Registro de Personas Autorizadas"
-          ],
+          "menuPath": ["Normativos", "Registro de Personas Autorizadas"],
           "description": "Vista de Registro de Personas Autorizadas.",
           "name": "Registro de Personas Autorizadas"
         },
@@ -835,10 +634,7 @@
           "id": "registro-facturacion",
           "title": "Registro Facturación",
           "route": "/back-office/registro-facturacion",
-          "menuPath": [
-            "Normativos",
-            "Registro Facturación"
-          ],
+          "menuPath": ["Normativos", "Registro Facturación"],
           "description": "Vista de Registro Facturación.",
           "name": "Registro Facturación"
         },
@@ -846,10 +642,7 @@
           "id": "activos-terceros-en-deposito-o-custodia",
           "title": "Activos Terceros en Deposito o Custodia",
           "route": "/back-office/registro-activos-terceros-en-depositos-o-custodias",
-          "menuPath": [
-            "Normativos",
-            "Activos Terceros en Deposito o Custodia"
-          ],
+          "menuPath": ["Normativos", "Activos Terceros en Deposito o Custodia"],
           "description": "Vista de Activos Terceros en Deposito o Custodia.",
           "name": "Activos Terceros en Deposito o Custodia"
         },
@@ -857,10 +650,7 @@
           "id": "registro-de-ejecutivos-y-trabajadores",
           "title": "Registro de Ejecutivos y Trabajadores",
           "route": "/back-office/registro-de-ejecutivos-y-trabajadores",
-          "menuPath": [
-            "Normativos",
-            "Registro de Ejecutivos y Trabajadores"
-          ],
+          "menuPath": ["Normativos", "Registro de Ejecutivos y Trabajadores"],
           "description": "Vista de Registro de Ejecutivos y Trabajadores.",
           "name": "Registro de Ejecutivos y Trabajadores"
         }
@@ -876,10 +666,7 @@
           "id": "cierre",
           "title": "Cierre",
           "route": "/back-office/cierre",
-          "menuPath": [
-            "Procesos",
-            "Cierre"
-          ],
+          "menuPath": ["Procesos", "Cierre"],
           "description": "Vista de Cierre.",
           "name": "Cierre"
         },
@@ -887,10 +674,7 @@
           "id": "balanceo",
           "title": "Balanceo",
           "route": "/back-office/balanceo/reporte-balanceo",
-          "menuPath": [
-            "Procesos",
-            "Balanceo"
-          ],
+          "menuPath": ["Procesos", "Balanceo"],
           "description": "Vista de Balanceo.",
           "name": "Balanceo"
         },
@@ -898,10 +682,7 @@
           "id": "generacion-masiva-documentos",
           "title": "Generación Masiva documentos",
           "route": "/back-office/generacion-masiva-documentos",
-          "menuPath": [
-            "Procesos",
-            "Generación Masiva documentos"
-          ],
+          "menuPath": ["Procesos", "Generación Masiva documentos"],
           "description": "Vista de Generación Masiva documentos.",
           "name": "Generación Masiva documentos"
         },
@@ -909,10 +690,7 @@
           "id": "carga-masiva-ordenes",
           "title": "Carga Masiva Órdenes",
           "route": "/back-office/carga-masiva-ordenes",
-          "menuPath": [
-            "Procesos",
-            "Carga Masiva Órdenes"
-          ],
+          "menuPath": ["Procesos", "Carga Masiva Órdenes"],
           "description": "Vista de Carga Masiva Órdenes.",
           "name": "Carga Masiva Órdenes"
         }
@@ -928,10 +706,7 @@
           "id": "mantenedor-de-archivos",
           "title": "Mantenedor de Archivos",
           "route": "/back-office/mantenedor-archivos-afb",
-          "menuPath": [
-            "AllFunds Bank",
-            "Mantenedor de Archivos"
-          ],
+          "menuPath": ["AllFunds Bank", "Mantenedor de Archivos"],
           "description": "Vista de Mantenedor de Archivos.",
           "name": "Mantenedor de Archivos"
         },
@@ -939,10 +714,7 @@
           "id": "horario-de-corte",
           "title": "Horario de Corte",
           "route": "/back-office/horario-corte",
-          "menuPath": [
-            "AllFunds Bank",
-            "Horario de Corte"
-          ],
+          "menuPath": ["AllFunds Bank", "Horario de Corte"],
           "description": "Vista de Horario de Corte.",
           "name": "Horario de Corte"
         },
@@ -950,10 +722,7 @@
           "id": "generacion-de-archivo",
           "title": "Generación de Archivo",
           "route": "/back-office/generacion-archivo-allfunds",
-          "menuPath": [
-            "AllFunds Bank",
-            "Generación de Archivo"
-          ],
+          "menuPath": ["AllFunds Bank", "Generación de Archivo"],
           "description": "Vista de Generación de Archivo.",
           "name": "Generación de Archivo"
         },
@@ -961,10 +730,7 @@
           "id": "lectura-de-aceptacion",
           "title": "Lectura de Aceptación",
           "route": "/back-office/mantenedor-archivos-afb/proceso-aceptacion",
-          "menuPath": [
-            "AllFunds Bank",
-            "Lectura de Aceptación"
-          ],
+          "menuPath": ["AllFunds Bank", "Lectura de Aceptación"],
           "description": "Vista de Lectura de Aceptación.",
           "name": "Lectura de Aceptación"
         },
@@ -972,10 +738,7 @@
           "id": "lectura-de-confirmacion",
           "title": "Lectura de Confirmación",
           "route": "/back-office/mantenedor-archivos-afb/proceso-confirmacion",
-          "menuPath": [
-            "AllFunds Bank",
-            "Lectura de Confirmación"
-          ],
+          "menuPath": ["AllFunds Bank", "Lectura de Confirmación"],
           "description": "Vista de Lectura de Confirmación.",
           "name": "Lectura de Confirmación"
         },
@@ -983,10 +746,7 @@
           "id": "resumen-de-eventos-de-capital",
           "title": "Resumen de Eventos de Capital",
           "route": "/back-office/resumen-evento-capital",
-          "menuPath": [
-            "AllFunds Bank",
-            "Resumen de Eventos de Capital"
-          ],
+          "menuPath": ["AllFunds Bank", "Resumen de Eventos de Capital"],
           "description": "Vista de Resumen de Eventos de Capital.",
           "name": "Resumen de Eventos de Capital"
         }

@@ -4,7 +4,9 @@ export interface FragmentoMarkdown {
   contenido: string;
 }
 
-export function dividirMarkdownPorSecciones(contenido: string): FragmentoMarkdown[] {
+export function dividirMarkdownPorSecciones(
+  contenido: string,
+): FragmentoMarkdown[] {
   if (!contenido || !contenido.trim()) {
     return [];
   }

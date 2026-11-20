@@ -6,7 +6,7 @@ Este documento define las reglas y estándares de desarrollo para la creación d
 
 ## 1. Entidades TypeORM
 
-- **Sin sufijo en nombres de clases:** 
+- **Sin sufijo en nombres de clases:**
   - Usar nombres limpios en singular: `Documento`, `Categoria`, `Producto`, `DocumentoFragmento` (NO usar sufijos como `Entity`).
   - Nombre de archivo: `[recurso].entity.ts` (ej. `documento.entity.ts`).
 - **Decorador `@Entity()`:**

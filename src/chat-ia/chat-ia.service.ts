@@ -9,8 +9,14 @@ import { GoogleGenAI } from '@google/genai';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ConsultaChatDto } from '../common/dto/consulta-chat.dto.js';
-import type { EstadoServidorDto, RespuestaChatDto } from '../common/dto/chat-respuestas.dto.js';
-import { GenerarDocGitDiffDto, RespuestaDocGitDiffDto } from '../common/dto/git-diff-doc.dto.js';
+import type {
+  EstadoServidorDto,
+  RespuestaChatDto,
+} from '../common/dto/chat-respuestas.dto.js';
+import {
+  GenerarDocGitDiffDto,
+  RespuestaDocGitDiffDto,
+} from '../common/dto/git-diff-doc.dto.js';
 import {
   PROMPT_ASISTENTE_DOCUMENTACION,
   PROMPT_GENERADOR_DOC_GIT_DIFF,
@@ -36,14 +42,16 @@ export class ChatIaService {
     modeloPersonalizado?: string,
   ): Promise<EstadoServidorDto> {
     const claveFinal = clavePersonalizada ? clavePersonalizada.trim() : '';
-    const modeloFinal = (modeloPersonalizado && modeloPersonalizado.trim()) || 'gemini-2.5-flash';
+    const modeloFinal =
+      (modeloPersonalizado && modeloPersonalizado.trim()) || 'gemini-2.5-flash';
 
     if (!claveFinal) {
       return {
         estado: 'desconocido',
         modelo: modeloFinal,
         tieneClaveConfigurada: false,
-        mensaje: 'Debes configurar tu API Key de Gemini en los Ajustes del frontend.',
+        mensaje:
+          'Debes configurar tu API Key de Gemini en los Ajustes del frontend.',
       };
     }
 
@@ -62,7 +70,8 @@ export class ChatIaService {
         tieneClaveConfigurada: true,
       };
     } catch (error: any) {
-      const mensajeError = error?.message || 'Error al conectar con la API de Gemini';
+      const mensajeError =
+        error?.message || 'Error al conectar con la API de Gemini';
       this.logger.warn(`Fallo en verificación de API Gemini: ${mensajeError}`);
 
       return {
@@ -75,14 +84,20 @@ export class ChatIaService {
   }
 
   async procesarMensaje(consulta: ConsultaChatDto): Promise<RespuestaChatDto> {
-    const { mensaje, historial = [], clavePersonalizada, modeloPersonalizado } = consulta;
+    const {
+      mensaje,
+      historial = [],
+      clavePersonalizada,
+      modeloPersonalizado,
+    } = consulta;
 
     if (!mensaje || !mensaje.trim()) {
       throw new BadRequestException('El mensaje es obligatorio');
     }
 
     const claveFinal = clavePersonalizada ? clavePersonalizada.trim() : '';
-    const modeloFinal = (modeloPersonalizado && modeloPersonalizado.trim()) || 'gemini-2.5-flash';
+    const modeloFinal =
+      (modeloPersonalizado && modeloPersonalizado.trim()) || 'gemini-2.5-flash';
 
     if (!claveFinal) {
       throw new ServiceUnavailableException(
@@ -95,9 +110,15 @@ export class ChatIaService {
     try {
       // Filtrado semántico rápido por términos clave en el nombre del documento o contenido
       const contextoDoc = this.obtenerContextoBase(mensaje);
-      const contenidoPrompt = construirPromptConsultaRAG(mensaje, contextoDoc, historial);
+      const contenidoPrompt = construirPromptConsultaRAG(
+        mensaje,
+        contextoDoc,
+        historial,
+      );
 
-      this.logger.log(`Procesando chat con modelo: ${modeloFinal} (tokens de contexto podados)`);
+      this.logger.log(
+        `Procesando chat con modelo: ${modeloFinal} (tokens de contexto podados)`,
+      );
 
       const promesaConsulta = clienteFinal.models.generateContent({
         model: modeloFinal,
@@ -145,14 +166,18 @@ export class ChatIaService {
   async generarDocumentacionDesdeDiff(
     dto: GenerarDocGitDiffDto,
   ): Promise<RespuestaDocGitDiffDto> {
-    const { diff, contextoAdicional, clavePersonalizada, modeloPersonalizado } = dto;
+    const { diff, contextoAdicional, clavePersonalizada, modeloPersonalizado } =
+      dto;
 
     if (!diff || !diff.trim()) {
-      throw new BadRequestException('El contenido del Git Diff es obligatorio.');
+      throw new BadRequestException(
+        'El contenido del Git Diff es obligatorio.',
+      );
     }
 
     const claveFinal = clavePersonalizada ? clavePersonalizada.trim() : '';
-    const modeloFinal = (modeloPersonalizado && modeloPersonalizado.trim()) || 'gemini-2.5-flash';
+    const modeloFinal =
+      (modeloPersonalizado && modeloPersonalizado.trim()) || 'gemini-2.5-flash';
 
     if (!claveFinal) {
       throw new ServiceUnavailableException(
@@ -161,10 +186,15 @@ export class ChatIaService {
     }
 
     const clienteFinal = new GoogleGenAI({ apiKey: claveFinal });
-    const contenidoUsuario = construirPromptUsuarioGitDiff(diff, contextoAdicional);
+    const contenidoUsuario = construirPromptUsuarioGitDiff(
+      diff,
+      contextoAdicional,
+    );
 
     try {
-      this.logger.log(`Generando documentación desde diff con modelo: ${modeloFinal}`);
+      this.logger.log(
+        `Generando documentación desde diff con modelo: ${modeloFinal}`,
+      );
       const respuestaAi = await clienteFinal.models.generateContent({
         model: modeloFinal,
         contents: contenidoUsuario,
@@ -182,16 +212,25 @@ export class ChatIaService {
 
       // Si el modelo envolvió todo en bloque de markdown ```markdown ... ``` lo extraemos limpiamente
       if (textoGenerado.startsWith('```markdown')) {
-        textoGenerado = textoGenerado.replace(/^```markdown\s*/i, '').replace(/```\s*$/i, '');
+        textoGenerado = textoGenerado
+          .replace(/^```markdown\s*/i, '')
+          .replace(/```\s*$/i, '');
       } else if (textoGenerado.startsWith('```md')) {
-        textoGenerado = textoGenerado.replace(/^```md\s*/i, '').replace(/```\s*$/i, '');
+        textoGenerado = textoGenerado
+          .replace(/^```md\s*/i, '')
+          .replace(/```\s*$/i, '');
       }
 
       return {
-        documentacionMarkdown: this.sanitizarTextoRespuesta(textoGenerado.trim()),
+        documentacionMarkdown: this.sanitizarTextoRespuesta(
+          textoGenerado.trim(),
+        ),
       };
     } catch (error: any) {
-      this.logger.error(`Error generando documentación desde diff: ${error.message}`, error.stack);
+      this.logger.error(
+        `Error generando documentación desde diff: ${error.message}`,
+        error.stack,
+      );
       throw new InternalServerErrorException(
         `Error al generar la documentación con IA: ${error.message}`,
       );
@@ -255,7 +294,10 @@ export class ChatIaService {
         const coincidentes = archivos.filter((archivo) => {
           const nombreNormalizado = archivo.nombre.toLowerCase();
           const contenidoNormalizado = archivo.contenido.toLowerCase();
-          return terminos.some((t) => nombreNormalizado.includes(t) || contenidoNormalizado.includes(t));
+          return terminos.some(
+            (t) =>
+              nombreNormalizado.includes(t) || contenidoNormalizado.includes(t),
+          );
         });
 
         if (coincidentes.length > 0) {
@@ -282,9 +324,7 @@ export class ChatIaService {
     modeloPropio?: string,
   ): Promise<{ titulo: string; manualMarkdown: string }> {
     const claveFinal =
-      (clavePropia && clavePropia.trim()) ||
-      process.env.GEMINI_API_KEY ||
-      '';
+      (clavePropia && clavePropia.trim()) || process.env.GEMINI_API_KEY || '';
     const modeloFinal =
       (modeloPropio && modeloPropio.trim()) ||
       process.env.GEMINI_MODELO ||
@@ -320,7 +360,8 @@ export class ChatIaService {
     } catch (error: any) {
       this.logger.error('Error al compilar manual con IA:', error);
       throw new InternalServerErrorException(
-        'Error al procesar la documentación con IA: ' + (error.message || 'Error desconocido'),
+        'Error al procesar la documentación con IA: ' +
+          (error.message || 'Error desconocido'),
       );
     }
   }
@@ -328,7 +369,8 @@ export class ChatIaService {
   private leerArchivosMd(
     directorio: string,
   ): Array<{ nombre: string; ruta: string; contenido: string }> {
-    let resultados: Array<{ nombre: string; ruta: string; contenido: string }> = [];
+    let resultados: Array<{ nombre: string; ruta: string; contenido: string }> =
+      [];
 
     const entradas = fs.readdirSync(directorio, { withFileTypes: true });
 
@@ -340,14 +382,19 @@ export class ChatIaService {
       } else if (entrada.isFile() && entrada.name.endsWith('.md')) {
         try {
           const contenido = fs.readFileSync(rutaCompleta, 'utf-8');
-          const rutaRelativa = path.relative(this.rutaDocumentacion, rutaCompleta);
+          const rutaRelativa = path.relative(
+            this.rutaDocumentacion,
+            rutaCompleta,
+          );
           resultados.push({
             nombre: rutaRelativa,
             ruta: rutaCompleta,
             contenido,
           });
         } catch (error: any) {
-          this.logger.warn(`No se pudo leer el archivo ${rutaCompleta}: ${error.message}`);
+          this.logger.warn(
+            `No se pudo leer el archivo ${rutaCompleta}: ${error.message}`,
+          );
         }
       }
     }

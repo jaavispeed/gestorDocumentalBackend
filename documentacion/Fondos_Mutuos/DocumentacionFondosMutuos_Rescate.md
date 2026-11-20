@@ -18,20 +18,22 @@ Este documento detalla las validaciones, parámetros de entrada y sistema, regla
 ## 2. Parámetros de Entrada y de Sistema
 
 ### 2.1 Parámetros Recibidos en el Request / Método
-| Parámetro | Tipo | Requerido | Descripción / Regla |
-| :--- | :--- | :--- | :--- |
-| `idCuenta` | `decimal` | Sí | Identificador de la cuenta de inversión. |
-| `idInstrumento` | `decimal` | Sí | Identificador del fondo mutuo (debe pertenecer a subclase `FFMM_NAC` con `CodigoFamilia == "FFMM"` y estar vigente). |
-| `monto` | `decimal?` | Condicional | Monto a rescatar. Requerido si `flgCantidad = false` y `flgVendeTodo != "S"`. |
-| `cuotas` | `decimal?` | Condicional | Cuotas a rescatar. Requerido si `flgCantidad = true` y `flgVendeTodo != "S"`. |
-| `flgVendeTodo` | `string` | Sí | `"S"` para rescatar el 100% de la custodia disponible en cartera, `"N"` para rescate parcial. |
-| `flgCantidad` | `bool` | Sí | `true` si el rescate se especifica por **Cuotas**, `false` si es por **Monto**. |
-| `TipoOperacion` | `string?` | No | Código de operación: `RESCATE` (por defecto), `RESCMLTEXT`, `APV_RET`, `APV_TR_EG`. |
-| `IdContraparte` | `decimal?` | Condicional | Identificador de contraparte externa. **Obligatorio** si `TipoOperacion == "RESCMLTEXT"`. |
-| `codigoAsesoria` | `string?` | No | Código de asesoría asociado a la orden. |
-| `emailNotificacion`| `string?` | No | Correo electrónico para el envío del comprobante de ingreso. |
+
+| Parámetro           | Tipo       | Requerido   | Descripción / Regla                                                                                                  |
+| :------------------ | :--------- | :---------- | :------------------------------------------------------------------------------------------------------------------- |
+| `idCuenta`          | `decimal`  | Sí          | Identificador de la cuenta de inversión.                                                                             |
+| `idInstrumento`     | `decimal`  | Sí          | Identificador del fondo mutuo (debe pertenecer a subclase `FFMM_NAC` con `CodigoFamilia == "FFMM"` y estar vigente). |
+| `monto`             | `decimal?` | Condicional | Monto a rescatar. Requerido si `flgCantidad = false` y `flgVendeTodo != "S"`.                                        |
+| `cuotas`            | `decimal?` | Condicional | Cuotas a rescatar. Requerido si `flgCantidad = true` y `flgVendeTodo != "S"`.                                        |
+| `flgVendeTodo`      | `string`   | Sí          | `"S"` para rescatar el 100% de la custodia disponible en cartera, `"N"` para rescate parcial.                        |
+| `flgCantidad`       | `bool`     | Sí          | `true` si el rescate se especifica por **Cuotas**, `false` si es por **Monto**.                                      |
+| `TipoOperacion`     | `string?`  | No          | Código de operación: `RESCATE` (por defecto), `RESCMLTEXT`, `APV_RET`, `APV_TR_EG`.                                  |
+| `IdContraparte`     | `decimal?` | Condicional | Identificador de contraparte externa. **Obligatorio** si `TipoOperacion == "RESCMLTEXT"`.                            |
+| `codigoAsesoria`    | `string?`  | No          | Código de asesoría asociado a la orden.                                                                              |
+| `emailNotificacion` | `string?`  | No          | Correo electrónico para el envío del comprobante de ingreso.                                                         |
 
 ### 2.2 Parámetros de Sistema y Atributos Consultados
+
 1. **`ValidaHorarioRescate` (`sis_parametro`):**
    - Si el horario de mercado del fondo está cerrado y este parámetro es `true`: la orden **se rechaza** (`InstrumentoErrors.HorarioCerrado`).
    - Si es `false`: se acepta y la `fechaOperacion` **se traslada al siguiente día hábil bancario**.
@@ -103,21 +105,27 @@ Este documento detalla las validaciones, parámetros de entrada y sistema, regla
 ## 4. Fórmulas Matemáticas y Doble Validación
 
 ### 4.1 Rescate Total ("Vende Todo")
+
 $$\text{CantidadOrden} = \text{CarteraDisponible}$$
 $$\text{MontoOrden} = \text{Round}(\text{CantidadOrden} \times \text{Precio}, \text{decimalesMoneda})$$
-*(Donde `decimalesMoneda` es 0 para CLP y 2 para USD/UF con `MidpointRounding.AwayFromZero`)*.
+_(Donde `decimalesMoneda` es 0 para CLP y 2 para USD/UF con `MidpointRounding.AwayFromZero`)_.
 
 ### 4.2 Rescate por Cuotas (`flgCantidad = true`)
+
 $$\text{CantidadOrden} = \text{cuotas}$$
 $$\text{MontoCalculado} = \text{Round}(\text{CantidadOrden} \times \text{Precio}, \text{decimalesMoneda})$$
+
 - Si se envía `monto`: se valida que $\text{Round}(\text{monto}, \text{decimalesMoneda}) = \text{MontoCalculado}$. Si difieren, arroja `OrdenErrors.DobleValidacionMonto`.
 
 ### 4.3 Rescate por Monto (`flgCantidad = false`)
+
 $$\text{MontoOrden} = \text{monto}$$
 $$\text{CantidadOrden} = \text{Round}\left(\frac{\text{MontoOrden}}{\text{Precio}}, 6\right)$$
+
 - Si se envían `cuotas > 0`: se valida que $\text{Round}(\text{cuotas}, 6) = \text{CantidadOrden}$. Si difieren, arroja `OrdenErrors.DobleValidacionCuotas`.
 
 ### 4.4 Fecha de Liquidación
+
 $$\text{FechaLiquidacion} = \text{FechaOperacion} + 1 \text{ día hábil bancario} \ (T+1)$$
 
 ---
@@ -125,6 +133,7 @@ $$\text{FechaLiquidacion} = \text{FechaOperacion} + 1 \text{ día hábil bancari
 ## 5. Ejemplos de Request y Response
 
 ### 5.1 Ejemplo de Request (Body - Rescate por Cuotas)
+
 ```json
 {
   "idCuenta": 12345,
@@ -140,13 +149,14 @@ $$\text{FechaLiquidacion} = \text{FechaOperacion} + 1 \text{ día hábil bancari
 ```
 
 ### 5.2 Ejemplo de Response (200 OK)
+
 ```json
 {
   "idOrden": 84531,
   "codMoneda": "CLP",
   "nemotecnico": "FM-MONEY-MARKET",
   "cantidad": 401.929237,
-  "precio": 1244.00,
+  "precio": 1244.0,
   "comision": 0,
   "porcComision": 0,
   "monto": 500000,

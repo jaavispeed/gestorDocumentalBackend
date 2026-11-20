@@ -57,11 +57,16 @@ export class GestorSesionPlaywright {
 
     try {
       console.log(`Navegando a ${urlApp}...`);
-      await page.goto(urlApp, { waitUntil: 'domcontentloaded', timeout: 35000 });
+      await page.goto(urlApp, {
+        waitUntil: 'domcontentloaded',
+        timeout: 35000,
+      });
       await page.bringToFront();
       await page.waitForTimeout(1500);
     } catch (navErr: any) {
-      console.error(`No se pudo acceder a la URL "${urlApp}": ${navErr.message}`);
+      console.error(
+        `No se pudo acceder a la URL "${urlApp}": ${navErr.message}`,
+      );
       await page.waitForTimeout(6000).catch(() => {});
       await browser.close().catch(() => {});
       throw new Error(`Error de conexión con ${urlApp}: ${navErr.message}`);
@@ -72,7 +77,9 @@ export class GestorSesionPlaywright {
       "button:has-text('Iniciar Sesión'), button:has-text('Iniciar sesión segura'), [data-login-sso]";
     const ssoBtn = page.locator(ssoSelector).first();
     if (await ssoBtn.isVisible().catch(() => false)) {
-      console.log('Detectado botón de acceso inicial. Avanzando a formulario...');
+      console.log(
+        'Detectado botón de acceso inicial. Avanzando a formulario...',
+      );
       await ssoBtn.click().catch(() => {});
       await page.waitForTimeout(2000);
     }
@@ -81,7 +88,9 @@ export class GestorSesionPlaywright {
       console.log('Rellenando credenciales configuradas para este cliente...');
       await this.rellenarCredenciales(page, configAuth);
     } else {
-      console.log('Ingresa tus credenciales en la ventana abierta de Chromium.');
+      console.log(
+        'Ingresa tus credenciales en la ventana abierta de Chromium.',
+      );
     }
 
     let targetHost = 'localhost';
@@ -124,10 +133,14 @@ export class GestorSesionPlaywright {
       const userSel =
         auth.userSelector ||
         "input[name*='User' i], input[type='email'], input[name*='user' i], input[name*='email' i], input[type='text']:not([type='password'])";
-      const passSel = auth.passwordSelector || "input[name*='Pass' i], input[type='password']";
+      const passSel =
+        auth.passwordSelector ||
+        "input[name*='Pass' i], input[type='password']";
 
       const userField = page.locator(userSel).first();
-      await userField.waitFor({ state: 'visible', timeout: 8000 }).catch(() => {});
+      await userField
+        .waitFor({ state: 'visible', timeout: 8000 })
+        .catch(() => {});
 
       if (await userField.isVisible().catch(() => false)) {
         await userField.fill(auth.username!);
@@ -174,11 +187,22 @@ export class GestorSesionPlaywright {
         const currentUrl = page.url();
         const currentHost = new URL(currentUrl).hostname;
 
-        const isBackOnMainHost = currentHost.includes(targetHost) || targetHost.includes(currentHost);
-        const passInputsCount = await page.locator("input[type='password']").count().catch(() => 0);
-        const isLoginPath = /login|signin|sign-in|auth\/account/i.test(currentUrl);
+        const isBackOnMainHost =
+          currentHost.includes(targetHost) || targetHost.includes(currentHost);
+        const passInputsCount = await page
+          .locator("input[type='password']")
+          .count()
+          .catch(() => 0);
+        const isLoginPath = /login|signin|sign-in|auth\/account/i.test(
+          currentUrl,
+        );
 
-        if (isBackOnMainHost && passInputsCount === 0 && !isLoginPath && currentUrl !== initialUrl) {
+        if (
+          isBackOnMainHost &&
+          passInputsCount === 0 &&
+          !isLoginPath &&
+          currentUrl !== initialUrl
+        ) {
           await context.storageState({ path: rutaSesion }).catch(() => {});
           return true;
         }

@@ -39,7 +39,11 @@ export class DocumentosController {
     @Body('categoria') categoria?: string,
     @Headers('x-gemini-key') apiKey?: string,
   ) {
-    return this.documentosService.procesarArchivoSubido(file, categoria, apiKey);
+    return this.documentosService.procesarArchivoSubido(
+      file,
+      categoria,
+      apiKey,
+    );
   }
 
   // 3. Listar todos los documentos activos

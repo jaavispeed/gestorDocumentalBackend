@@ -11,8 +11,18 @@ export interface RutasAutomanual {
 
 export function obtenerRutasAutomanual(): RutasAutomanual {
   const directorioRaiz = process.env.APP_ROOT || process.cwd();
-  const directorioClientes = path.join(directorioRaiz, 'datos', 'automanual', 'clientes');
-  const directorioDocs = path.join(directorioRaiz, 'datos', 'automanual', 'docs');
+  const directorioClientes = path.join(
+    directorioRaiz,
+    'datos',
+    'automanual',
+    'clientes',
+  );
+  const directorioDocs = path.join(
+    directorioRaiz,
+    'datos',
+    'automanual',
+    'docs',
+  );
   const archivoEnv = path.join(directorioRaiz, '.env');
   const directorioPlantillas = path.join(
     directorioRaiz,

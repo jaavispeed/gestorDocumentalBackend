@@ -11,7 +11,9 @@ export interface OpcionesDescubrimiento {
 }
 
 export class DescubridorNavegacion {
-  public async descubrir(opciones: OpcionesDescubrimiento): Promise<ModuloCliente[]> {
+  public async descubrir(
+    opciones: OpcionesDescubrimiento,
+  ): Promise<ModuloCliente[]> {
     const targetUrl = opciones.initialRoute
       ? new URL(opciones.initialRoute, opciones.appUrl).toString()
       : opciones.appUrl;
@@ -28,7 +30,10 @@ export class DescubridorNavegacion {
         viewport: { width: 1440, height: 900 },
       };
 
-      if (opciones.storageStatePath && (await fs.pathExists(opciones.storageStatePath))) {
+      if (
+        opciones.storageStatePath &&
+        (await fs.pathExists(opciones.storageStatePath))
+      ) {
         contextOptions.storageState = opciones.storageStatePath;
       }
 
@@ -36,7 +41,10 @@ export class DescubridorNavegacion {
       const page = await context.newPage();
 
       try {
-        await page.goto(targetUrl, { waitUntil: 'domcontentloaded', timeout: 25000 });
+        await page.goto(targetUrl, {
+          waitUntil: 'domcontentloaded',
+          timeout: 25000,
+        });
         await page.waitForTimeout(2000);
       } catch (err: any) {
         console.warn(`Aviso al cargar URL inicial: ${err.message}`);
@@ -47,8 +55,14 @@ export class DescubridorNavegacion {
         /login|signin|sign-in|auth\/account/i.test(currentUrl) ||
         (await page.$("input[type='password']")) !== null;
 
-      if (isLogin && opciones.authConfig?.username && opciones.authConfig?.password) {
-        console.log('Sesión requerida detectada. Autenticando para acceder a menús...');
+      if (
+        isLogin &&
+        opciones.authConfig?.username &&
+        opciones.authConfig?.password
+      ) {
+        console.log(
+          'Sesión requerida detectada. Autenticando para acceder a menús...',
+        );
 
         const ssoSelector =
           opciones.authConfig.ssoTriggerSelector ||
@@ -63,10 +77,13 @@ export class DescubridorNavegacion {
           opciones.authConfig.userSelector ||
           "input[name*='User' i], input[type='email'], input[name*='user' i], input[type='text']:not([type='password'])";
         const passSel =
-          opciones.authConfig.passwordSelector || "input[name*='Pass' i], input[type='password']";
+          opciones.authConfig.passwordSelector ||
+          "input[name*='Pass' i], input[type='password']";
 
         const userField = page.locator(userSel).first();
-        await userField.waitFor({ state: 'visible', timeout: 8000 }).catch(() => {});
+        await userField
+          .waitFor({ state: 'visible', timeout: 8000 })
+          .catch(() => {});
         if (await userField.isVisible().catch(() => false)) {
           await userField.fill(opciones.authConfig.username);
         }
@@ -88,7 +105,9 @@ export class DescubridorNavegacion {
 
         await page.waitForTimeout(5000);
         if (opciones.storageStatePath) {
-          await context.storageState({ path: opciones.storageStatePath }).catch(() => {});
+          await context
+            .storageState({ path: opciones.storageStatePath })
+            .catch(() => {});
         }
       }
 
@@ -97,9 +116,12 @@ export class DescubridorNavegacion {
       }
 
       await page
-        .waitForSelector("mat-nav-list, nav, aside, .sidebar, .menu, [role='navigation'], .mat-drawer", {
-          timeout: 5000,
-        })
+        .waitForSelector(
+          "mat-nav-list, nav, aside, .sidebar, .menu, [role='navigation'], .mat-drawer",
+          {
+            timeout: 5000,
+          },
+        )
         .catch(() => null);
 
       const menuRaw = await page.evaluate(() => {
@@ -111,7 +133,9 @@ export class DescubridorNavegacion {
 
         const simpleLinks = links
           .map((l) => ({
-            text: (l.innerText || l.textContent || '').trim().replace(/\s+/g, ' '),
+            text: (l.innerText || l.textContent || '')
+              .trim()
+              .replace(/\s+/g, ' '),
             href: l.href,
           }))
           .filter(
@@ -171,7 +195,9 @@ export class DescubridorNavegacion {
         modulosFinales.push(moduloPrincipal);
       }
 
-      console.log(`Auto-descubrimiento completado: ${modulosFinales.length} módulos detectados.`);
+      console.log(
+        `Auto-descubrimiento completado: ${modulosFinales.length} módulos detectados.`,
+      );
       return modulosFinales;
     } finally {
       await browser.close().catch(() => {});

@@ -1,131 +1,393 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clientes | gpi</title>
-  <link rel="stylesheet" href="../../assets/theme.css">
-  <link rel="stylesheet" href="../../assets/styles.css">
-</head>
-<body class="section-body">
-
-  <header class="top-navbar">
-    <div class="nav-left">
-      <a href="../../index.html" class="brand-link" title="Ir a la portada">
-        <img src="../../assets/logo.jpg" alt="Logo" class="brand-logo" onerror="this.style.display='none'">
-        <span>gpi</span>
-      </a>
-      <div class="nav-divider"></div>
-      <a href="../../index.html" class="nav-back-btn">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        <span>Portada</span>
-      </a>
-    </div>
-
-    <div class="nav-right">
-      <div class="section-picker-wrapper">
-        <svg class="picker-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-        <select class="section-picker-select" onchange="if(this.value) window.location.href=this.value;">
-          <optgroup label="Documentos"><option value="../../documentos/documentos/index.html" >Documentos &rsaquo; Documentos</option>
-<option value="../../documentos/carga-de-documentos/index.html" >Documentos &rsaquo; Carga de documentos</option></optgroup>
-<optgroup label="BICE Connect"><option value="../../bice-connect/transacciones/index.html" >BICE Connect &rsaquo; Transacciones</option></optgroup>
-<optgroup label="Monitores"><option value="../../monitores/mesa-negocio/index.html" >Monitores &rsaquo; Mesa Negocio</option>
-<option value="../../monitores/monitor-de-logs/index.html" >Monitores &rsaquo; Monitor de Logs</option></optgroup>
-<optgroup label="Operaciones"><option value="../../operaciones/carga-de-operaciones/index.html" >Operaciones &rsaquo; Carga de operaciones</option>
-<option value="../../operaciones/traspaso-clientes-agfcdb/index.html" >Operaciones &rsaquo; Traspaso Clientes Agf/Cdb</option>
-<option value="../../operaciones/forward/index.html" >Operaciones &rsaquo; Forward</option>
-<option value="../../operaciones/operaciones-spot/index.html" >Operaciones &rsaquo; Operaciones Spot</option>
-<option value="../../operaciones/valorizacion-rf/index.html" >Operaciones &rsaquo; Valorización RF</option></optgroup>
-<optgroup label="Facturación"><option value="../../facturacion/facturacion-manual/index.html" >Facturación &rsaquo; Facturación Manual</option>
-<option value="../../facturacion/reporte-facturacion/index.html" >Facturación &rsaquo; Reporte Facturación</option></optgroup>
-<optgroup label="Tesorería"><option value="../../tesoreria/movimientos/index.html" >Tesorería &rsaquo; Movimientos</option>
-<option value="../../tesoreria/saldos/index.html" >Tesorería &rsaquo; Saldos</option>
-<option value="../../tesoreria/propuestas/index.html" >Tesorería &rsaquo; Propuestas</option></optgroup>
-<optgroup label="Multibanco BCI"><option value="../../multibanco-bci/nomina-de-cobros/index.html" >Multibanco BCI &rsaquo; Nómina de Cobros</option>
-<option value="../../multibanco-bci/universo-de-mandatos/index.html" >Multibanco BCI &rsaquo; Universo de Mandatos</option>
-<option value="../../multibanco-bci/rendicion-de-pagos/index.html" >Multibanco BCI &rsaquo; Rendición de Pagos</option></optgroup>
-<optgroup label="Reportes"><option value="../../reportes/cartera/index.html" >Reportes &rsaquo; Cartera</option>
-<option value="../../reportes/forward/index.html" >Reportes &rsaquo; Forward</option>
-<option value="../../reportes/spot/index.html" >Reportes &rsaquo; Spot</option>
-<option value="../../reportes/firmas/index.html" >Reportes &rsaquo; Firmas</option>
-<option value="../../reportes/simultaneas/index.html" >Reportes &rsaquo; Simultáneas</option>
-<option value="../../reportes/comisiones-por-cuenta/index.html" >Reportes &rsaquo; Comisiones por cuenta</option>
-<option value="../../reportes/operaciones-y-ordenes/index.html" >Reportes &rsaquo; Operaciones y Ordenes</option>
-<option value="../../reportes/balanceo/index.html" >Reportes &rsaquo; Balanceo</option>
-<option value="../../reportes/por-tipo-inversionista/index.html" >Reportes &rsaquo; Por Tipo Inversionista</option>
-<option value="../../reportes/cuadratura-custodia/index.html" >Reportes &rsaquo; Cuadratura Custodia</option>
-<option value="../../reportes/custodia-externa/index.html" >Reportes &rsaquo; Custodia Externa</option>
-<option value="../../reportes/conciliador/index.html" >Reportes &rsaquo; Conciliador</option></optgroup>
-<optgroup label="Cartolas"><option value="../../cartolas/cartola-consolidada/index.html" >Cartolas &rsaquo; Cartola Consolidada</option></optgroup>
-<optgroup label="Mantenedores"><option value="../../mantenedores/asesores/index.html" >Mantenedores &rsaquo; Asesores</option>
-<option value="../../mantenedores/bancos/index.html" >Mantenedores &rsaquo; Bancos</option>
-<option value="../../mantenedores/carga-masiva/index.html" >Mantenedores &rsaquo; Carga Masiva</option>
-<option value="../../mantenedores/clientes/index.html" selected>Mantenedores &rsaquo; Clientes</option>
-<option value="../../mantenedores/conceptos-externos/index.html" >Mantenedores &rsaquo; Conceptos Externos</option>
-<option value="../../mantenedores/contrapartes/index.html" >Mantenedores &rsaquo; Contrapartes</option>
-<option value="../../mantenedores/control-de-firmas/index.html" >Mantenedores &rsaquo; Control de Firmas</option>
-<option value="../../mantenedores/cuentas/index.html" >Mantenedores &rsaquo; Cuentas</option>
-<option value="../../mantenedores/cuentas-dcv/index.html" >Mantenedores &rsaquo; Cuentas DCV</option>
-<option value="../../mantenedores/declaraciones/index.html" >Mantenedores &rsaquo; Declaraciones</option>
-<option value="../../mantenedores/dias-feriados/index.html" >Mantenedores &rsaquo; Días Feriados</option>
-<option value="../../mantenedores/emisor/index.html" >Mantenedores &rsaquo; Emisor</option>
-<option value="../../mantenedores/entradas/index.html" >Mantenedores &rsaquo; Entradas</option>
-<option value="../../mantenedores/estrategias-de-inversion/index.html" >Mantenedores &rsaquo; Estrategias de Inversión</option>
-<option value="../../mantenedores/eventos-de-capital/index.html" >Mantenedores &rsaquo; Eventos de Capital</option>
-<option value="../../mantenedores/grupos-cuenta/index.html" >Mantenedores &rsaquo; Grupos Cuenta</option>
-<option value="../../mantenedores/grupos-de-comisiones/index.html" >Mantenedores &rsaquo; Grupos de Comisiones</option>
-<option value="../../mantenedores/instrumentos/index.html" >Mantenedores &rsaquo; Instrumentos</option>
-<option value="../../mantenedores/operacion-concepto/index.html" >Mantenedores &rsaquo; Operacion Concepto</option>
-<option value="../../mantenedores/parametros-de-negocio/index.html" >Mantenedores &rsaquo; Parámetros de Negocio</option>
-<option value="../../mantenedores/parametros-de-sistema/index.html" >Mantenedores &rsaquo; Parámetros de Sistema</option>
-<option value="../../mantenedores/perfiles-de-riesgo/index.html" >Mantenedores &rsaquo; Perfiles de Riesgo</option>
-<option value="../../mantenedores/personas/index.html" >Mantenedores &rsaquo; Personas</option>
-<option value="../../mantenedores/plantillas-de-correo/index.html" >Mantenedores &rsaquo; Plantillas de Correo</option>
-<option value="../../mantenedores/posicion-mesa-spot/index.html" >Mantenedores &rsaquo; Posición Mesa Spot</option>
-<option value="../../mantenedores/posicion-punta/index.html" >Mantenedores &rsaquo; Posición Punta</option>
-<option value="../../mantenedores/pre-importador/index.html" >Mantenedores &rsaquo; Pre Importador</option>
-<option value="../../mantenedores/precios-de-instrumentos/index.html" >Mantenedores &rsaquo; Precios de Instrumentos</option>
-<option value="../../mantenedores/tipos-cambio/index.html" >Mantenedores &rsaquo; Tipos Cambio</option>
-<option value="../../mantenedores/tipos-de-contraparte/index.html" >Mantenedores &rsaquo; Tipos de Contraparte</option>
-<option value="../../mantenedores/transacciones-preimportador/index.html" >Mantenedores &rsaquo; Transacciones Preimportador</option></optgroup>
-<optgroup label="Normativos"><option value="../../normativos/registro-de-operaciones/index.html" >Normativos &rsaquo; Registro de Operaciones</option>
-<option value="../../normativos/registro-de-asignaciones/index.html" >Normativos &rsaquo; Registro de Asignaciones</option>
-<option value="../../normativos/registro-de-ordenes/index.html" >Normativos &rsaquo; Registro de Órdenes</option>
-<option value="../../normativos/registro-de-clientes/index.html" >Normativos &rsaquo; Registro de Clientes</option>
-<option value="../../normativos/registro-de-personas-autorizadas/index.html" >Normativos &rsaquo; Registro de Personas Autorizadas</option>
-<option value="../../normativos/registro-facturacion/index.html" >Normativos &rsaquo; Registro Facturación</option>
-<option value="../../normativos/activos-terceros-en-deposito-o-custodia/index.html" >Normativos &rsaquo; Activos Terceros en Deposito o Custodia</option>
-<option value="../../normativos/registro-de-ejecutivos-y-trabajadores/index.html" >Normativos &rsaquo; Registro de Ejecutivos y Trabajadores</option></optgroup>
-<optgroup label="Procesos"><option value="../../procesos/cierre/index.html" >Procesos &rsaquo; Cierre</option>
-<option value="../../procesos/balanceo/index.html" >Procesos &rsaquo; Balanceo</option>
-<option value="../../procesos/generacion-masiva-documentos/index.html" >Procesos &rsaquo; Generación Masiva documentos</option>
-<option value="../../procesos/carga-masiva-ordenes/index.html" >Procesos &rsaquo; Carga Masiva Órdenes</option></optgroup>
-<optgroup label="AllFunds Bank"><option value="../../allfunds-bank/mantenedor-de-archivos/index.html" >AllFunds Bank &rsaquo; Mantenedor de Archivos</option>
-<option value="../../allfunds-bank/horario-de-corte/index.html" >AllFunds Bank &rsaquo; Horario de Corte</option>
-<option value="../../allfunds-bank/generacion-de-archivo/index.html" >AllFunds Bank &rsaquo; Generación de Archivo</option>
-<option value="../../allfunds-bank/lectura-de-aceptacion/index.html" >AllFunds Bank &rsaquo; Lectura de Aceptación</option>
-<option value="../../allfunds-bank/lectura-de-confirmacion/index.html" >AllFunds Bank &rsaquo; Lectura de Confirmación</option>
-<option value="../../allfunds-bank/resumen-de-eventos-de-capital/index.html" >AllFunds Bank &rsaquo; Resumen de Eventos de Capital</option></optgroup>
-        </select>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clientes | gpi</title>
+    <link rel="stylesheet" href="../../assets/theme.css" />
+    <link rel="stylesheet" href="../../assets/styles.css" />
+  </head>
+  <body class="section-body">
+    <header class="top-navbar">
+      <div class="nav-left">
+        <a href="../../index.html" class="brand-link" title="Ir a la portada">
+          <img
+            src="../../assets/logo.jpg"
+            alt="Logo"
+            class="brand-logo"
+            onerror="this.style.display = 'none'"
+          />
+          <span>gpi</span>
+        </a>
+        <div class="nav-divider"></div>
+        <a href="../../index.html" class="nav-back-btn">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          <span>Portada</span>
+        </a>
       </div>
-    </div>
-  </header>
 
-  <main class="section-main-container">
+      <div class="nav-right">
+        <div class="section-picker-wrapper">
+          <svg
+            class="picker-icon"
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <rect x="3" y="3" width="7" height="7" />
+            <rect x="14" y="3" width="7" height="7" />
+            <rect x="14" y="14" width="7" height="7" />
+            <rect x="3" y="14" width="7" height="7" />
+          </svg>
+          <select
+            class="section-picker-select"
+            onchange="if (this.value) window.location.href = this.value;"
+          >
+            <optgroup label="Documentos">
+              <option value="../../documentos/documentos/index.html">
+                Documentos &rsaquo; Documentos
+              </option>
+              <option value="../../documentos/carga-de-documentos/index.html">
+                Documentos &rsaquo; Carga de documentos
+              </option>
+            </optgroup>
+            <optgroup label="BICE Connect">
+              <option value="../../bice-connect/transacciones/index.html">
+                BICE Connect &rsaquo; Transacciones
+              </option>
+            </optgroup>
+            <optgroup label="Monitores">
+              <option value="../../monitores/mesa-negocio/index.html">
+                Monitores &rsaquo; Mesa Negocio
+              </option>
+              <option value="../../monitores/monitor-de-logs/index.html">
+                Monitores &rsaquo; Monitor de Logs
+              </option>
+            </optgroup>
+            <optgroup label="Operaciones">
+              <option value="../../operaciones/carga-de-operaciones/index.html">
+                Operaciones &rsaquo; Carga de operaciones
+              </option>
+              <option
+                value="../../operaciones/traspaso-clientes-agfcdb/index.html"
+              >
+                Operaciones &rsaquo; Traspaso Clientes Agf/Cdb
+              </option>
+              <option value="../../operaciones/forward/index.html">
+                Operaciones &rsaquo; Forward
+              </option>
+              <option value="../../operaciones/operaciones-spot/index.html">
+                Operaciones &rsaquo; Operaciones Spot
+              </option>
+              <option value="../../operaciones/valorizacion-rf/index.html">
+                Operaciones &rsaquo; Valorización RF
+              </option>
+            </optgroup>
+            <optgroup label="Facturación">
+              <option value="../../facturacion/facturacion-manual/index.html">
+                Facturación &rsaquo; Facturación Manual
+              </option>
+              <option value="../../facturacion/reporte-facturacion/index.html">
+                Facturación &rsaquo; Reporte Facturación
+              </option>
+            </optgroup>
+            <optgroup label="Tesorería">
+              <option value="../../tesoreria/movimientos/index.html">
+                Tesorería &rsaquo; Movimientos
+              </option>
+              <option value="../../tesoreria/saldos/index.html">
+                Tesorería &rsaquo; Saldos
+              </option>
+              <option value="../../tesoreria/propuestas/index.html">
+                Tesorería &rsaquo; Propuestas
+              </option>
+            </optgroup>
+            <optgroup label="Multibanco BCI">
+              <option value="../../multibanco-bci/nomina-de-cobros/index.html">
+                Multibanco BCI &rsaquo; Nómina de Cobros
+              </option>
+              <option
+                value="../../multibanco-bci/universo-de-mandatos/index.html"
+              >
+                Multibanco BCI &rsaquo; Universo de Mandatos
+              </option>
+              <option
+                value="../../multibanco-bci/rendicion-de-pagos/index.html"
+              >
+                Multibanco BCI &rsaquo; Rendición de Pagos
+              </option>
+            </optgroup>
+            <optgroup label="Reportes">
+              <option value="../../reportes/cartera/index.html">
+                Reportes &rsaquo; Cartera
+              </option>
+              <option value="../../reportes/forward/index.html">
+                Reportes &rsaquo; Forward
+              </option>
+              <option value="../../reportes/spot/index.html">
+                Reportes &rsaquo; Spot
+              </option>
+              <option value="../../reportes/firmas/index.html">
+                Reportes &rsaquo; Firmas
+              </option>
+              <option value="../../reportes/simultaneas/index.html">
+                Reportes &rsaquo; Simultáneas
+              </option>
+              <option value="../../reportes/comisiones-por-cuenta/index.html">
+                Reportes &rsaquo; Comisiones por cuenta
+              </option>
+              <option value="../../reportes/operaciones-y-ordenes/index.html">
+                Reportes &rsaquo; Operaciones y Ordenes
+              </option>
+              <option value="../../reportes/balanceo/index.html">
+                Reportes &rsaquo; Balanceo
+              </option>
+              <option value="../../reportes/por-tipo-inversionista/index.html">
+                Reportes &rsaquo; Por Tipo Inversionista
+              </option>
+              <option value="../../reportes/cuadratura-custodia/index.html">
+                Reportes &rsaquo; Cuadratura Custodia
+              </option>
+              <option value="../../reportes/custodia-externa/index.html">
+                Reportes &rsaquo; Custodia Externa
+              </option>
+              <option value="../../reportes/conciliador/index.html">
+                Reportes &rsaquo; Conciliador
+              </option>
+            </optgroup>
+            <optgroup label="Cartolas">
+              <option value="../../cartolas/cartola-consolidada/index.html">
+                Cartolas &rsaquo; Cartola Consolidada
+              </option>
+            </optgroup>
+            <optgroup label="Mantenedores">
+              <option value="../../mantenedores/asesores/index.html">
+                Mantenedores &rsaquo; Asesores
+              </option>
+              <option value="../../mantenedores/bancos/index.html">
+                Mantenedores &rsaquo; Bancos
+              </option>
+              <option value="../../mantenedores/carga-masiva/index.html">
+                Mantenedores &rsaquo; Carga Masiva
+              </option>
+              <option value="../../mantenedores/clientes/index.html" selected>
+                Mantenedores &rsaquo; Clientes
+              </option>
+              <option value="../../mantenedores/conceptos-externos/index.html">
+                Mantenedores &rsaquo; Conceptos Externos
+              </option>
+              <option value="../../mantenedores/contrapartes/index.html">
+                Mantenedores &rsaquo; Contrapartes
+              </option>
+              <option value="../../mantenedores/control-de-firmas/index.html">
+                Mantenedores &rsaquo; Control de Firmas
+              </option>
+              <option value="../../mantenedores/cuentas/index.html">
+                Mantenedores &rsaquo; Cuentas
+              </option>
+              <option value="../../mantenedores/cuentas-dcv/index.html">
+                Mantenedores &rsaquo; Cuentas DCV
+              </option>
+              <option value="../../mantenedores/declaraciones/index.html">
+                Mantenedores &rsaquo; Declaraciones
+              </option>
+              <option value="../../mantenedores/dias-feriados/index.html">
+                Mantenedores &rsaquo; Días Feriados
+              </option>
+              <option value="../../mantenedores/emisor/index.html">
+                Mantenedores &rsaquo; Emisor
+              </option>
+              <option value="../../mantenedores/entradas/index.html">
+                Mantenedores &rsaquo; Entradas
+              </option>
+              <option
+                value="../../mantenedores/estrategias-de-inversion/index.html"
+              >
+                Mantenedores &rsaquo; Estrategias de Inversión
+              </option>
+              <option value="../../mantenedores/eventos-de-capital/index.html">
+                Mantenedores &rsaquo; Eventos de Capital
+              </option>
+              <option value="../../mantenedores/grupos-cuenta/index.html">
+                Mantenedores &rsaquo; Grupos Cuenta
+              </option>
+              <option
+                value="../../mantenedores/grupos-de-comisiones/index.html"
+              >
+                Mantenedores &rsaquo; Grupos de Comisiones
+              </option>
+              <option value="../../mantenedores/instrumentos/index.html">
+                Mantenedores &rsaquo; Instrumentos
+              </option>
+              <option value="../../mantenedores/operacion-concepto/index.html">
+                Mantenedores &rsaquo; Operacion Concepto
+              </option>
+              <option
+                value="../../mantenedores/parametros-de-negocio/index.html"
+              >
+                Mantenedores &rsaquo; Parámetros de Negocio
+              </option>
+              <option
+                value="../../mantenedores/parametros-de-sistema/index.html"
+              >
+                Mantenedores &rsaquo; Parámetros de Sistema
+              </option>
+              <option value="../../mantenedores/perfiles-de-riesgo/index.html">
+                Mantenedores &rsaquo; Perfiles de Riesgo
+              </option>
+              <option value="../../mantenedores/personas/index.html">
+                Mantenedores &rsaquo; Personas
+              </option>
+              <option
+                value="../../mantenedores/plantillas-de-correo/index.html"
+              >
+                Mantenedores &rsaquo; Plantillas de Correo
+              </option>
+              <option value="../../mantenedores/posicion-mesa-spot/index.html">
+                Mantenedores &rsaquo; Posición Mesa Spot
+              </option>
+              <option value="../../mantenedores/posicion-punta/index.html">
+                Mantenedores &rsaquo; Posición Punta
+              </option>
+              <option value="../../mantenedores/pre-importador/index.html">
+                Mantenedores &rsaquo; Pre Importador
+              </option>
+              <option
+                value="../../mantenedores/precios-de-instrumentos/index.html"
+              >
+                Mantenedores &rsaquo; Precios de Instrumentos
+              </option>
+              <option value="../../mantenedores/tipos-cambio/index.html">
+                Mantenedores &rsaquo; Tipos Cambio
+              </option>
+              <option
+                value="../../mantenedores/tipos-de-contraparte/index.html"
+              >
+                Mantenedores &rsaquo; Tipos de Contraparte
+              </option>
+              <option
+                value="../../mantenedores/transacciones-preimportador/index.html"
+              >
+                Mantenedores &rsaquo; Transacciones Preimportador
+              </option>
+            </optgroup>
+            <optgroup label="Normativos">
+              <option
+                value="../../normativos/registro-de-operaciones/index.html"
+              >
+                Normativos &rsaquo; Registro de Operaciones
+              </option>
+              <option
+                value="../../normativos/registro-de-asignaciones/index.html"
+              >
+                Normativos &rsaquo; Registro de Asignaciones
+              </option>
+              <option value="../../normativos/registro-de-ordenes/index.html">
+                Normativos &rsaquo; Registro de Órdenes
+              </option>
+              <option value="../../normativos/registro-de-clientes/index.html">
+                Normativos &rsaquo; Registro de Clientes
+              </option>
+              <option
+                value="../../normativos/registro-de-personas-autorizadas/index.html"
+              >
+                Normativos &rsaquo; Registro de Personas Autorizadas
+              </option>
+              <option value="../../normativos/registro-facturacion/index.html">
+                Normativos &rsaquo; Registro Facturación
+              </option>
+              <option
+                value="../../normativos/activos-terceros-en-deposito-o-custodia/index.html"
+              >
+                Normativos &rsaquo; Activos Terceros en Deposito o Custodia
+              </option>
+              <option
+                value="../../normativos/registro-de-ejecutivos-y-trabajadores/index.html"
+              >
+                Normativos &rsaquo; Registro de Ejecutivos y Trabajadores
+              </option>
+            </optgroup>
+            <optgroup label="Procesos">
+              <option value="../../procesos/cierre/index.html">
+                Procesos &rsaquo; Cierre
+              </option>
+              <option value="../../procesos/balanceo/index.html">
+                Procesos &rsaquo; Balanceo
+              </option>
+              <option
+                value="../../procesos/generacion-masiva-documentos/index.html"
+              >
+                Procesos &rsaquo; Generación Masiva documentos
+              </option>
+              <option value="../../procesos/carga-masiva-ordenes/index.html">
+                Procesos &rsaquo; Carga Masiva Órdenes
+              </option>
+            </optgroup>
+            <optgroup label="AllFunds Bank">
+              <option
+                value="../../allfunds-bank/mantenedor-de-archivos/index.html"
+              >
+                AllFunds Bank &rsaquo; Mantenedor de Archivos
+              </option>
+              <option value="../../allfunds-bank/horario-de-corte/index.html">
+                AllFunds Bank &rsaquo; Horario de Corte
+              </option>
+              <option
+                value="../../allfunds-bank/generacion-de-archivo/index.html"
+              >
+                AllFunds Bank &rsaquo; Generación de Archivo
+              </option>
+              <option
+                value="../../allfunds-bank/lectura-de-aceptacion/index.html"
+              >
+                AllFunds Bank &rsaquo; Lectura de Aceptación
+              </option>
+              <option
+                value="../../allfunds-bank/lectura-de-confirmacion/index.html"
+              >
+                AllFunds Bank &rsaquo; Lectura de Confirmación
+              </option>
+              <option
+                value="../../allfunds-bank/resumen-de-eventos-de-capital/index.html"
+              >
+                AllFunds Bank &rsaquo; Resumen de Eventos de Capital
+              </option>
+            </optgroup>
+          </select>
+        </div>
+      </div>
+    </header>
 
-    <div class="breadcrumbs-row">
-      <span class="breadcrumb-item">Mantenedores</span><span class="breadcrumb-separator">&rsaquo;</span><span class="breadcrumb-item breadcrumb-current">Clientes</span>
-    </div>
+    <main class="section-main-container">
+      <div class="breadcrumbs-row">
+        <span class="breadcrumb-item">Mantenedores</span
+        ><span class="breadcrumb-separator">&rsaquo;</span
+        ><span class="breadcrumb-item breadcrumb-current">Clientes</span>
+      </div>
 
-    <div class="section-hero">
-      <div class="section-hero-badge">Mantenedores</div>
-      <h1 class="section-hero-title">Clientes</h1>
-      <p class="section-hero-desc">
-        Esta pantalla permite administrar las tablas maestras y actualizar la configuración de clientes.
-      </p>
-    </div>
+      <div class="section-hero">
+        <div class="section-hero-badge">Mantenedores</div>
+        <h1 class="section-hero-title">Clientes</h1>
+        <p class="section-hero-desc">
+          Esta pantalla permite administrar las tablas maestras y actualizar la
+          configuración de clientes.
+        </p>
+      </div>
 
-    
       <div class="mac-window-frame" onclick="openLightboxAt(0)">
         <div class="mac-titlebar">
           <div class="mac-buttons">
@@ -135,204 +397,369 @@
           </div>
           <div class="mac-title">Clientes &mdash; Vista Principal</div>
           <div class="mac-zoom-hint">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              <line x1="11" y1="8" x2="11" y2="14" />
+              <line x1="8" y1="11" x2="14" y2="11" />
+            </svg>
             <span>Clic para ampliar</span>
           </div>
         </div>
-        <img src="screenshots/01-vista-principal.png" alt="Clientes" class="mac-screenshot-img">
-        
+        <img
+          src="screenshots/01-vista-principal.png"
+          alt="Clientes"
+          class="mac-screenshot-img"
+        />
       </div>
-    
+
       <div class="extra-screenshots-section">
         <h3 class="extra-screenshots-title">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+            <circle cx="8.5" cy="8.5" r="1.5" />
+            <polyline points="21 15 16 10 5 21" />
+          </svg>
           Estados y Subpantallas Exploradas (2)
         </h3>
         <div class="extra-screenshots-grid">
-          
-            <div class="extra-screenshot-card" onclick="openLightboxAt(1)">
-              <div class="extra-screenshot-thumb-box">
-                <img src="screenshots/02-detalle-ver-detalle.png" alt="Detalle de registro (&quot;Ver Detalle&quot;) → Detalle Cliente" class="extra-screenshot-thumb" loading="lazy">
-                <span class="extra-screenshot-badge">detail</span>
+          <div class="extra-screenshot-card" onclick="openLightboxAt(1)">
+            <div class="extra-screenshot-thumb-box">
+              <img
+                src="screenshots/02-detalle-ver-detalle.png"
+                alt='Detalle de registro ("Ver Detalle") → Detalle Cliente'
+                class="extra-screenshot-thumb"
+                loading="lazy"
+              />
+              <span class="extra-screenshot-badge">detail</span>
+            </div>
+            <div class="extra-screenshot-meta">
+              <div class="extra-screenshot-caption">
+                Detalle de registro (&quot;Ver Detalle&quot;) → Detalle Cliente
               </div>
-              <div class="extra-screenshot-meta">
-                <div class="extra-screenshot-caption">Detalle de registro (&quot;Ver Detalle&quot;) → Detalle Cliente</div>
-                <div class="extra-screenshot-note">Ruta: /back-office/clientes/148</div>
+              <div class="extra-screenshot-note">
+                Ruta: /back-office/clientes/148
               </div>
             </div>
+          </div>
 
-            <div class="extra-screenshot-card" onclick="openLightboxAt(2)">
-              <div class="extra-screenshot-thumb-box">
-                <img src="screenshots/03-subpantalla-nuevo-cliente.png" alt="Botón &quot;Nuevo Cliente&quot; → Crear Cliente" class="extra-screenshot-thumb" loading="lazy">
-                <span class="extra-screenshot-badge">subview</span>
+          <div class="extra-screenshot-card" onclick="openLightboxAt(2)">
+            <div class="extra-screenshot-thumb-box">
+              <img
+                src="screenshots/03-subpantalla-nuevo-cliente.png"
+                alt='Botón "Nuevo Cliente" → Crear Cliente'
+                class="extra-screenshot-thumb"
+                loading="lazy"
+              />
+              <span class="extra-screenshot-badge">subview</span>
+            </div>
+            <div class="extra-screenshot-meta">
+              <div class="extra-screenshot-caption">
+                Botón &quot;Nuevo Cliente&quot; → Crear Cliente
               </div>
-              <div class="extra-screenshot-meta">
-                <div class="extra-screenshot-caption">Botón &quot;Nuevo Cliente&quot; → Crear Cliente</div>
-                <div class="extra-screenshot-note">Ruta: /back-office/clientes/new • 1 campo(s): Persona</div>
+              <div class="extra-screenshot-note">
+                Ruta: /back-office/clientes/new • 1 campo(s): Persona
               </div>
             </div>
+          </div>
         </div>
       </div>
-    
+
       <div class="content-card">
         <h2 class="content-card-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+            <line x1="3" y1="9" x2="21" y2="9" />
+            <line x1="9" y1="21" x2="9" y2="9" />
+          </svg>
           Tablas, Filtros y Elementos en Pantalla
         </h2>
         <div class="fields-grid">
-          
-            <div class="field-item">
-              <div class="field-item-header">
-                <span class="field-name">Tabla de registros</span>
-                <span class="field-badge" style="background:var(--client-primary-subtle); color:var(--client-primary);">Tabla</span>
-              </div>
-              <div class="field-meaning">Muestra las columnas: ID, Nombre Cliente, Estado, Rut, Tipo Persona, Email. (10 fila(s) cargadas).</div>
+          <div class="field-item">
+            <div class="field-item-header">
+              <span class="field-name">Tabla de registros</span>
+              <span
+                class="field-badge"
+                style="
+                  background: var(--client-primary-subtle);
+                  color: var(--client-primary);
+                "
+                >Tabla</span
+              >
             </div>
+            <div class="field-meaning">
+              Muestra las columnas: ID, Nombre Cliente, Estado, Rut, Tipo
+              Persona, Email. (10 fila(s) cargadas).
+            </div>
+          </div>
         </div>
       </div>
-    
+
       <div class="content-card">
         <h2 class="content-card-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+            />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" y1="13" x2="8" y2="13" />
+            <line x1="16" y1="17" x2="8" y2="17" />
+          </svg>
           Campos y Parámetros de la Pantalla
         </h2>
-        <p class="content-card-desc">Conoce el significado de cada campo y cómo completarlo correctamente:</p>
+        <p class="content-card-desc">
+          Conoce el significado de cada campo y cómo completarlo correctamente:
+        </p>
         <div class="fields-grid">
-          
-            <div class="field-item">
-              <div class="field-item-header">
-                <span class="field-name">Filtrar por nombre y rut</span>
-                <span class="field-badge badge-optional">
-                  Opcional
-                </span>
-              </div>
-              <div class="field-meaning">Ingreso o selección para filtrar por nombre y rut.</div>
-              
-              <div class="field-example-row">
-                <span class="example-label">Ejemplo:</span>
-                <code class="example-code">Texto descriptivo</code>
-                <button class="copy-example-btn" onclick="copyExampleText('Texto descriptivo', this)" title="Copiar ejemplo">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                </button>
-              </div>
+          <div class="field-item">
+            <div class="field-item-header">
+              <span class="field-name">Filtrar por nombre y rut</span>
+              <span class="field-badge badge-optional"> Opcional </span>
+            </div>
+            <div class="field-meaning">
+              Ingreso o selección para filtrar por nombre y rut.
             </div>
 
-            <div class="field-item">
-              <div class="field-item-header">
-                <span class="field-name">Persona</span>
-                <span class="field-badge badge-optional">
-                  Opcional
-                </span>
-              </div>
-              <div class="field-meaning">Ingreso o selección para persona.</div>
-              
-              <div class="field-example-row">
-                <span class="example-label">Ejemplo:</span>
-                <code class="example-code">Texto descriptivo</code>
-                <button class="copy-example-btn" onclick="copyExampleText('Texto descriptivo', this)" title="Copiar ejemplo">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                </button>
-              </div>
+            <div class="field-example-row">
+              <span class="example-label">Ejemplo:</span>
+              <code class="example-code">Texto descriptivo</code>
+              <button
+                class="copy-example-btn"
+                onclick="copyExampleText('Texto descriptivo', this)"
+                title="Copiar ejemplo"
+              >
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                  <path
+                    d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                  />
+                </svg>
+              </button>
             </div>
+          </div>
+
+          <div class="field-item">
+            <div class="field-item-header">
+              <span class="field-name">Persona</span>
+              <span class="field-badge badge-optional"> Opcional </span>
+            </div>
+            <div class="field-meaning">Ingreso o selección para persona.</div>
+
+            <div class="field-example-row">
+              <span class="example-label">Ejemplo:</span>
+              <code class="example-code">Texto descriptivo</code>
+              <button
+                class="copy-example-btn"
+                onclick="copyExampleText('Texto descriptivo', this)"
+                title="Copiar ejemplo"
+              >
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                  <path
+                    d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-    
+
       <div class="content-card">
         <h2 class="content-card-title">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <polygon points="10 8 16 12 10 16 10 8" />
+          </svg>
           Acciones y Botones Disponibles
         </h2>
         <div class="actions-list">
-          
-            <div class="action-item">
-              <span class="action-btn-pill">Ver Detalle (Tabla)</span>
-              <span class="action-desc">Abre la vista &quot;Detalle Cliente&quot; (/back-office/clientes/148) con el detalle del registro seleccionado.</span>
-            </div>
+          <div class="action-item">
+            <span class="action-btn-pill">Ver Detalle (Tabla)</span>
+            <span class="action-desc"
+              >Abre la vista &quot;Detalle Cliente&quot;
+              (/back-office/clientes/148) con el detalle del registro
+              seleccionado.</span
+            >
+          </div>
 
-            <div class="action-item">
-              <span class="action-btn-pill">USD 981,08</span>
-              <span class="action-desc">Ejecuta la acción de usd 981,08 en la pantalla.</span>
-            </div>
+          <div class="action-item">
+            <span class="action-btn-pill">USD 981,08</span>
+            <span class="action-desc"
+              >Ejecuta la acción de usd 981,08 en la pantalla.</span
+            >
+          </div>
 
-            <div class="action-item">
-              <span class="action-btn-pill">UF 41.237,01</span>
-              <span class="action-desc">Ejecuta la acción de uf 41.237,01 en la pantalla.</span>
-            </div>
+          <div class="action-item">
+            <span class="action-btn-pill">UF 41.237,01</span>
+            <span class="action-desc"
+              >Ejecuta la acción de uf 41.237,01 en la pantalla.</span
+            >
+          </div>
 
-            <div class="action-item">
-              <span class="action-btn-pill">EUR 1.093,25</span>
-              <span class="action-desc">Ejecuta la acción de eur 1.093,25 en la pantalla.</span>
-            </div>
+          <div class="action-item">
+            <span class="action-btn-pill">EUR 1.093,25</span>
+            <span class="action-desc"
+              >Ejecuta la acción de eur 1.093,25 en la pantalla.</span
+            >
+          </div>
 
-            <div class="action-item">
-              <span class="action-btn-pill">YEN 6,20</span>
-              <span class="action-desc">Ejecuta la acción de yen 6,20 en la pantalla.</span>
-            </div>
+          <div class="action-item">
+            <span class="action-btn-pill">YEN 6,20</span>
+            <span class="action-desc"
+              >Ejecuta la acción de yen 6,20 en la pantalla.</span
+            >
+          </div>
 
-            <div class="action-item">
-              <span class="action-btn-pill">Nuevo Cliente</span>
-              <span class="action-desc">Abre la subpantalla &quot;Crear Cliente&quot; (/back-office/clientes/new) con 1 campo(s) para completar (Persona).</span>
-            </div>
+          <div class="action-item">
+            <span class="action-btn-pill">Nuevo Cliente</span>
+            <span class="action-desc"
+              >Abre la subpantalla &quot;Crear Cliente&quot;
+              (/back-office/clientes/new) con 1 campo(s) para completar
+              (Persona).</span
+            >
+          </div>
 
-            <div class="action-item">
-              <span class="action-btn-pill">ID</span>
-              <span class="action-desc">Ejecuta la acción de id en la pantalla.</span>
-            </div>
+          <div class="action-item">
+            <span class="action-btn-pill">ID</span>
+            <span class="action-desc"
+              >Ejecuta la acción de id en la pantalla.</span
+            >
+          </div>
 
-            <div class="action-item">
-              <span class="action-btn-pill">Nombre Cliente</span>
-              <span class="action-desc">Ejecuta la acción de nombre cliente en la pantalla.</span>
-            </div>
+          <div class="action-item">
+            <span class="action-btn-pill">Nombre Cliente</span>
+            <span class="action-desc"
+              >Ejecuta la acción de nombre cliente en la pantalla.</span
+            >
+          </div>
 
-            <div class="action-item">
-              <span class="action-btn-pill">Estado</span>
-              <span class="action-desc">Ejecuta la acción de estado en la pantalla.</span>
-            </div>
+          <div class="action-item">
+            <span class="action-btn-pill">Estado</span>
+            <span class="action-desc"
+              >Ejecuta la acción de estado en la pantalla.</span
+            >
+          </div>
 
-            <div class="action-item">
-              <span class="action-btn-pill">Rut</span>
-              <span class="action-desc">Ejecuta la acción de rut en la pantalla.</span>
-            </div>
+          <div class="action-item">
+            <span class="action-btn-pill">Rut</span>
+            <span class="action-desc"
+              >Ejecuta la acción de rut en la pantalla.</span
+            >
+          </div>
 
-            <div class="action-item">
-              <span class="action-btn-pill">Tipo Persona</span>
-              <span class="action-desc">Ejecuta la acción de tipo persona en la pantalla.</span>
-            </div>
+          <div class="action-item">
+            <span class="action-btn-pill">Tipo Persona</span>
+            <span class="action-desc"
+              >Ejecuta la acción de tipo persona en la pantalla.</span
+            >
+          </div>
 
-            <div class="action-item">
-              <span class="action-btn-pill">Email</span>
-              <span class="action-desc">Ejecuta la acción de email en la pantalla.</span>
-            </div>
+          <div class="action-item">
+            <span class="action-btn-pill">Email</span>
+            <span class="action-desc"
+              >Ejecuta la acción de email en la pantalla.</span
+            >
+          </div>
 
-            <div class="action-item">
-              <span class="action-btn-pill">Buscar</span>
-              <span class="action-desc">Ejecuta la acción de buscar en la pantalla.</span>
-            </div>
+          <div class="action-item">
+            <span class="action-btn-pill">Buscar</span>
+            <span class="action-desc"
+              >Ejecuta la acción de buscar en la pantalla.</span
+            >
+          </div>
 
-            <div class="action-item">
-              <span class="action-btn-pill">Cancelar</span>
-              <span class="action-desc">Ejecuta la acción de cancelar en la pantalla.</span>
-            </div>
+          <div class="action-item">
+            <span class="action-btn-pill">Cancelar</span>
+            <span class="action-desc"
+              >Ejecuta la acción de cancelar en la pantalla.</span
+            >
+          </div>
 
-            <div class="action-item">
-              <span class="action-btn-pill">Crear Cliente</span>
-              <span class="action-desc">Ejecuta la acción de crear cliente en la pantalla.</span>
-            </div>
+          <div class="action-item">
+            <span class="action-btn-pill">Crear Cliente</span>
+            <span class="action-desc"
+              >Ejecuta la acción de crear cliente en la pantalla.</span
+            >
+          </div>
         </div>
       </div>
 
-    <div class="content-card">
-      <h2 class="content-card-title">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-        Flujo de Uso Paso a Paso
-      </h2>
-      <div class="steps-compact-box">
-        
+      <div class="content-card">
+        <h2 class="content-card-title">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="9 11 12 14 22 4" />
+            <path
+              d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"
+            />
+          </svg>
+          Flujo de Uso Paso a Paso
+        </h2>
+        <div class="steps-compact-box">
           <div class="step-compact-item">
             <span class="step-num">1</span>
             <div class="step-content">
               <h4 class="step-title">Ingresar parámetros</h4>
-              <p class="step-desc">Completa o selecciona los criterios en el formulario (&quot;Filtrar por nombre y rut&quot;, &quot;Persona&quot;).</p>
+              <p class="step-desc">
+                Completa o selecciona los criterios en el formulario
+                (&quot;Filtrar por nombre y rut&quot;, &quot;Persona&quot;).
+              </p>
             </div>
           </div>
 
@@ -340,7 +767,10 @@
             <span class="step-num">2</span>
             <div class="step-content">
               <h4 class="step-title">Ejecutar consulta</h4>
-              <p class="step-desc">Haz clic en el botón &quot;Buscar&quot; para cargar y listar los registros.</p>
+              <p class="step-desc">
+                Haz clic en el botón &quot;Buscar&quot; para cargar y listar los
+                registros.
+              </p>
             </div>
           </div>
 
@@ -348,90 +778,160 @@
             <span class="step-num">3</span>
             <div class="step-content">
               <h4 class="step-title">Finalizar</h4>
-              <p class="step-desc">Comprueba en pantalla que la información se haya actualizado correctamente.</p>
+              <p class="step-desc">
+                Comprueba en pantalla que la información se haya actualizado
+                correctamente.
+              </p>
             </div>
           </div>
+        </div>
       </div>
-    </div>
 
-    
-    
-
-    <div class="section-footer-nav">
-      <a href="../../index.html" class="btn btn-secondary">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-        <span>Volver a la portada</span>
-      </a>
-      <span style="font-size:0.8rem; color:var(--text-muted);">gpi &bull; Manual de Operación</span>
-    </div>
-
-  </main>
-
-  <div id="lightboxModal" class="lightbox-modal" onclick="closeLightbox()">
-    <button class="lightbox-close" aria-label="Cerrar modal" onclick="closeLightbox()">&times;</button>
-    <button id="lightboxPrev" class="lightbox-nav lightbox-prev" aria-label="Captura anterior" onclick="event.stopPropagation(); stepLightbox(-1)">&#8249;</button>
-    <div class="lightbox-stage" onclick="event.stopPropagation()">
-      <img id="lightboxImg" class="lightbox-content" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Captura ampliada">
-      <div class="lightbox-caption-bar">
-        <div id="lightboxCaption" class="lightbox-caption-text"></div>
-        <div id="lightboxNote" class="lightbox-caption-note"></div>
-        <div id="lightboxCounter" class="lightbox-counter"></div>
+      <div class="section-footer-nav">
+        <a href="../../index.html" class="btn btn-secondary">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          <span>Volver a la portada</span>
+        </a>
+        <span style="font-size: 0.8rem; color: var(--text-muted)"
+          >gpi &bull; Manual de Operación</span
+        >
       </div>
+    </main>
+
+    <div id="lightboxModal" class="lightbox-modal" onclick="closeLightbox()">
+      <button
+        class="lightbox-close"
+        aria-label="Cerrar modal"
+        onclick="closeLightbox()"
+      >
+        &times;
+      </button>
+      <button
+        id="lightboxPrev"
+        class="lightbox-nav lightbox-prev"
+        aria-label="Captura anterior"
+        onclick="
+          event.stopPropagation();
+          stepLightbox(-1);
+        "
+      >
+        &#8249;
+      </button>
+      <div class="lightbox-stage" onclick="event.stopPropagation()">
+        <img
+          id="lightboxImg"
+          class="lightbox-content"
+          src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E"
+          alt="Captura ampliada"
+        />
+        <div class="lightbox-caption-bar">
+          <div id="lightboxCaption" class="lightbox-caption-text"></div>
+          <div id="lightboxNote" class="lightbox-caption-note"></div>
+          <div id="lightboxCounter" class="lightbox-counter"></div>
+        </div>
+      </div>
+      <button
+        id="lightboxNext"
+        class="lightbox-nav lightbox-next"
+        aria-label="Captura siguiente"
+        onclick="
+          event.stopPropagation();
+          stepLightbox(1);
+        "
+      >
+        &#8250;
+      </button>
     </div>
-    <button id="lightboxNext" class="lightbox-nav lightbox-next" aria-label="Captura siguiente" onclick="event.stopPropagation(); stepLightbox(1)">&#8250;</button>
-  </div>
 
-  <script>
-    const lightboxItems = [{"src":"screenshots/01-vista-principal.png","caption":"Clientes","note":""},{"src":"screenshots/02-detalle-ver-detalle.png","caption":"Detalle de registro (\"Ver Detalle\") → Detalle Cliente","note":"Ruta: /back-office/clientes/148"},{"src":"screenshots/03-subpantalla-nuevo-cliente.png","caption":"Botón \"Nuevo Cliente\" → Crear Cliente","note":"Ruta: /back-office/clientes/new • 1 campo(s): Persona"}];
-    let currentLightboxIndex = 0;
+    <script>
+      const lightboxItems = [
+        {
+          src: 'screenshots/01-vista-principal.png',
+          caption: 'Clientes',
+          note: '',
+        },
+        {
+          src: 'screenshots/02-detalle-ver-detalle.png',
+          caption: 'Detalle de registro ("Ver Detalle") → Detalle Cliente',
+          note: 'Ruta: /back-office/clientes/148',
+        },
+        {
+          src: 'screenshots/03-subpantalla-nuevo-cliente.png',
+          caption: 'Botón "Nuevo Cliente" → Crear Cliente',
+          note: 'Ruta: /back-office/clientes/new • 1 campo(s): Persona',
+        },
+      ];
+      let currentLightboxIndex = 0;
 
-    function renderLightboxItem() {
-      if (!lightboxItems.length) return;
-      const item = lightboxItems[currentLightboxIndex];
-      document.getElementById('lightboxImg').src = item.src;
-      document.getElementById('lightboxCaption').textContent = item.caption || '';
-      const noteEl = document.getElementById('lightboxNote');
-      noteEl.textContent = item.note || '';
-      noteEl.style.display = item.note ? 'block' : 'none';
-      const counterEl = document.getElementById('lightboxCounter');
-      counterEl.textContent = lightboxItems.length > 1 ? (currentLightboxIndex + 1) + ' / ' + lightboxItems.length : '';
-      document.getElementById('lightboxPrev').style.display = lightboxItems.length > 1 ? 'flex' : 'none';
-      document.getElementById('lightboxNext').style.display = lightboxItems.length > 1 ? 'flex' : 'none';
-    }
+      function renderLightboxItem() {
+        if (!lightboxItems.length) return;
+        const item = lightboxItems[currentLightboxIndex];
+        document.getElementById('lightboxImg').src = item.src;
+        document.getElementById('lightboxCaption').textContent =
+          item.caption || '';
+        const noteEl = document.getElementById('lightboxNote');
+        noteEl.textContent = item.note || '';
+        noteEl.style.display = item.note ? 'block' : 'none';
+        const counterEl = document.getElementById('lightboxCounter');
+        counterEl.textContent =
+          lightboxItems.length > 1
+            ? currentLightboxIndex + 1 + ' / ' + lightboxItems.length
+            : '';
+        document.getElementById('lightboxPrev').style.display =
+          lightboxItems.length > 1 ? 'flex' : 'none';
+        document.getElementById('lightboxNext').style.display =
+          lightboxItems.length > 1 ? 'flex' : 'none';
+      }
 
-    function openLightboxAt(index) {
-      if (!lightboxItems.length) return;
-      currentLightboxIndex = Math.max(0, Math.min(index, lightboxItems.length - 1));
-      renderLightboxItem();
-      document.getElementById('lightboxModal').classList.add('active');
-    }
+      function openLightboxAt(index) {
+        if (!lightboxItems.length) return;
+        currentLightboxIndex = Math.max(
+          0,
+          Math.min(index, lightboxItems.length - 1),
+        );
+        renderLightboxItem();
+        document.getElementById('lightboxModal').classList.add('active');
+      }
 
-    function stepLightbox(delta) {
-      if (lightboxItems.length <= 1) return;
-      currentLightboxIndex = (currentLightboxIndex + delta + lightboxItems.length) % lightboxItems.length;
-      renderLightboxItem();
-    }
+      function stepLightbox(delta) {
+        if (lightboxItems.length <= 1) return;
+        currentLightboxIndex =
+          (currentLightboxIndex + delta + lightboxItems.length) %
+          lightboxItems.length;
+        renderLightboxItem();
+      }
 
-    function closeLightbox() {
-      document.getElementById('lightboxModal').classList.remove('active');
-    }
+      function closeLightbox() {
+        document.getElementById('lightboxModal').classList.remove('active');
+      }
 
-    document.addEventListener('keydown', (e) => {
-      const modal = document.getElementById('lightboxModal');
-      if (!modal.classList.contains('active')) return;
-      if (e.key === 'Escape') closeLightbox();
-      if (e.key === 'ArrowRight') stepLightbox(1);
-      if (e.key === 'ArrowLeft') stepLightbox(-1);
-    });
-
-    function copyExampleText(text, btn) {
-      navigator.clipboard.writeText(text).then(() => {
-        const originalHtml = btn.innerHTML;
-        btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
-        setTimeout(() => { btn.innerHTML = originalHtml; }, 1500);
+      document.addEventListener('keydown', (e) => {
+        const modal = document.getElementById('lightboxModal');
+        if (!modal.classList.contains('active')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowRight') stepLightbox(1);
+        if (e.key === 'ArrowLeft') stepLightbox(-1);
       });
-    }
-  </script>
 
-</body>
+      function copyExampleText(text, btn) {
+        navigator.clipboard.writeText(text).then(() => {
+          const originalHtml = btn.innerHTML;
+          btn.innerHTML =
+            '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
+          setTimeout(() => {
+            btn.innerHTML = originalHtml;
+          }, 1500);
+        });
+      }
+    </script>
+  </body>
 </html>

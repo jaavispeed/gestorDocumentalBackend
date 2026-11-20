@@ -9,11 +9,31 @@ export interface InfoVariablePrompt {
 }
 
 export const VARIABLES_PROMPT_VISION: InfoVariablePrompt[] = [
-  { token: '{{appName}}', label: 'Sistema / Cliente', description: 'Nombre de la aplicación o cliente' },
-  { token: '{{moduleTitle}}', label: 'Módulo', description: 'Nombre del módulo padre' },
-  { token: '{{sectionTitle}}', label: 'Pantalla', description: 'Título de la pantalla capturada' },
-  { token: '{{fields}}', label: 'Campos DOM', description: 'Campos y filtros detectados automáticamente' },
-  { token: '{{actions}}', label: 'Acciones DOM', description: 'Botones y acciones visibles en pantalla' },
+  {
+    token: '{{appName}}',
+    label: 'Sistema / Cliente',
+    description: 'Nombre de la aplicación o cliente',
+  },
+  {
+    token: '{{moduleTitle}}',
+    label: 'Módulo',
+    description: 'Nombre del módulo padre',
+  },
+  {
+    token: '{{sectionTitle}}',
+    label: 'Pantalla',
+    description: 'Título de la pantalla capturada',
+  },
+  {
+    token: '{{fields}}',
+    label: 'Campos DOM',
+    description: 'Campos y filtros detectados automáticamente',
+  },
+  {
+    token: '{{actions}}',
+    label: 'Acciones DOM',
+    description: 'Botones y acciones visibles en pantalla',
+  },
 ];
 
 export const PROMPT_VISION_PREDETERMINADO = `Eres un redactor técnico experto en documentación de software y experiencia de usuario.
@@ -39,7 +59,13 @@ export interface ConfigPromptSistema {
 
 export function obtenerRutaArchivoConfigSistema(): string {
   const rutas = obtenerRutasAutomanual();
-  return path.join(rutas.directorioRaiz, 'datos', 'automanual', 'config', 'system.json');
+  return path.join(
+    rutas.directorioRaiz,
+    'datos',
+    'automanual',
+    'config',
+    'system.json',
+  );
 }
 
 export function cargarConfiguracionPromptSincrono(): ConfigPromptSistema {
@@ -47,7 +73,10 @@ export function cargarConfiguracionPromptSincrono(): ConfigPromptSistema {
   try {
     if (fs.existsSync(rutaArchivo)) {
       const data = fs.readJsonSync(rutaArchivo);
-      const promptGuardado = typeof data?.ai?.visionPrompt === 'string' ? data.ai.visionPrompt.trim() : '';
+      const promptGuardado =
+        typeof data?.ai?.visionPrompt === 'string'
+          ? data.ai.visionPrompt.trim()
+          : '';
       return {
         visionPrompt: promptGuardado || PROMPT_VISION_PREDETERMINADO,
       };

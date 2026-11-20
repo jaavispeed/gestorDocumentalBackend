@@ -17,21 +17,23 @@ Este documento detalla las validaciones, reglas de negocio, parámetros utilizad
 ## 2. Parámetros del Request y de Entrada
 
 ### 2.1 Parámetros Recibidos en el Request / Método
-| Parámetro | Tipo | Requerido | Descripción / Regla |
-| :--- | :--- | :--- | :--- |
-| `idCuenta` | `decimal` | Sí | Identificador de la cuenta de inversión del cliente. |
-| `idInstrumento` | `decimal` | Sí | Identificador del instrumento (debe pertenecer a familia `RV` y estar vigente). |
-| `cantidad` | `decimal?` | Sí | Cantidad de títulos o acciones a comprar. Mayor a 0. En CLP **debe ser un número entero**. |
-| `precio` | `decimal?` | Condicional | Precio unitario. Obligatorio si `flgLimitePrecio = "L"`. Si es `"M"`, se obtiene de mercado. |
-| `monto` | `decimal?` | Sí | Monto bruto de la orden ($\text{Cantidad} \times \text{Precio}$). |
-| `montoTotal` | `decimal?` | Opcional | Monto total con comisiones, derechos e IVA. Se somete a validación con tolerancia. |
-| `formaLiq` | `string?` | No | Condición de liquidación: `"CN"` ($T+2$, por defecto), `"PM"` ($T+1$) o `"PH"` ($T+0$). |
-| `fechaLiquidacion`| `DateTime?`| No | Fecha manual de liquidación. No puede ser menor a la mínima legal ni caer en día inhábil. |
-| `flgLimitePrecio` | `string?` | No | `"L"` (Límite) o `"M"` (Mercado). Por defecto: `"M"`. |
-| `codigoAsesoria` | `string?` | No | Código de asesoría asociado para trazabilidad comercial. |
-| `emailNotificacion`| `string?` | No | Correo adicional para el envío del comprobante de la orden. |
+
+| Parámetro           | Tipo        | Requerido   | Descripción / Regla                                                                          |
+| :------------------ | :---------- | :---------- | :------------------------------------------------------------------------------------------- |
+| `idCuenta`          | `decimal`   | Sí          | Identificador de la cuenta de inversión del cliente.                                         |
+| `idInstrumento`     | `decimal`   | Sí          | Identificador del instrumento (debe pertenecer a familia `RV` y estar vigente).              |
+| `cantidad`          | `decimal?`  | Sí          | Cantidad de títulos o acciones a comprar. Mayor a 0. En CLP **debe ser un número entero**.   |
+| `precio`            | `decimal?`  | Condicional | Precio unitario. Obligatorio si `flgLimitePrecio = "L"`. Si es `"M"`, se obtiene de mercado. |
+| `monto`             | `decimal?`  | Sí          | Monto bruto de la orden ($\text{Cantidad} \times \text{Precio}$).                            |
+| `montoTotal`        | `decimal?`  | Opcional    | Monto total con comisiones, derechos e IVA. Se somete a validación con tolerancia.           |
+| `formaLiq`          | `string?`   | No          | Condición de liquidación: `"CN"` ($T+2$, por defecto), `"PM"` ($T+1$) o `"PH"` ($T+0$).      |
+| `fechaLiquidacion`  | `DateTime?` | No          | Fecha manual de liquidación. No puede ser menor a la mínima legal ni caer en día inhábil.    |
+| `flgLimitePrecio`   | `string?`   | No          | `"L"` (Límite) o `"M"` (Mercado). Por defecto: `"M"`.                                        |
+| `codigoAsesoria`    | `string?`   | No          | Código de asesoría asociado para trazabilidad comercial.                                     |
+| `emailNotificacion` | `string?`   | No          | Correo adicional para el envío del comprobante de la orden.                                  |
 
 ### 2.2 Parámetros de Sistema Consultados (`sis_parametro`)
+
 1. **`HORA_INI_FIN_BOLSARV` / `HORA_BOLSA_RV`:** Rango horario de rueda bursátil. Si la hora del sistema está fuera de rango, la orden se rechaza inmediatamente con `OrdenErrors.FueraDeHorario`.
 2. **`IVA`:** Porcentaje de impuesto al valor agregado (ej: 19%) para tasar comisiones y derechos.
 3. **`TOLERANCIA_MONTO_TOTAL_RV`:** Porcentaje base 100 de tolerancia para admitir diferencias por redondeo en `montoTotal`.
@@ -48,7 +50,7 @@ Este documento detalla las validaciones, reglas de negocio, parámetros utilizad
 1. Validar Datos Básicos (Cuenta vigente, no bloqueada, cliente activo)
        │
        ▼
-2. Validar Saldo Disponible (Si la cuenta no permite sobregiro `FlgMovDescubiertos != 'S'`, 
+2. Validar Saldo Disponible (Si la cuenta no permite sobregiro `FlgMovDescubiertos != 'S'`,
    el saldo de caja debe cubrir el monto de la compra)
        │
        ▼
@@ -99,19 +101,24 @@ Este documento detalla las validaciones, reglas de negocio, parámetros utilizad
 ## 4. Fórmulas Matemáticas y Cálculos Financieros
 
 ### 4.1 Monto Bruto de la Orden
+
 $$\text{MontoOrden} = \text{Cantidad} \times \text{Precio}$$
+
 - Redondeo: `MidpointRounding.AwayFromZero` a $0$ decimales si la divisa es `CLP`, o a $2$ decimales si es divisa extranjera.
 
 ### 4.2 Cobros Operativos (Si no es Fondo Propio)
+
 $$\text{Comisión} = \text{MontoOrden} \times \frac{\text{PorcentajeComisión}}{100}$$
 $$\text{Derechos} = \text{MontoOrden} \times \frac{\text{PorcentajeDerecho}}{100}$$
 $$\text{IVA} = (\text{Comisión} + \text{Derechos}) \times \frac{\text{PorcentajeIVA}}{100}$$
 
 ### 4.3 Monto Total de la Compra
+
 En las compras, todos los recargos operacionales **se suman** al costo de los títulos:
 $$\text{MontoTotal} = \text{MontoOrden} + \text{Comisión} + \text{Derechos} + \text{IVA}$$
 
 ### 4.4 Evaluación de Tolerancia
+
 $$\text{Diferencia Porcentual} = \frac{|\text{MontoTotal Recibido} - \text{MontoTotal Calculado}|}{\text{MontoTotal Calculado}} \times 100$$
 Se acepta si $\text{Diferencia Porcentual} \le \text{Tolerancia}$. De lo contrario, retorna `OrdenErrors.DobleValidacionMontoTotalRentaVariable`.
 
@@ -120,12 +127,13 @@ Se acepta si $\text{Diferencia Porcentual} \le \text{Tolerancia}$. De lo contrar
 ## 5. Ejemplos de Request y Response
 
 ### 5.1 Ejemplo de Request (Body)
+
 ```json
 {
   "idCuenta": 12345,
   "idInstrumento": 987,
   "cantidad": 1000,
-  "precio": 1250.50,
+  "precio": 1250.5,
   "monto": 1250500,
   "montoTotal": 1258134,
   "formaLiq": "CN",
@@ -137,13 +145,14 @@ Se acepta si $\text{Diferencia Porcentual} \le \text{Tolerancia}$. De lo contrar
 ```
 
 ### 5.2 Ejemplo de Response (200 OK)
+
 ```json
 {
   "idOrden": 84521,
   "codMoneda": "CLP",
   "nemotecnico": "CHILE",
   "cantidad": 1000,
-  "precio": 1250.50,
+  "precio": 1250.5,
   "comision": 5627,
   "porcComision": 0.45,
   "monto": 1250500,
@@ -159,6 +168,7 @@ Se acepta si $\text{Diferencia Porcentual} \le \text{Tolerancia}$. De lo contrar
 ## 6. Despacho a Rueda Bursátil (FIX)
 
 Si `PUBLICAR_EN_MERCADO_RV` está activo:
+
 - Valida que el precio no tenga más de 2 decimales (`precio == Round(precio, 2)`).
 - Obtiene el concepto de auditoría `"ENVÍO DE MENSAJES AL MERCADO"`.
 - Despacha mensaje a la cola `ToMarketQueue` con:

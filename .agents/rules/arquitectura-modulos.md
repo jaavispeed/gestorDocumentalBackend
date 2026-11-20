@@ -25,5 +25,6 @@ Este documento establece la correspondencia del backend con los módulos funcion
 ---
 
 ## 2. Reglas de Integración
-* Las rutas de endpoints deben reflejar el dominio funcional (`/api/documentacion`, `/api/chat-ia`, `/api/automanual`).
-* La persistencia de documentos generados por AutoManual y Gestor Documental debe converger en el repositorio unificado de documentación técnica.
+
+- Las rutas de endpoints deben reflejar el dominio funcional (`/api/documentacion`, `/api/chat-ia`, `/api/automanual`).
+- La persistencia de documentos generados por AutoManual y Gestor Documental debe converger en el repositorio unificado de documentación técnica.

@@ -24,9 +24,7 @@
             "Panel de Transacciones"
           ],
           "description": "En esta pantalla podrás consultar todas las transacciones recientes, revisar su estado de aprobación y registrar nuevas operaciones con un solo clic.",
-          "codePaths": [
-            "test-app/operaciones.html"
-          ],
+          "codePaths": ["test-app/operaciones.html"],
           "actions": [
             {
               "name": "+ Nueva Operación",
@@ -47,9 +45,7 @@
             "Consolidado Mensual"
           ],
           "description": "Visualiza el consolidado de movimientos procesados y verifica el estado de auditoría contable sin inconsistencias.",
-          "codePaths": [
-            "test-app/reportes.html"
-          ],
+          "codePaths": ["test-app/reportes.html"],
           "name": "Reportes y Auditoría"
         }
       ],

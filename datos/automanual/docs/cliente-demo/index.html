@@ -1,143 +1,220 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manual de Usuario | Fintech Express S.A.</title>
-  <link rel="stylesheet" href="assets/theme.css">
-  <link rel="stylesheet" href="assets/styles.css">
-</head>
-<body>
-
-  <!-- Translucent Top Bar -->
-  <header class="top-navbar">
-    <div class="nav-left">
-      <a href="index.html" class="brand-link">
-        <img src="assets/logo.svg" alt="Logo" class="brand-logo" onerror="this.style.display='none'">
-        <span>Fintech Express S.A.</span>
-      </a>
-      <div class="nav-divider"></div>
-      <span class="nav-location">Manual de Operación</span>
-    </div>
-    <div class="nav-right">
-      <span class="badge-counter">2 pantallas documentadas</span>
-    </div>
-  </header>
-
-  <!-- Main Container -->
-  <main class="main-container">
-    
-    <!-- Hero Minimalista -->
-    <div class="apple-hero">
-      <h1 class="apple-hero-title">Manual de Usuario</h1>
-      <p class="apple-hero-subtitle">Guía visual de operaciones, pantallas y flujos de trabajo.</p>
-
-      <!-- Buscador con atajo '/' -->
-      <div class="search-wrapper">
-        <svg class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-        <input type="text" id="searchInput" class="apple-search-input" placeholder="Buscar pantalla por nombre o ruta..." autocomplete="off">
-        <span class="search-kbd-hint">/</span>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manual de Usuario | Fintech Express S.A.</title>
+    <link rel="stylesheet" href="assets/theme.css" />
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <!-- Translucent Top Bar -->
+    <header class="top-navbar">
+      <div class="nav-left">
+        <a href="index.html" class="brand-link">
+          <img
+            src="assets/logo.svg"
+            alt="Logo"
+            class="brand-logo"
+            onerror="this.style.display = 'none'"
+          />
+          <span>Fintech Express S.A.</span>
+        </a>
+        <div class="nav-divider"></div>
+        <span class="nav-location">Manual de Operación</span>
       </div>
-    </div>
+      <div class="nav-right">
+        <span class="badge-counter">2 pantallas documentadas</span>
+      </div>
+    </header>
 
-    <!-- Grupos de Pantallas -->
-    <div id="modulesContainer">
-      
-        <section class="module-group" data-module="Módulo de Operaciones y Backoffice">
+    <!-- Main Container -->
+    <main class="main-container">
+      <!-- Hero Minimalista -->
+      <div class="apple-hero">
+        <h1 class="apple-hero-title">Manual de Usuario</h1>
+        <p class="apple-hero-subtitle">
+          Guía visual de operaciones, pantallas y flujos de trabajo.
+        </p>
+
+        <!-- Buscador con atajo '/' -->
+        <div class="search-wrapper">
+          <svg
+            class="search-icon-svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input
+            type="text"
+            id="searchInput"
+            class="apple-search-input"
+            placeholder="Buscar pantalla por nombre o ruta..."
+            autocomplete="off"
+          />
+          <span class="search-kbd-hint">/</span>
+        </div>
+      </div>
+
+      <!-- Grupos de Pantallas -->
+      <div id="modulesContainer">
+        <section
+          class="module-group"
+          data-module="Módulo de Operaciones y Backoffice"
+        >
           <div class="module-header">
             <h2 class="module-title">Módulo de Operaciones y Backoffice</h2>
             <span class="module-count">2 pantallas</span>
           </div>
           <div class="cards-grid">
-            
-            <a href="backoffice/operaciones/index.html" class="apple-card" data-title="Gestión de Operaciones" data-desc="En esta pantalla podrás consultar todas las transacciones recientes, revisar su estado de aprobación y registrar nuevas operaciones con un solo clic." data-module="Módulo de Operaciones y Backoffice">
+            <a
+              href="backoffice/operaciones/index.html"
+              class="apple-card"
+              data-title="Gestión de Operaciones"
+              data-desc="En esta pantalla podrás consultar todas las transacciones recientes, revisar su estado de aprobación y registrar nuevas operaciones con un solo clic."
+              data-module="Módulo de Operaciones y Backoffice"
+            >
               <div>
                 <h3 class="card-title">Gestión de Operaciones</h3>
-                <p class="card-desc">En esta pantalla podrás consultar todas las transacciones recientes, revisar su estado de aprobación y registrar nuevas operaciones con un solo clic.</p>
+                <p class="card-desc">
+                  En esta pantalla podrás consultar todas las transacciones
+                  recientes, revisar su estado de aprobación y registrar nuevas
+                  operaciones con un solo clic.
+                </p>
               </div>
               <div class="card-bottom-row">
                 <span class="card-route-pill">/operaciones.html</span>
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
 
-            <a href="backoffice/reportes/index.html" class="apple-card" data-title="Reportes y Auditoría" data-desc="Visualiza el consolidado de movimientos procesados y verifica el estado de auditoría contable sin inconsistencias." data-module="Módulo de Operaciones y Backoffice">
+            <a
+              href="backoffice/reportes/index.html"
+              class="apple-card"
+              data-title="Reportes y Auditoría"
+              data-desc="Visualiza el consolidado de movimientos procesados y verifica el estado de auditoría contable sin inconsistencias."
+              data-module="Módulo de Operaciones y Backoffice"
+            >
               <div>
                 <h3 class="card-title">Reportes y Auditoría</h3>
-                <p class="card-desc">Visualiza el consolidado de movimientos procesados y verifica el estado de auditoría contable sin inconsistencias.</p>
+                <p class="card-desc">
+                  Visualiza el consolidado de movimientos procesados y verifica
+                  el estado de auditoría contable sin inconsistencias.
+                </p>
               </div>
               <div class="card-bottom-row">
                 <span class="card-route-pill">/reportes.html</span>
                 <span class="card-link-action">
                   <span>Abrir</span>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
                 </span>
               </div>
             </a>
           </div>
         </section>
-    </div>
+      </div>
 
-    <!-- Estado vacío de búsqueda -->
-    <div id="searchEmpty" class="search-empty-state">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"></circle>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-      </svg>
-      <p>No se encontraron pantallas para tu búsqueda.</p>
-      <button class="btn btn-secondary" onclick="document.getElementById('searchInput').value=''; document.getElementById('searchInput').dispatchEvent(new Event('input'))">
-        Restablecer búsqueda
-      </button>
-    </div>
+      <!-- Estado vacío de búsqueda -->
+      <div id="searchEmpty" class="search-empty-state">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <p>No se encontraron pantallas para tu búsqueda.</p>
+        <button
+          class="btn btn-secondary"
+          onclick="
+            document.getElementById('searchInput').value = '';
+            document
+              .getElementById('searchInput')
+              .dispatchEvent(new Event('input'));
+          "
+        >
+          Restablecer búsqueda
+        </button>
+      </div>
+    </main>
 
-  </main>
+    <script>
+      const searchInput = document.getElementById('searchInput');
+      const cards = document.querySelectorAll('.apple-card');
+      const modules = document.querySelectorAll('.module-group');
+      const emptyState = document.getElementById('searchEmpty');
 
-  <script>
-    const searchInput = document.getElementById('searchInput');
-    const cards = document.querySelectorAll('.apple-card');
-    const modules = document.querySelectorAll('.module-group');
-    const emptyState = document.getElementById('searchEmpty');
-
-    // Atajo rápido '/' para enfocar el buscador
-    document.addEventListener('keydown', (e) => {
-      if (e.key === '/' && document.activeElement !== searchInput) {
-        e.preventDefault();
-        searchInput.focus();
-      }
-      if (e.key === 'Escape' && document.activeElement === searchInput) {
-        searchInput.value = '';
-        searchInput.dispatchEvent(new Event('input'));
-        searchInput.blur();
-      }
-    });
-
-    searchInput.addEventListener('input', (e) => {
-      const term = e.target.value.toLowerCase().trim();
-      let visibleTotal = 0;
-      
-      cards.forEach(card => {
-        const title = (card.getAttribute('data-title') || '').toLowerCase();
-        const desc = (card.getAttribute('data-desc') || '').toLowerCase();
-        const mod = (card.getAttribute('data-module') || '').toLowerCase();
-        const matches = title.includes(term) || desc.includes(term) || mod.includes(term);
-        card.style.display = matches ? 'flex' : 'none';
-        if (matches) visibleTotal++;
+      // Atajo rápido '/' para enfocar el buscador
+      document.addEventListener('keydown', (e) => {
+        if (e.key === '/' && document.activeElement !== searchInput) {
+          e.preventDefault();
+          searchInput.focus();
+        }
+        if (e.key === 'Escape' && document.activeElement === searchInput) {
+          searchInput.value = '';
+          searchInput.dispatchEvent(new Event('input'));
+          searchInput.blur();
+        }
       });
 
-      modules.forEach(mod => {
-        const visibleCards = mod.querySelectorAll('.apple-card:not([style*="display: none"])');
-        mod.style.display = visibleCards.length > 0 ? 'block' : 'none';
+      searchInput.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase().trim();
+        let visibleTotal = 0;
+
+        cards.forEach((card) => {
+          const title = (card.getAttribute('data-title') || '').toLowerCase();
+          const desc = (card.getAttribute('data-desc') || '').toLowerCase();
+          const mod = (card.getAttribute('data-module') || '').toLowerCase();
+          const matches =
+            title.includes(term) || desc.includes(term) || mod.includes(term);
+          card.style.display = matches ? 'flex' : 'none';
+          if (matches) visibleTotal++;
+        });
+
+        modules.forEach((mod) => {
+          const visibleCards = mod.querySelectorAll(
+            '.apple-card:not([style*="display: none"])',
+          );
+          mod.style.display = visibleCards.length > 0 ? 'block' : 'none';
+        });
+
+        emptyState.style.display = visibleTotal === 0 ? 'block' : 'none';
       });
-
-      emptyState.style.display = (visibleTotal === 0) ? 'block' : 'none';
-    });
-  </script>
-
-</body>
+    </script>
+  </body>
 </html>

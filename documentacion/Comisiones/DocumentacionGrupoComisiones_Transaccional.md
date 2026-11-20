@@ -19,7 +19,7 @@ Este documento detalla las validaciones, reglas de negocio y flujos para la gest
   - Misma Contraparte (`IdContraparte`) y Moneda (`CodMoneda`).
   - Mismo Tipo de Comisión (`IdTipoComision`).
   - Igual porcentaje de comisión, porcentaje de derechos y monto de gastos (truncados a 4 decimales) en sus comisiones activas.
-  - *Si coinciden absolutamente todos, se rechaza la operación informando del grupo original.*
+  - _Si coinciden absolutamente todos, se rechaza la operación informando del grupo original._
 - **Nombre Duplicado:** Valida que no exista en la base de datos ningún grupo (transaccional o no) que posea la misma `DscGrupoComisiones`, la misma `CodigoFamilia` y el mismo tipo de instrumento (`GrupoComisionYaExiste`).
 - **Validación de Cuentas Asociadas:** Valida a través del endpoint si existen las cuentas ingresadas que aplican o se excluyen de la comisión (`ValidarCuentasAsociadasAsync`).
 
@@ -49,6 +49,7 @@ Este documento detalla las validaciones, reglas de negocio y flujos para la gest
 ## 3. Impacto en Base de Datos (Modelo de Datos)
 
 ### Tablas Afectadas (Escritura)
+
 - `GrupoComisiones`: Información central de cada grupo creado.
 - `RelCuentaGrupoComisiones`: Registro de asignación para saber qué cuentas específicas aplican o se excluyen del grupo.
 - `Comision` y `ComisionCalculo`: Registro histórico donde se guardan los porcentajes y montos efectivos cobrados a los clientes.

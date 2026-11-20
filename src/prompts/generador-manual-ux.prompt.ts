@@ -37,7 +37,9 @@ export interface OpcionesCompilacionManual {
   documentos: Array<{ titulo: string; categoria?: string; contenido: string }>;
 }
 
-export function construirPromptGenerarManual(opciones: OpcionesCompilacionManual): string {
+export function construirPromptGenerarManual(
+  opciones: OpcionesCompilacionManual,
+): string {
   const publico = opciones.publicoObjetivo || 'usuario_final';
 
   let prompt = `TITULO DEL DOCUMENTO SOLICITADO: "${opciones.tituloManual}"\n`;

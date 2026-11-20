@@ -21,9 +21,7 @@
           "title": "Gestión de Operaciones",
           "route": "/backoffice/operaciones",
           "description": "Monitoreo, filtros y ejecución de transacciones operativas.",
-          "codePaths": [
-            "src/modules/backoffice/operaciones/**"
-          ],
+          "codePaths": ["src/modules/backoffice/operaciones/**"],
           "name": "Gestión de Operaciones"
         },
         {
@@ -31,9 +29,7 @@
           "title": "Control de Usuarios y Roles",
           "route": "/backoffice/usuarios",
           "description": "Gestión de accesos, permisos y perfiles de usuarios.",
-          "codePaths": [
-            "src/modules/backoffice/usuarios/**"
-          ],
+          "codePaths": ["src/modules/backoffice/usuarios/**"],
           "name": "Control de Usuarios y Roles"
         }
       ],

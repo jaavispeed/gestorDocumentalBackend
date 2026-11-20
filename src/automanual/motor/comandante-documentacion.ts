@@ -1,10 +1,7 @@
 import path from 'path';
 import fs from 'fs-extra';
 import pc from 'picocolors';
-import {
-  ConfiguracionCliente,
-  SeccionDocGenerada,
-} from './tipos.js';
+import { ConfiguracionCliente, SeccionDocGenerada } from './tipos.js';
 import { RastreadorNavegador } from './crawler.js';
 import { SintetizadorGuiaUsuario } from './ai-synthesizer.js';
 import { MotorPlantillas } from './template-engine.js';
@@ -41,7 +38,11 @@ export class ComandanteDocumentacion {
   }
 
   public async cargarCliente(clienteId: string): Promise<ConfiguracionCliente> {
-    const configPath = path.join(this.rutas.directorioClientes, clienteId, 'config.json');
+    const configPath = path.join(
+      this.rutas.directorioClientes,
+      clienteId,
+      'config.json',
+    );
     if (!(await fs.pathExists(configPath))) {
       throw new Error(`Cliente "${clienteId}" no encontrado en ${configPath}`);
     }
@@ -51,15 +52,27 @@ export class ComandanteDocumentacion {
   public async iniciarSesionCliente(clienteId: string): Promise<void> {
     const config = await this.cargarCliente(clienteId);
     const clientPath = path.join(this.rutas.directorioClientes, config.id);
-    await this.sessionManager.iniciarSesionYContinuar(config.appUrl, clientPath, config.auth);
+    await this.sessionManager.iniciarSesionYContinuar(
+      config.appUrl,
+      clientPath,
+      config.auth,
+    );
   }
 
-  public async descubrirRutasCliente(clienteId: string): Promise<ConfiguracionCliente> {
+  public async descubrirRutasCliente(
+    clienteId: string,
+  ): Promise<ConfiguracionCliente> {
     const config = await this.cargarCliente(clienteId);
     const clientPath = path.join(this.rutas.directorioClientes, config.id);
     const sessionPath = this.sessionManager.obtenerRutaSesion(clientPath);
 
-    console.log(pc.bold(pc.cyan(`\nAuto-descubriendo navegación para: ${config.name} (${config.id})`)));
+    console.log(
+      pc.bold(
+        pc.cyan(
+          `\nAuto-descubriendo navegación para: ${config.name} (${config.id})`,
+        ),
+      ),
+    );
 
     const modulosDescubiertos = await this.navDiscovery.descubrir({
       appUrl: config.appUrl,
@@ -72,13 +85,19 @@ export class ComandanteDocumentacion {
       config.modules = modulosDescubiertos;
       const configFilePath = path.join(clientPath, 'config.json');
       await fs.writeJson(configFilePath, config, { spaces: 2 });
-      console.log(pc.green(`Configuración de ${config.name} actualizada con ${config.modules.length} módulos.`));
+      console.log(
+        pc.green(
+          `Configuración de ${config.name} actualizada con ${config.modules.length} módulos.`,
+        ),
+      );
     }
 
     return config;
   }
 
-  public async ejecutarGeneracion(opciones: OpcionesEjecucionGeneracion): Promise<void> {
+  public async ejecutarGeneracion(
+    opciones: OpcionesEjecucionGeneracion,
+  ): Promise<void> {
     const config = await this.cargarCliente(opciones.client);
     const clientDir = path.join(this.rutas.directorioClientes, config.id);
     const clientOutDir = path.join(this.rutas.directorioDocs, config.id);
@@ -87,21 +106,32 @@ export class ComandanteDocumentacion {
     const sessionExists = await fs.pathExists(sessionPath);
     const activeSessionPath = sessionExists ? sessionPath : undefined;
 
-    console.log(pc.bold(pc.cyan(`\n=== GENERADOR AUTOMANUAL ESTILO APPLE ===`)));
+    console.log(
+      pc.bold(pc.cyan(`\n=== GENERADOR AUTOMANUAL ESTILO APPLE ===`)),
+    );
     console.log(pc.white(`Cliente: ${config.name} (${config.id})`));
     console.log(pc.white(`URL: ${config.appUrl}`));
 
     await fs.ensureDir(clientAssetsDir);
 
     const themeCss = generarCssTema(config.theme);
-    await fs.writeFile(path.join(clientAssetsDir, 'theme.css'), themeCss, 'utf-8');
+    await fs.writeFile(
+      path.join(clientAssetsDir, 'theme.css'),
+      themeCss,
+      'utf-8',
+    );
 
-    const stylesSource = path.join(this.rutas.directorioPlantillas, 'styles.css');
+    const stylesSource = path.join(
+      this.rutas.directorioPlantillas,
+      'styles.css',
+    );
     if (await fs.pathExists(stylesSource)) {
       await fs.copy(stylesSource, path.join(clientAssetsDir, 'styles.css'));
     }
 
-    const logoBaseName = path.basename(config.theme.logoPath || 'default-logo.svg');
+    const logoBaseName = path.basename(
+      config.theme.logoPath || 'default-logo.svg',
+    );
     const clientLogoSource = path.join(clientDir, logoBaseName);
     if (await fs.pathExists(clientLogoSource)) {
       await fs.copy(clientLogoSource, path.join(clientAssetsDir, logoBaseName));
@@ -120,7 +150,13 @@ export class ComandanteDocumentacion {
         for (const sec of mod.sections || []) {
           if (targetSectionId && sec.id !== targetSectionId) continue;
 
-          console.log(pc.bold(pc.white(`\n📌 Documentando pantalla: [${mod.title}] -> ${sec.title}`)));
+          console.log(
+            pc.bold(
+              pc.white(
+                `\n📌 Documentando pantalla: [${mod.title}] -> ${sec.title}`,
+              ),
+            ),
+          );
 
           const sectionOutDir = path.join(clientOutDir, mod.id, sec.id);
           const screenshotsDir = path.join(sectionOutDir, 'screenshots');
@@ -136,7 +172,10 @@ export class ComandanteDocumentacion {
           totalScreenshotsCount += crawlResult.screenshots.length;
 
           let visionResult = null;
-          if (this.visionAnalyzer.estaDisponible() && crawlResult.screenshots.length > 0) {
+          if (
+            this.visionAnalyzer.estaDisponible() &&
+            crawlResult.screenshots.length > 0
+          ) {
             const visionShots = crawlResult.screenshots.map((s) => ({
               path: path.join(screenshotsDir, s.fileName),
               caption: s.caption,
@@ -176,18 +215,38 @@ export class ComandanteDocumentacion {
             userGuide,
           };
 
-          const sectionHtml = this.templateEngine.generarPaginaSeccion(config, generatedSection);
+          const sectionHtml = this.templateEngine.generarPaginaSeccion(
+            config,
+            generatedSection,
+          );
           const sectionHtmlPath = path.join(sectionOutDir, 'index.html');
           await fs.writeFile(sectionHtmlPath, sectionHtml, 'utf-8');
-          console.log(pc.green(`  ✔ Pantalla documentada: ${path.relative(this.rutas.directorioRaiz, sectionHtmlPath)}`));
+          console.log(
+            pc.green(
+              `  ✔ Pantalla documentada: ${path.relative(this.rutas.directorioRaiz, sectionHtmlPath)}`,
+            ),
+          );
         }
       }
 
-      const homeHtml = this.templateEngine.generarPortada(config, totalScreenshotsCount);
+      const homeHtml = this.templateEngine.generarPortada(
+        config,
+        totalScreenshotsCount,
+      );
       const homeHtmlPath = path.join(clientOutDir, 'index.html');
       await fs.writeFile(homeHtmlPath, homeHtml, 'utf-8');
-      console.log(pc.green(`\n✔ Portada de presentación estilo Apple generada en ${path.relative(this.rutas.directorioRaiz, homeHtmlPath)}`));
-      console.log(pc.bold(pc.green(`\n🎉 ¡Manual de usuario generado con éxito para ${config.name}!`)));
+      console.log(
+        pc.green(
+          `\n✔ Portada de presentación estilo Apple generada en ${path.relative(this.rutas.directorioRaiz, homeHtmlPath)}`,
+        ),
+      );
+      console.log(
+        pc.bold(
+          pc.green(
+            `\n🎉 ¡Manual de usuario generado con éxito para ${config.name}!`,
+          ),
+        ),
+      );
     } finally {
       await this.crawler.cerrar();
     }

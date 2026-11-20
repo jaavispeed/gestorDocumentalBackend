@@ -52,14 +52,28 @@ export class AutomanualService {
 
   public async obtenerClientes(): Promise<ResumenCliente[]> {
     await this.asegurarDirectorioClientes();
-    const entradas = await fs.readdir(this.rutas.directorioClientes, { withFileTypes: true });
+    const entradas = await fs.readdir(this.rutas.directorioClientes, {
+      withFileTypes: true,
+    });
     const clientes: ResumenCliente[] = [];
 
     for (const entrada of entradas) {
       if (entrada.isDirectory() && !entrada.name.startsWith('_')) {
-        const rutaConfig = path.join(this.rutas.directorioClientes, entrada.name, 'config.json');
-        const rutaSesion = path.join(this.rutas.directorioClientes, entrada.name, 'session.json');
-        const rutaManual = path.join(this.rutas.directorioDocs, entrada.name, 'index.html');
+        const rutaConfig = path.join(
+          this.rutas.directorioClientes,
+          entrada.name,
+          'config.json',
+        );
+        const rutaSesion = path.join(
+          this.rutas.directorioClientes,
+          entrada.name,
+          'session.json',
+        );
+        const rutaManual = path.join(
+          this.rutas.directorioDocs,
+          entrada.name,
+          'index.html',
+        );
 
         if (await fs.pathExists(rutaConfig)) {
           try {
@@ -106,14 +120,22 @@ export class AutomanualService {
   }
 
   public async obtenerCliente(id: string): Promise<ConfiguracionCliente> {
-    const rutaConfig = path.join(this.rutas.directorioClientes, id, 'config.json');
+    const rutaConfig = path.join(
+      this.rutas.directorioClientes,
+      id,
+      'config.json',
+    );
     if (!(await fs.pathExists(rutaConfig))) {
       throw new NotFoundException(`Cliente "${id}" no encontrado`);
     }
 
     const config = await fs.readJson(rutaConfig);
     const normalizado = this.normalizarConfiguracion(config);
-    const rutaSesion = path.join(this.rutas.directorioClientes, id, 'session.json');
+    const rutaSesion = path.join(
+      this.rutas.directorioClientes,
+      id,
+      'session.json',
+    );
     const rutaManual = path.join(this.rutas.directorioDocs, id, 'index.html');
 
     return {
@@ -123,26 +145,41 @@ export class AutomanualService {
     };
   }
 
-  public async guardarCliente(config: any): Promise<{ success: boolean; client: ConfiguracionCliente }> {
+  public async guardarCliente(
+    config: any,
+  ): Promise<{ success: boolean; client: ConfiguracionCliente }> {
     if (!config.id || !config.name || !config.appUrl) {
-      throw new BadRequestException('Faltan campos obligatorios (id, name, appUrl)');
+      throw new BadRequestException(
+        'Faltan campos obligatorios (id, name, appUrl)',
+      );
     }
 
     const normalizado = this.normalizarConfiguracion(config);
     const rutaCliente = path.join(this.rutas.directorioClientes, config.id);
     await fs.ensureDir(rutaCliente);
-    await fs.writeJson(path.join(rutaCliente, 'config.json'), normalizado, { spaces: 2 });
+    await fs.writeJson(path.join(rutaCliente, 'config.json'), normalizado, {
+      spaces: 2,
+    });
 
-    const logoPredeterminado = path.join(this.rutas.directorioClientes, '_default', 'default-logo.svg');
+    const logoPredeterminado = path.join(
+      this.rutas.directorioClientes,
+      '_default',
+      'default-logo.svg',
+    );
     const logoDestino = path.join(rutaCliente, 'default-logo.svg');
-    if (!(await fs.pathExists(logoDestino)) && (await fs.pathExists(logoPredeterminado))) {
+    if (
+      !(await fs.pathExists(logoDestino)) &&
+      (await fs.pathExists(logoPredeterminado))
+    ) {
       await fs.copy(logoPredeterminado, logoDestino);
     }
 
     return { success: true, client: normalizado };
   }
 
-  public async eliminarCliente(id: string): Promise<{ success: boolean; message: string }> {
+  public async eliminarCliente(
+    id: string,
+  ): Promise<{ success: boolean; message: string }> {
     const rutaCliente = path.join(this.rutas.directorioClientes, id);
     if (!(await fs.pathExists(rutaCliente))) {
       throw new NotFoundException(`Cliente "${id}" no existe`);
@@ -154,18 +191,28 @@ export class AutomanualService {
       await fs.remove(rutaDocs);
     }
 
-    return { success: true, message: `Cliente "${id}" eliminado correctamente` };
+    return {
+      success: true,
+      message: `Cliente "${id}" eliminado correctamente`,
+    };
   }
 
   public async obtenerFlujoLogo(id: string) {
     const rutaCliente = path.join(this.rutas.directorioClientes, id);
     const rutaConfig = path.join(rutaCliente, 'config.json');
-    let rutaLogo = path.join(this.rutas.directorioClientes, '_default', 'default-logo.svg');
+    let rutaLogo = path.join(
+      this.rutas.directorioClientes,
+      '_default',
+      'default-logo.svg',
+    );
 
     if (await fs.pathExists(rutaConfig)) {
       const config = await fs.readJson(rutaConfig);
       if (config.theme?.logoPath) {
-        const candidato = path.join(rutaCliente, path.basename(config.theme.logoPath));
+        const candidato = path.join(
+          rutaCliente,
+          path.basename(config.theme.logoPath),
+        );
         if (await fs.pathExists(candidato)) {
           rutaLogo = candidato;
         }
@@ -191,7 +238,9 @@ export class AutomanualService {
 
   public async guardarLogo(id: string, base64: string, fileName: string) {
     if (!base64 || !fileName) {
-      throw new BadRequestException('Faltan datos de la imagen (base64, fileName)');
+      throw new BadRequestException(
+        'Faltan datos de la imagen (base64, fileName)',
+      );
     }
 
     const rutaCliente = path.join(this.rutas.directorioClientes, id);
@@ -226,10 +275,18 @@ export class AutomanualService {
       await fs.copy(targetFile, path.join(clientAssetsDir, cleanFileName));
 
       const newHomeHtml = this.motorPlantillas.generarPortada(config, 0);
-      await fs.writeFile(path.join(clientDocsDir, 'index.html'), newHomeHtml, 'utf-8');
+      await fs.writeFile(
+        path.join(clientDocsDir, 'index.html'),
+        newHomeHtml,
+        'utf-8',
+      );
 
       const themeCss = generarCssTema(config.theme);
-      await fs.writeFile(path.join(clientAssetsDir, 'theme.css'), themeCss, 'utf-8');
+      await fs.writeFile(
+        path.join(clientAssetsDir, 'theme.css'),
+        themeCss,
+        'utf-8',
+      );
 
       const actualizarHtmls = async (dir: string) => {
         const entries = await fs.readdir(dir, { withFileTypes: true });
@@ -237,11 +294,21 @@ export class AutomanualService {
           const fullPath = path.join(dir, entry.name);
           if (entry.isDirectory()) {
             await actualizarHtmls(fullPath);
-          } else if (entry.isFile() && entry.name === 'index.html' && dir !== clientDocsDir) {
+          } else if (
+            entry.isFile() &&
+            entry.name === 'index.html' &&
+            dir !== clientDocsDir
+          ) {
             let content = await fs.readFile(fullPath, 'utf-8');
             const prevBase = path.basename(prevLogo);
-            content = content.replace(new RegExp(`assets/${prevBase}`, 'g'), `assets/${cleanFileName}`);
-            content = content.replace(/assets\/default-logo\.svg/g, `assets/${cleanFileName}`);
+            content = content.replace(
+              new RegExp(`assets/${prevBase}`, 'g'),
+              `assets/${cleanFileName}`,
+            );
+            content = content.replace(
+              /assets\/default-logo\.svg/g,
+              `assets/${cleanFileName}`,
+            );
             await fs.writeFile(fullPath, content, 'utf-8');
           }
         }
@@ -263,12 +330,16 @@ export class AutomanualService {
     }
 
     this.estaGenerando = true;
-    this.logsActuales = [`Iniciando ventana de Playwright para el cliente "${clienteId}"...`];
+    this.logsActuales = [
+      `Iniciando ventana de Playwright para el cliente "${clienteId}"...`,
+    ];
 
     const originalLog = console.log;
     console.log = (...args: any[]) => {
       originalLog(...args);
-      const texto = args.map((a) => (typeof a === 'string' ? a : JSON.stringify(a))).join(' ');
+      const texto = args
+        .map((a) => (typeof a === 'string' ? a : JSON.stringify(a)))
+        .join(' ');
       this.logsActuales.push(texto);
     };
 
@@ -284,20 +355,28 @@ export class AutomanualService {
       }
     })();
 
-    return { success: true, message: 'Ventana de Playwright abierta en pantalla.' };
+    return {
+      success: true,
+      message: 'Ventana de Playwright abierta en pantalla.',
+    };
   }
 
   public async descubrirRutas(clienteId: string) {
-    this.logsActuales = [`Iniciando auto-descubrimiento para "${clienteId}"...`];
+    this.logsActuales = [
+      `Iniciando auto-descubrimiento para "${clienteId}"...`,
+    ];
     const originalLog = console.log;
     console.log = (...args: any[]) => {
       originalLog(...args);
-      const texto = args.map((a) => (typeof a === 'string' ? a : JSON.stringify(a))).join(' ');
+      const texto = args
+        .map((a) => (typeof a === 'string' ? a : JSON.stringify(a)))
+        .join(' ');
       this.logsActuales.push(texto);
     };
 
     try {
-      const configActualizada = await this.comandante.descubrirRutasCliente(clienteId);
+      const configActualizada =
+        await this.comandante.descubrirRutasCliente(clienteId);
       this.logsActuales.push(
         `✔ Auto-descubrimiento completado: ${configActualizada.modules?.length || 0} módulos encontrados.`,
       );
@@ -310,9 +389,14 @@ export class AutomanualService {
     }
   }
 
-  public async iniciarGeneracion(clienteId: string, opciones: OpcionesGeneracionDto) {
+  public async iniciarGeneracion(
+    clienteId: string,
+    opciones: OpcionesGeneracionDto,
+  ) {
     if (this.estaGenerando) {
-      throw new ConflictException('Ya hay un proceso de generación o login en curso.');
+      throw new ConflictException(
+        'Ya hay un proceso de generación o login en curso.',
+      );
     }
 
     this.estaGenerando = true;
@@ -321,13 +405,18 @@ export class AutomanualService {
     const originalLog = console.log;
     console.log = (...args: any[]) => {
       originalLog(...args);
-      const texto = args.map((a) => (typeof a === 'string' ? a : JSON.stringify(a))).join(' ');
+      const texto = args
+        .map((a) => (typeof a === 'string' ? a : JSON.stringify(a)))
+        .join(' ');
       this.logsActuales.push(texto);
     };
 
     void (async () => {
       try {
-        const esCompleto = opciones.moduleId || opciones.sectionId ? false : opciones.all !== false;
+        const esCompleto =
+          opciones.moduleId || opciones.sectionId
+            ? false
+            : opciones.all !== false;
 
         await this.comandante.ejecutarGeneracion({
           client: clienteId,
@@ -384,10 +473,26 @@ export class AutomanualService {
         promptVariables: VARIABLES_PROMPT_VISION,
       },
       availableModels: [
-        { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash (Recomendado)', description: 'Rápido, multimodal y de alta precisión.' },
-        { id: 'gemini-2.5-flash-lite', name: 'Gemini 2.5 Flash Lite', description: 'Ultra-rápido para análisis ágil.' },
-        { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash', description: 'Modelo multimodal estable.' },
-        { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro', description: 'Máxima profundidad de análisis y razonamiento.' },
+        {
+          id: 'gemini-2.5-flash',
+          name: 'Gemini 2.5 Flash (Recomendado)',
+          description: 'Rápido, multimodal y de alta precisión.',
+        },
+        {
+          id: 'gemini-2.5-flash-lite',
+          name: 'Gemini 2.5 Flash Lite',
+          description: 'Ultra-rápido para análisis ágil.',
+        },
+        {
+          id: 'gemini-2.0-flash',
+          name: 'Gemini 2.0 Flash',
+          description: 'Modelo multimodal estable.',
+        },
+        {
+          id: 'gemini-2.5-pro',
+          name: 'Gemini 2.5 Pro',
+          description: 'Máxima profundidad de análisis y razonamiento.',
+        },
       ],
     };
   }
@@ -406,16 +511,35 @@ export class AutomanualService {
       await guardarConfiguracionPrompt(dto.ai.visionPrompt);
     }
 
-    return { success: true, message: 'Configuración de Gemini AI actualizada.' };
+    return {
+      success: true,
+      message: 'Configuración de Gemini AI actualizada.',
+    };
   }
 
   public async obtenerModelos(apiKey?: string) {
     const key = apiKey || process.env.GEMINI_API_KEY;
     const modelosPorDefecto = [
-      { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash (Recomendado)', description: 'Rápido, multimodal y de alta precisión.' },
-      { id: 'gemini-2.5-flash-lite', name: 'Gemini 2.5 Flash Lite', description: 'Ultra-rápido para análisis ágil.' },
-      { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash', description: 'Modelo multimodal estable.' },
-      { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro', description: 'Máxima profundidad de análisis y razonamiento.' },
+      {
+        id: 'gemini-2.5-flash',
+        name: 'Gemini 2.5 Flash (Recomendado)',
+        description: 'Rápido, multimodal y de alta precisión.',
+      },
+      {
+        id: 'gemini-2.5-flash-lite',
+        name: 'Gemini 2.5 Flash Lite',
+        description: 'Ultra-rápido para análisis ágil.',
+      },
+      {
+        id: 'gemini-2.0-flash',
+        name: 'Gemini 2.0 Flash',
+        description: 'Modelo multimodal estable.',
+      },
+      {
+        id: 'gemini-2.5-pro',
+        name: 'Gemini 2.5 Pro',
+        description: 'Máxima profundidad de análisis y razonamiento.',
+      },
     ];
 
     if (!key) {

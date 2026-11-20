@@ -9,13 +9,22 @@ export const TEMA_PREDETERMINADO: TemaCliente = {
   logoPath: 'default-logo.svg',
 };
 
-export function resolverTema(temaPersonalizado?: Partial<TemaCliente>): TemaCliente {
+export function resolverTema(
+  temaPersonalizado?: Partial<TemaCliente>,
+): TemaCliente {
   return {
-    primaryColor: temaPersonalizado?.primaryColor?.trim() || TEMA_PREDETERMINADO.primaryColor,
-    secondaryColor: temaPersonalizado?.secondaryColor?.trim() || TEMA_PREDETERMINADO.secondaryColor,
-    accentColor: temaPersonalizado?.accentColor?.trim() || TEMA_PREDETERMINADO.accentColor,
-    fontFamily: temaPersonalizado?.fontFamily?.trim() || TEMA_PREDETERMINADO.fontFamily,
-    logoPath: temaPersonalizado?.logoPath?.trim() || TEMA_PREDETERMINADO.logoPath,
+    primaryColor:
+      temaPersonalizado?.primaryColor?.trim() ||
+      TEMA_PREDETERMINADO.primaryColor,
+    secondaryColor:
+      temaPersonalizado?.secondaryColor?.trim() ||
+      TEMA_PREDETERMINADO.secondaryColor,
+    accentColor:
+      temaPersonalizado?.accentColor?.trim() || TEMA_PREDETERMINADO.accentColor,
+    fontFamily:
+      temaPersonalizado?.fontFamily?.trim() || TEMA_PREDETERMINADO.fontFamily,
+    logoPath:
+      temaPersonalizado?.logoPath?.trim() || TEMA_PREDETERMINADO.logoPath,
   };
 }
 
@@ -64,7 +73,8 @@ export function generarCssTema(tema: TemaCliente): string {
 
 function hexARgba(hex: string, alpha: number): string {
   const cleanHex = hex.replace('#', '');
-  if (cleanHex.length !== 6 && cleanHex.length !== 3) return `rgba(0, 113, 227, ${alpha})`;
+  if (cleanHex.length !== 6 && cleanHex.length !== 3)
+    return `rgba(0, 113, 227, ${alpha})`;
   const fullHex =
     cleanHex.length === 3
       ? cleanHex

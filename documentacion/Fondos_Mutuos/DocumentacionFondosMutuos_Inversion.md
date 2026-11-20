@@ -18,18 +18,20 @@ Este documento detalla las validaciones, parámetros de entrada y sistema, regla
 ## 2. Parámetros de Entrada y de Sistema
 
 ### 2.1 Parámetros Recibidos en el Request / Método
-| Parámetro | Tipo | Requerido | Descripción / Regla |
-| :--- | :--- | :--- | :--- |
-| `idCuenta` | `decimal` | Sí | Identificador de la cuenta de inversión. |
-| `idInstrumento` | `decimal` | Sí | Identificador del fondo mutuo (debe pertenecer a subclase `FFMM_NAC` con `CodigoFamilia == "FFMM"` y estar vigente). |
-| `monto` | `decimal?` | Sí | Monto a invertir en la moneda del fondo (o CLP si cotiza en UF). Debe ser $> 0$. |
-| `cuotas` | `decimal?` | Opcional | Cuotas esperadas por el cliente. Si viene $> 0$, activa la **Doble Validación de Cuotas**. |
-| `TipoOperacion` | `string?` | No | Código de operación: `INVERSION` (por defecto), `INVMLTEXT`, `APV_APO`, `APV_TR_IN`. |
-| `IdContraparte` | `decimal?` | Condicional | Identificador de la contraparte externa. **Obligatorio** si `TipoOperacion == "INVMLTEXT"`. |
-| `codigoAsesoria` | `string?` | No | Código de asesoría asociado a la orden para seguimiento comercial. |
-| `emailNotificacion`| `string?` | No | Correo electrónico para el envío del comprobante de ingreso. |
+
+| Parámetro           | Tipo       | Requerido   | Descripción / Regla                                                                                                  |
+| :------------------ | :--------- | :---------- | :------------------------------------------------------------------------------------------------------------------- |
+| `idCuenta`          | `decimal`  | Sí          | Identificador de la cuenta de inversión.                                                                             |
+| `idInstrumento`     | `decimal`  | Sí          | Identificador del fondo mutuo (debe pertenecer a subclase `FFMM_NAC` con `CodigoFamilia == "FFMM"` y estar vigente). |
+| `monto`             | `decimal?` | Sí          | Monto a invertir en la moneda del fondo (o CLP si cotiza en UF). Debe ser $> 0$.                                     |
+| `cuotas`            | `decimal?` | Opcional    | Cuotas esperadas por el cliente. Si viene $> 0$, activa la **Doble Validación de Cuotas**.                           |
+| `TipoOperacion`     | `string?`  | No          | Código de operación: `INVERSION` (por defecto), `INVMLTEXT`, `APV_APO`, `APV_TR_IN`.                                 |
+| `IdContraparte`     | `decimal?` | Condicional | Identificador de la contraparte externa. **Obligatorio** si `TipoOperacion == "INVMLTEXT"`.                          |
+| `codigoAsesoria`    | `string?`  | No          | Código de asesoría asociado a la orden para seguimiento comercial.                                                   |
+| `emailNotificacion` | `string?`  | No          | Correo electrónico para el envío del comprobante de ingreso.                                                         |
 
 ### 2.2 Parámetros de Sistema y Atributos Consultados
+
 1. **`ValidaHorarioInversion` (`sis_parametro`):**
    - Si el horario de mercado del fondo está cerrado y este parámetro es `true`: la orden **se rechaza** (`InstrumentoErrors.HorarioCerrado`).
    - Si es `false`: se acepta y la `fechaOperacion` **se difiere automáticamente al siguiente día hábil bancario**.
@@ -91,17 +93,20 @@ Este documento detalla las validaciones, parámetros de entrada y sistema, regla
 ## 4. Fórmulas Matemáticas y Cálculos
 
 ### 4.1 Cálculo de Cuotas Estimadas
+
 $$\text{CantidadOrden} = \text{Round}\left(\frac{\text{MontoOrden}}{\text{Precio}}, 6\right)$$
 
 ### 4.2 Doble Validación de Cuotas
+
 Si en la solicitud se especifica el campo `cuotas`:
 $$\text{CuotasRecibidas} = \text{Round}(\text{cuotas}, 6)$$
 Si $\text{CuotasRecibidas} \neq \text{CantidadOrden}$, la transacción se aborta arrojando:
 $$\text{OrdenErrors.DobleValidacionCuotas}(\text{CuotasRecibidas}, \text{CantidadOrden})$$
 
 ### 4.3 Determinación de la Fecha de Liquidación
-$$\text{FechaLiquidación} = 
-\begin{cases} 
+
+$$ \text{FechaLiquidación} =
+\begin{cases}
 \text{FechaOperacion} + \text{DRI días hábiles}, & \text{si } \text{DRI} > 0 \\
 \text{FechaOperacion} + 1 \text{ día hábil}, & \text{si } \text{DRI} = 0 \text{ y existe } \text{VCD} \\
 \text{FechaOperacion} \ (T+0), & \text{si } \text{DRI} = 0 \text{ y no existe } \text{VCD}
@@ -149,3 +154,4 @@ $$\text{FechaLiquidación} =
 - **`Orden`:** Inserta la orden con `TipoBolsa = "F"`, `FormaLiq = "PH"`, `FlgLimitePrecio = "M"`, `CodEstado = "P"`.
 - **`SolicitudInversion`:** Registro cabecera vinculado con `IdOperacionConcepto = 774`, `Comision = 0`, `Gastos = 0`.
 - **`SisRegistroLog`:** Captura silenciosa de errores técnicos ante excepciones imprevistas previo rollback transaccional.
+$$

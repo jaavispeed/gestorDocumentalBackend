@@ -9,7 +9,11 @@ import { EmbeddingsService } from './embeddings.service.js';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Documento, DocumentoFragmento, DocumentoHistorial]),
+    TypeOrmModule.forFeature([
+      Documento,
+      DocumentoFragmento,
+      DocumentoHistorial,
+    ]),
   ],
   controllers: [DocumentosController],
   providers: [DocumentosService, EmbeddingsService],

@@ -34,7 +34,10 @@ Reglas:
 /**
  * Función constructora del prompt de diff optimizada en tokens.
  */
-export function construirPromptUsuarioGitDiff(diff: string, contextoAdicional?: string): string {
+export function construirPromptUsuarioGitDiff(
+  diff: string,
+  contextoAdicional?: string,
+): string {
   let contenido = `DIFF:\n\`\`\`diff\n${diff.trim()}\n\`\`\`\n`;
   if (contextoAdicional && contextoAdicional.trim()) {
     contenido += `\nCONTEXTO:\n${contextoAdicional.trim()}\n`;

@@ -1,8 +1,23 @@
-import { Controller, Get, Post, Body, Query, Headers, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Query,
+  Headers,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { ChatIaService } from './chat-ia.service.js';
 import { ConsultaChatDto } from '../common/dto/consulta-chat.dto.js';
-import type { EstadoServidorDto, RespuestaChatDto } from '../common/dto/chat-respuestas.dto.js';
-import { GenerarDocGitDiffDto, RespuestaDocGitDiffDto } from '../common/dto/git-diff-doc.dto.js';
+import type {
+  EstadoServidorDto,
+  RespuestaChatDto,
+} from '../common/dto/chat-respuestas.dto.js';
+import {
+  GenerarDocGitDiffDto,
+  RespuestaDocGitDiffDto,
+} from '../common/dto/git-diff-doc.dto.js';
 import { CompilarManualIaDto } from '../common/dto/compilar-manual.dto.js';
 
 @Controller()
@@ -14,18 +29,25 @@ export class ChatIaController {
     @Query('clave') clavePersonalizada?: string,
     @Query('modelo') modeloPersonalizado?: string,
   ): Promise<EstadoServidorDto> {
-    return this.chatIaService.obtenerEstado(clavePersonalizada, modeloPersonalizado);
+    return this.chatIaService.obtenerEstado(
+      clavePersonalizada,
+      modeloPersonalizado,
+    );
   }
 
   @Post('api/ia/chat')
   @HttpCode(HttpStatus.OK)
-  async enviarChat(@Body() consulta: ConsultaChatDto): Promise<RespuestaChatDto> {
+  async enviarChat(
+    @Body() consulta: ConsultaChatDto,
+  ): Promise<RespuestaChatDto> {
     return this.chatIaService.procesarMensaje(consulta);
   }
 
   @Post('api/ia/generar-doc-diff')
   @HttpCode(HttpStatus.OK)
-  async generarDocDiff(@Body() dto: GenerarDocGitDiffDto): Promise<RespuestaDocGitDiffDto> {
+  async generarDocDiff(
+    @Body() dto: GenerarDocGitDiffDto,
+  ): Promise<RespuestaDocGitDiffDto> {
     return this.chatIaService.generarDocumentacionDesdeDiff(dto);
   }
 

@@ -117,7 +117,12 @@ export class AnalizadorVision {
   public static async probarConexion(
     apiKey?: string,
     model?: string,
-  ): Promise<{ success: boolean; model: string; message: string; latencyMs?: number }> {
+  ): Promise<{
+    success: boolean;
+    model: string;
+    message: string;
+    latencyMs?: number;
+  }> {
     const key = apiKey || process.env.GEMINI_API_KEY;
     const targetModel = model || process.env.GEMINI_MODEL || 'gemini-2.5-flash';
 
@@ -173,7 +178,13 @@ export class AnalizadorVision {
       const capturasSeleccionadas: EntradaCapturaVision[] =
         opciones.screenshots && opciones.screenshots.length > 0
           ? opciones.screenshots.slice(0, 4)
-          : [{ path: opciones.screenshotPath, caption: opciones.sectionTitle, kind: 'main' }];
+          : [
+              {
+                path: opciones.screenshotPath,
+                caption: opciones.sectionTitle,
+                kind: 'main',
+              },
+            ];
 
       const camposTexto =
         opciones.fields && opciones.fields.length > 0
@@ -187,7 +198,9 @@ export class AnalizadorVision {
 
       const accionesTexto =
         opciones.actions && opciones.actions.length > 0
-          ? opciones.actions.map((a) => `- Botón/Acción: "${a.name}"`).join('\n')
+          ? opciones.actions
+              .map((a) => `- Botón/Acción: "${a.name}"`)
+              .join('\n')
           : 'No se detectaron botones relevantes.';
 
       const promptPlantilla =
@@ -203,12 +216,17 @@ export class AnalizadorVision {
         .replace(/\{\{actions\}\}/g, accionesTexto)
         .concat('\n\n', APENDICE_CONTRATO_JSON);
 
-      const partesContenido: Array<{ inlineData?: { mimeType: string; data: string }; text?: string }> = [];
+      const partesContenido: Array<{
+        inlineData?: { mimeType: string; data: string };
+        text?: string;
+      }> = [];
       for (let idx = 0; idx < capturasSeleccionadas.length; idx++) {
         const shot = capturasSeleccionadas[idx];
         if (await fs.pathExists(shot.path)) {
           const buffer = await fs.readFile(shot.path);
-          partesContenido.push({ text: `[Captura ${idx + 1}: ${shot.caption}]` });
+          partesContenido.push({
+            text: `[Captura ${idx + 1}: ${shot.caption}]`,
+          });
           partesContenido.push({
             inlineData: {
               mimeType: 'image/png',
@@ -221,7 +239,11 @@ export class AnalizadorVision {
       partesContenido.push({ text: promptFinal });
 
       const modeloActivo = this.model || 'gemini-2.5-flash';
-      const colaModelos = [modeloActivo, 'gemini-2.5-flash-lite', 'gemini-2.0-flash'];
+      const colaModelos = [
+        modeloActivo,
+        'gemini-2.5-flash-lite',
+        'gemini-2.0-flash',
+      ];
 
       for (const modeloActual of colaModelos) {
         try {
@@ -248,7 +270,9 @@ export class AnalizadorVision {
           );
           return resultado;
         } catch (err: any) {
-          console.warn(`  ⚠ Intento con modelo ${modeloActual} no completado: ${err.message}`);
+          console.warn(
+            `  ⚠ Intento con modelo ${modeloActual} no completado: ${err.message}`,
+          );
         }
       }
 

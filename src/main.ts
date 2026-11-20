@@ -20,7 +20,12 @@ async function bootstrap() {
     }),
   );
 
-  const directorioDocs = path.join(process.cwd(), 'datos', 'automanual', 'docs');
+  const directorioDocs = path.join(
+    process.cwd(),
+    'datos',
+    'automanual',
+    'docs',
+  );
   app.use('/manuals', express.static(directorioDocs));
 
   const puerto = process.env.PORT ?? 3000;

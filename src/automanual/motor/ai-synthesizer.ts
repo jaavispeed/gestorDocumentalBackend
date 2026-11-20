@@ -52,14 +52,26 @@ export class SintetizadorGuiaUsuario {
       !/^vista de /i.test(liveDom.pageDescription)
     ) {
       whatItDoes = liveDom.pageDescription;
-    } else if (seccion.description && seccion.description.length > 20 && !/^vista de /i.test(seccion.description)) {
+    } else if (
+      seccion.description &&
+      seccion.description.length > 20 &&
+      !/^vista de /i.test(seccion.description)
+    ) {
       whatItDoes = seccion.description.trim();
     } else {
       if (/carga|ingreso|registro|nuevo|formulario/i.test(lowerTitle)) {
         whatItDoes = `Esta pantalla permite ingresar, cargar y registrar nuevos movimientos de ${lowerTitle} en la plataforma.`;
-      } else if (/consulta|reporte|monitor|cartola|historico|balanceo|cuadratura/i.test(lowerTitle)) {
+      } else if (
+        /consulta|reporte|monitor|cartola|historico|balanceo|cuadratura/i.test(
+          lowerTitle,
+        )
+      ) {
         whatItDoes = `Esta pantalla permite consultar, filtrar y supervisar los registros e indicadores de ${lowerTitle}.`;
-      } else if (/mantenedor|configuracion|parametro|perfil|asesor|banco|cliente/i.test(lowerTitle)) {
+      } else if (
+        /mantenedor|configuracion|parametro|perfil|asesor|banco|cliente/i.test(
+          lowerTitle,
+        )
+      ) {
         whatItDoes = `Esta pantalla permite administrar las tablas maestras y actualizar la configuración de ${lowerTitle}.`;
       } else if (/cierre|proceso|generacion/i.test(lowerTitle)) {
         whatItDoes = `Esta pantalla permite supervisar y ejecutar los procesos operativos de ${lowerTitle}.`;
@@ -68,8 +80,12 @@ export class SintetizadorGuiaUsuario {
       }
     }
 
-    const searchBtn = actions.find((a) => /consultar|buscar|filtr/i.test(a.name));
-    const saveBtn = actions.find((a) => /ingresar|guardar|confirmar|crear/i.test(a.name));
+    const searchBtn = actions.find((a) =>
+      /consultar|buscar|filtr/i.test(a.name),
+    );
+    const saveBtn = actions.find((a) =>
+      /ingresar|guardar|confirmar|crear/i.test(a.name),
+    );
     const detailBtn = actions.find((a) => /agregar|nuevo/i.test(a.name));
     const exportBtn = actions.find((a) => /exportar|descargar/i.test(a.name));
 
@@ -113,9 +129,17 @@ export class SintetizadorGuiaUsuario {
       howToUse,
     };
 
-    const stepByStep: Array<{ stepNumber: number; title: string; description: string }> = [];
+    const stepByStep: Array<{
+      stepNumber: number;
+      title: string;
+      description: string;
+    }> = [];
 
-    if (visionResult && visionResult.stepByStep && visionResult.stepByStep.length > 0) {
+    if (
+      visionResult &&
+      visionResult.stepByStep &&
+      visionResult.stepByStep.length > 0
+    ) {
       stepByStep.push(...visionResult.stepByStep);
     } else {
       if (fields.length > 0) {
@@ -158,7 +182,8 @@ export class SintetizadorGuiaUsuario {
         stepByStep.push({
           stepNumber: 2,
           title: 'Revisar datos',
-          description: 'Verifica el detalle de los registros mostrados en la tabla o panel informativo.',
+          description:
+            'Verifica el detalle de los registros mostrados en la tabla o panel informativo.',
         });
       }
 
@@ -172,13 +197,18 @@ export class SintetizadorGuiaUsuario {
         stepByStep.push({
           stepNumber: 3,
           title: 'Finalizar',
-          description: 'Comprueba en pantalla que la información se haya actualizado correctamente.',
+          description:
+            'Comprueba en pantalla que la información se haya actualizado correctamente.',
         });
       }
     }
 
     const visualElements: ElementoVisualPantalla[] = [];
-    if (visionResult && visionResult.visualElements && visionResult.visualElements.length > 0) {
+    if (
+      visionResult &&
+      visionResult.visualElements &&
+      visionResult.visualElements.length > 0
+    ) {
       visualElements.push(...visionResult.visualElements);
     } else if (liveDom && liveDom.tables && liveDom.tables.length > 0) {
       for (const tbl of liveDom.tables) {
