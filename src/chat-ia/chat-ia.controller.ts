@@ -41,8 +41,14 @@ export class ChatIaController {
     @Body() consulta: ConsultaChatDto,
     @Headers('x-gemini-key') apiKey?: string,
     @Headers('x-gemini-model') modelo?: string,
+    @Headers('x-gemini-embedding-model') modeloEmbedding?: string,
   ): Promise<RespuestaChatDto> {
-    return this.chatIaService.procesarMensaje(consulta, apiKey, modelo);
+    return this.chatIaService.procesarMensaje(
+      consulta,
+      apiKey,
+      modelo,
+      modeloEmbedding,
+    );
   }
 
   @Post('api/ia/generar-doc-diff')

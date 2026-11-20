@@ -5,6 +5,8 @@ import {
   InternalServerErrorException,
   ServiceUnavailableException,
 } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { GoogleGenAI } from '@google/genai';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -26,14 +28,20 @@ import {
   construirPromptGenerarManual,
 } from '../prompts/index.js';
 import { CompilarManualIaDto } from '../common/dto/compilar-manual.dto.js';
+import { DocumentoFragmento } from '../documentos/entities/documento-fragmento.entity.js';
+import { EmbeddingsService } from '../documentos/embeddings.service.js';
 
 @Injectable()
 export class ChatIaService {
   private readonly logger = new Logger(ChatIaService.name);
   private readonly rutaDocumentacion: string;
 
-  constructor() {
-    // Ruta de la carpeta documentacion en la raíz del backend
+  constructor(
+    @InjectRepository(DocumentoFragmento)
+    private readonly fragmentoRepository: Repository<DocumentoFragmento>,
+    private readonly embeddingsService: EmbeddingsService,
+  ) {
+    // Ruta de la carpeta documentacion en la raíz del backend (fallback)
     this.rutaDocumentacion = path.resolve(process.cwd(), 'documentacion');
   }
 
@@ -103,6 +111,7 @@ export class ChatIaService {
     consulta: ConsultaChatDto,
     apiKeyHeader?: string,
     modeloHeader?: string,
+    modeloEmbeddingHeader?: string,
   ): Promise<RespuestaChatDto> {
     const inicioTiempo = Date.now();
 
@@ -146,8 +155,21 @@ export class ChatIaService {
     const clienteFinal = new GoogleGenAI({ apiKey: claveFinal });
 
     try {
-      // Filtrado semántico rápido por términos clave en el nombre del documento o contenido
-      const contextoDoc = this.obtenerContextoBase(preguntaTexto);
+      // 1. Intentar recuperación semántica RAG mediante vectores (pgvector)
+      let { contextoDoc, citasDetectadas } = await this.buscarContextoVectorial(
+        preguntaTexto,
+        claveFinal,
+        modeloEmbeddingHeader,
+      );
+
+      let tipoEstrategia = 'rag-vectorial';
+
+      // 2. Fallback a lectura de archivos físicos si no hay fragmentos vectoriales
+      if (!contextoDoc) {
+        contextoDoc = this.obtenerContextoBase(preguntaTexto);
+        tipoEstrategia = 'rag-filesystem';
+      }
+
       const contenidoPrompt = construirPromptConsultaRAG(
         preguntaTexto,
         contextoDoc,
@@ -157,7 +179,7 @@ export class ChatIaService {
       const contextCharsSent = contenidoPrompt.length;
 
       this.logger.log(
-        `Procesando chat [modo: ${strategyUsed}] con modelo: ${modeloFinal} (${contextCharsSent} caracteres)`,
+        `Procesando chat [modo: ${strategyUsed} / ${tipoEstrategia}] con modelo: ${modeloFinal} (${contextCharsSent} caracteres)`,
       );
 
       const promesaConsulta = clienteFinal.models.generateContent({
@@ -200,10 +222,11 @@ export class ChatIaService {
       );
       const foundInManual = !noEncontrado && !!contextoDoc;
 
-      // Extracción de citas del texto si existen referencias a archivos .md
+      // Extracción de citas del texto si existen referencias a archivos .md o documentos
       const matchesCitas = respuestaLimpia.match(/`([a-zA-Z0-9_\-./\\]+\.md)`/g) || [];
+      const citationsText = matchesCitas.map((m) => m.replace(/`/g, ''));
       const citations = Array.from(
-        new Set(matchesCitas.map((m) => m.replace(/`/g, ''))),
+        new Set([...citasDetectadas, ...citationsText]),
       );
 
       // Preguntas de seguimiento sugeridas
@@ -217,7 +240,7 @@ export class ChatIaService {
         foundInManual,
         citations,
         suggestedFollowUps,
-        strategyUsed,
+        strategyUsed: tipoEstrategia,
         modelUsed: modeloFinal,
         contextCharsSent,
         latencyMs: latenciaMs,
@@ -229,6 +252,90 @@ export class ChatIaService {
       throw new BadRequestException(
         `Error al consultar la IA de Gemini: ${msjLimpio}`,
       );
+    }
+  }
+
+  /**
+   * Realiza búsqueda semántica vectorial en PostgreSQL utilizando pgvector y similitud coseno.
+   */
+  private async buscarContextoVectorial(
+    pregunta: string,
+    claveGemini?: string,
+    modeloEmbedding?: string,
+    limite: number = 5,
+  ): Promise<{ contextoDoc: string; citasDetectadas: string[] }> {
+    try {
+      const vector = await this.embeddingsService.generarEmbedding(
+        pregunta,
+        claveGemini,
+        modeloEmbedding,
+      );
+
+      if (!vector || !vector.length) {
+        return { contextoDoc: '', citasDetectadas: [] };
+      }
+
+      const vectorStr = `[${vector.join(',')}]`;
+
+      // Consultar los fragmentos más cercanos usando distancia coseno (<=>)
+      const resultados: Array<{
+        id: string;
+        seccion: string;
+        contenido: string;
+        titulo: string;
+        nombre_archivo: string;
+        distancia: number;
+        similitud: number;
+      }> = await this.fragmentoRepository.query(
+        `
+        SELECT 
+          df.id,
+          df.seccion,
+          df.contenido,
+          d.titulo,
+          d.nombre_archivo,
+          (df.embedding <=> $1::vector) AS distancia,
+          1 - (df.embedding <=> $1::vector) AS similitud
+        FROM documento_fragmentos df
+        INNER JOIN documentos d ON d.id = df.documento_id
+        WHERE df.embedding IS NOT NULL
+          AND d.estado = 'ACTIVO'
+          AND d.fecha_eliminacion IS NULL
+        ORDER BY df.embedding <=> $1::vector ASC
+        LIMIT $2
+        `,
+        [vectorStr, limite],
+      );
+
+      if (!resultados || resultados.length === 0) {
+        return { contextoDoc: '', citasDetectadas: [] };
+      }
+
+      this.logger.log(
+        `Búsqueda vectorial encontró ${resultados.length} fragmentos relevantes. Top similitud: ${(resultados[0].similitud * 100).toFixed(1)}%`,
+      );
+
+      const citasSet = new Set<string>();
+      const fragmentosTexto = resultados.map((r) => {
+        const docRef = r.nombre_archivo || r.titulo || 'Documento';
+        citasSet.add(docRef);
+        const secRef = r.seccion ? ` (${r.seccion})` : '';
+        const contenidoPodado = r.contenido
+          .replace(/\r\n/g, '\n')
+          .replace(/\n{3,}/g, '\n\n')
+          .trim();
+        return `[DOC: ${docRef}${secRef}]\n${contenidoPodado}`;
+      });
+
+      return {
+        contextoDoc: fragmentosTexto.join('\n\n---\n\n'),
+        citasDetectadas: Array.from(citasSet),
+      };
+    } catch (error: any) {
+      this.logger.warn(
+        `No se pudo completar la búsqueda vectorial: ${error?.message || error}. Se utilizará búsqueda de respaldo.`,
+      );
+      return { contextoDoc: '', citasDetectadas: [] };
     }
   }
 

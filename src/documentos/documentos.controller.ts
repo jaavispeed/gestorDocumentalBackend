@@ -93,6 +93,22 @@ export class DocumentosController {
     );
   }
 
+  // 2.4 Sugerir Feature mediante vectores y heurística
+  @Post('sugerir-feature')
+  sugerirFeature(
+    @Body('nombreArchivo') nombreArchivo: string,
+    @Body('muestraContenido') muestraContenido?: string,
+    @Headers('x-gemini-key') apiKey?: string,
+    @Headers('x-gemini-embedding-model') modeloEmbedding?: string,
+  ) {
+    return this.documentosService.sugerirFeature(
+      nombreArchivo,
+      muestraContenido,
+      apiKey,
+      modeloEmbedding,
+    );
+  }
+
   // 3. Listar todos los documentos activos
   @Get()
   findAll() {

@@ -344,6 +344,154 @@ export class DocumentosService {
     };
   }
 
+  /**
+   * Sugiere el Feature (categoría) más adecuado para un archivo analizando
+   * su nombre y una muestra de su contenido contra los vectores existentes en la base de datos (pgvector).
+   */
+  async sugerirFeature(
+    nombreArchivo: string,
+    muestraContenido?: string,
+    apiKeyHeader?: string,
+    modeloEmbeddingHeader?: string,
+  ): Promise<{ featureSugerido: string; origen: 'vector' | 'heuristica'; confianza?: number }> {
+    // 1. Extraer texto para vectorizar (combinación de nombre y muestra inicial del contenido)
+    const textoConsulta = [
+      nombreArchivo.replace(/\.md$/i, '').replace(/[-_]+/g, ' '),
+      muestraContenido ? muestraContenido.substring(0, 1000) : '',
+    ]
+      .filter(Boolean)
+      .join('\n\n')
+      .trim();
+
+    try {
+      if (textoConsulta) {
+        const vector = await this.embeddingsService.generarEmbedding(
+          textoConsulta,
+          apiKeyHeader,
+          modeloEmbeddingHeader,
+        );
+
+        if (vector && vector.length > 0) {
+          const vectorStr = `[${vector.join(',')}]`;
+
+          // Buscar los fragmentos más cercanos en documentos activos
+          const coincidencias: Array<{
+            categoria: string;
+            similitud: number;
+          }> = await this.fragmentoRepository.query(
+            `
+            SELECT 
+              d.categoria,
+              1 - (df.embedding <=> $1::vector) AS similitud
+            FROM documento_fragmentos df
+            INNER JOIN documentos d ON d.id = df.documento_id
+            WHERE df.embedding IS NOT NULL
+              AND d.categoria IS NOT NULL
+              AND d.categoria != ''
+              AND d.estado = 'ACTIVO'
+              AND d.fecha_eliminacion IS NULL
+            ORDER BY df.embedding <=> $1::vector ASC
+            LIMIT 5
+            `,
+            [vectorStr],
+          );
+
+          if (coincidencias && coincidencias.length > 0) {
+            // Contar votos ponderados por similitud para la mejor categoría
+            const puntuaciones: Record<string, number> = {};
+            for (const c of coincidencias) {
+              if (c.categoria) {
+                puntuaciones[c.categoria] =
+                  (puntuaciones[c.categoria] || 0) + Number(c.similitud);
+              }
+            }
+
+            let mejorCategoria = '';
+            let mejorPuntuacion = -1;
+            for (const [cat, punt] of Object.entries(puntuaciones)) {
+              if (punt > mejorPuntuacion) {
+                mejorPuntuacion = punt;
+                mejorCategoria = cat;
+              }
+            }
+
+            // Si la similitud del primer resultado es representativa (>= 0.6)
+            if (mejorCategoria && coincidencias[0].similitud >= 0.55) {
+              return {
+                featureSugerido: mejorCategoria,
+                origen: 'vector',
+                confianza: Number(coincidencias[0].similitud.toFixed(2)),
+              };
+            }
+          }
+        }
+      }
+    } catch (err: any) {
+      this.logger.warn(
+        `Fallo al sugerir feature con vectores: ${err.message}. Aplicando heurística.`,
+      );
+    }
+
+    // 2. Si no hay vectores o la similitud fue baja, usar heurística formateada limpiamente
+    const featureLimpio = this.limpiarYFormatearFeature(nombreArchivo);
+    return {
+      featureSugerido: featureLimpio,
+      origen: 'heuristica',
+    };
+  }
+
+  /**
+   * Limpia nombres crudos de archivos como "DocumentacionRentaVariable_Venta" o "RV-01_comisiones"
+   * transformándolos a nombres limpios y profesionales (ej: "Renta Variable", "Comisiones").
+   */
+  private limpiarYFormatearFeature(nombreArchivo: string): string {
+    let base = nombreArchivo.replace(/\.md$/i, '').trim();
+
+    // Eliminar prefijos comunes y redundantes como "Documentacion", "Documento", "Manual", "Guia", "Doc_"
+    base = base.replace(/^(documentacion|documento|manual|guia|doc|specs?)[_ -]*/i, '');
+
+    // Si viene en camelCase o PascalCase, separar palabras: "RentaVariable" -> "Renta Variable"
+    base = base.replace(/([a-z])([A-Z])/g, '$1 $2');
+    base = base.replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2');
+
+    // Reemplazar guiones y guiones bajos por espacios
+    base = base.replace(/[-_]+/g, ' ').trim();
+
+    // Reemplazos de acrónimos comunes conocidos
+    const lower = base.toLowerCase();
+    if (lower.startsWith('rv ') || lower === 'rv' || lower.includes('renta variable')) {
+      return 'Renta Variable';
+    }
+    if (lower.startsWith('rf ') || lower === 'rf' || lower.includes('renta fija')) {
+      return 'Renta Fija';
+    }
+    if (lower.includes('auth') || lower.includes('login') || lower.includes('usuario')) {
+      return 'Autenticación';
+    }
+    if (lower.includes('pago') || lower.includes('billing') || lower.includes('factur')) {
+      return 'Facturación';
+    }
+    if (lower.includes('comision')) {
+      return 'Comisiones';
+    }
+    if (lower.includes('notificac')) {
+      return 'Notificaciones';
+    }
+    if (lower.includes('orden')) {
+      return 'Órdenes';
+    }
+
+    // Capitalizar palabras estilo Title Case estándar
+    const palabras = base.split(/\s+/).filter(Boolean);
+    if (palabras.length === 0) return 'General';
+
+    // Tomar las primeras dos palabras si es un nombre muy largo
+    const palabrasClave = palabras.slice(0, 2);
+    return palabrasClave
+      .map((p) => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase())
+      .join(' ');
+  }
+
   private handleDBExceptions(error: any) {
     if (error.code === '23505') {
       throw new BadRequestException(error.detail || 'El registro ya existe');
