@@ -211,40 +211,32 @@ export class ChatIaService {
         respuestaAi.candidates?.[0]?.content?.parts?.[0]?.text ||
         'No se pudo obtener una respuesta del modelo.';
 
-      // Sanitización defensiva de posibles residuos LaTeX en la respuesta
-      const respuestaLimpia = this.sanitizarTextoRespuesta(textoRespuesta);
+      // 1. "respuesta": Texto original enriquecido con Markdown (###, negritas, viñetas) para renderizar en el front con marked
+      const respuestaMarkdown = this.sanitizarTextoRespuesta(textoRespuesta);
+
+      // 2. "answer": Versión simplificada en texto plano legible para clientes externos que no usan visor Markdown
+      const answerPlano = this.convertirATextoPlanoLegible(respuestaMarkdown);
 
       const latenciaMs = Date.now() - inicioTiempo;
 
       // Detección de si se encontró en el manual
-      const noEncontrado = respuestaLimpia.includes(
+      const noEncontrado = respuestaMarkdown.includes(
         'La información solicitada no se encuentra disponible',
       );
       const foundInManual = !noEncontrado && !!contextoDoc;
 
       // Extracción de citas del texto si existen referencias a archivos .md o documentos
-      const matchesCitas = respuestaLimpia.match(/`([a-zA-Z0-9_\-./\\]+\.md)`/g) || [];
+      const matchesCitas = respuestaMarkdown.match(/`([a-zA-Z0-9_\-./\\]+\.md)`/g) || [];
       const citationsText = matchesCitas.map((m) => m.replace(/`/g, ''));
       const citations = Array.from(
         new Set([...citasDetectadas, ...citationsText]),
       );
 
-      // Preguntas de seguimiento sugeridas
-      const suggestedFollowUps = this.generarSugerenciasSeguimiento(
-        preguntaTexto,
-        contextoDoc,
-      );
-
       return {
-        answer: respuestaLimpia,
-        foundInManual,
-        citations,
-        suggestedFollowUps,
-        strategyUsed: tipoEstrategia,
-        modelUsed: modeloFinal,
-        contextCharsSent,
-        latencyMs: latenciaMs,
-        respuesta: respuestaLimpia,
+        text: answerPlano,
+        markdown: respuestaMarkdown,
+        sources: citations,
+        model: modeloFinal,
       };
     } catch (error: any) {
       const msjLimpio = this.extraerMensajeLimpioError(error);
@@ -454,8 +446,33 @@ export class ChatIaService {
   }
 
   /**
-   * Sanitiza residuos de notación matemática LaTeX y limpia caracteres markdown agresivos (como encabezados ###)
-   * para asegurar que el texto sea perfectamente legible tanto en clientes de texto plano como en frontends con markdown.
+   * Convierte una respuesta con Markdown a texto plano limpio y fácil de leer
+   * para clientes externos que no disponen de renderizador Markdown.
+   */
+  private convertirATextoPlanoLegible(texto: string): string {
+    if (!texto) return '';
+
+    return (
+      texto
+        // Quitar encabezados (#, ##, ###, etc.) y dejar solo el texto
+        .replace(/^[ \t]*#{1,6}[ \t]+/gm, '')
+        // Quitar negritas y cursivas con asteriscos (***texto***, **texto**, *texto*) sin tocar guiones bajos de variables
+        .replace(/\*{1,3}([^*]+)\*{1,3}/g, '$1')
+        // Quitar solo los delimitadores backtick (ej: `HORA_BOLSA_RV` -> HORA_BOLSA_RV)
+        .replace(/`([^`]+)`/g, '$1')
+        // Normalizar viñetas markdown a puntos legibles
+        .replace(/^[ \t]*[*+-][ \t]+/gm, '• ')
+        // Limpiar líneas horizontales divisoras (--- o ***)
+        .replace(/^[ \t]*[-*_]{3,}[ \t]*$/gm, '')
+        // Colapsar saltos de línea repetidos
+        .replace(/\n{3,}/g, '\n\n')
+        .trim()
+    );
+  }
+
+  /**
+   * Sanitiza residuos de notación matemática LaTeX que el modelo pudiera filtrar.
+   * Transforma de forma general cualquier comando LaTeX y expresión entre signos $ a texto plano.
    */
   private sanitizarTextoRespuesta(texto: string): string {
     if (!texto) return '';
@@ -478,17 +495,6 @@ export class ChatIaService {
         // Normalizar espaciados en sumas y restas de variables (ej: T+1 -> T + 1, T-1 -> T - 1)
         .replace(/([A-Za-z])\+([A-Za-z0-9])/g, '$1 + $2')
         .replace(/([A-Za-z])\-([A-Za-z0-9])/g, '$1 - $2')
-        // Limpiar encabezados markdown (#, ##, ###, etc.) y convertirlos a texto en negrita limpio
-        // Por ejemplo: "### Características" -> "**Características**"
-        .replace(/^[ \t]*#{1,6}[ \t]+([^\r\n]+)/gm, (_match, titulo) => {
-          const limpio = titulo.trim().replace(/^\*\*|\*\*$/g, '');
-          return `**${limpio}**`;
-        })
-        // Limpiar residuos tipo "\n\n###" o "# " inline que hayan quedado atrapados
-        .replace(/(^|\n)#{1,6}\s+/g, '$1')
-        // Colapsar saltos de línea excesivos
-        .replace(/\n{3,}/g, '\n\n')
-        .trim()
     );
   }
 
