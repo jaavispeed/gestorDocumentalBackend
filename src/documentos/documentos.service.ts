@@ -17,6 +17,7 @@ import { CrearDocumentoDto } from './dto/crear-documento.dto.js';
 import { ActualizarDocumentoDto } from './dto/actualizar-documento.dto.js';
 import { EmbeddingsService } from './embeddings.service.js';
 import { dividirMarkdownPorSecciones } from './utils/markdown-chunker.js';
+import { PaginacionDto, RespuestaPaginada } from '../common/dto/paginacion.dto.js';
 
 @Injectable()
 export class DocumentosService {
@@ -48,18 +49,17 @@ export class DocumentosService {
       (t || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
     const contenidoLimpio = normalizarTexto(contenido);
 
-    // 1. Detección por nombre de archivo exacto
+    // 1. Detección por nombre de archivo exacto (solo documentos con estado ACTIVO)
     const existentePorNombre = await this.documentoRepository.findOne({
       where: {
         nombreArchivo: nombreLimpio,
         estado: EstadoDocumento.ACTIVO,
       },
-      withDeleted: true,
     });
 
     if (existentePorNombre) {
       throw new ConflictException(
-        `Ya existe un documento registrado con el archivo "${nombreArchivo}" (Título: "${existentePorNombre.titulo}", Feature: "${existentePorNombre.categoria || 'General'}").`,
+        `Ya existe un documento activo registrado con el archivo "${nombreArchivo}" (Título: "${existentePorNombre.titulo}", Feature: "${existentePorNombre.categoria || 'General'}").`,
       );
     }
 
@@ -325,9 +325,15 @@ export class DocumentosService {
     return resultados;
   }
 
-  async findAll() {
-    // Retorna documentos con estado ACTIVO, con recuento de fragmentos/vectores generados
-    const documentos = await this.documentoRepository
+  async findAll(paginacionDto?: PaginacionDto): Promise<RespuestaPaginada<any> | any[]> {
+    // Si no se envían parámetros de paginación explícitos (modo retrocompatible)
+    const pagina = paginacionDto?.pagina ? Number(paginacionDto.pagina) : undefined;
+    const limite = paginacionDto?.limite ? Number(paginacionDto.limite) : undefined;
+    const busqueda = paginacionDto?.busqueda?.trim();
+    const tipoUsuario = paginacionDto?.tipoUsuario;
+    const categoria = paginacionDto?.categoria?.trim();
+
+    const queryBuilder = this.documentoRepository
       .createQueryBuilder('d')
       .leftJoin('d.fragmentos', 'f')
       .select([
@@ -343,12 +349,72 @@ export class DocumentosService {
       ])
       .addSelect('COUNT(f.id)', 'total_fragmentos')
       .addSelect('COUNT(CASE WHEN f.embedding IS NOT NULL THEN 1 END)', 'total_vectores')
-      .where('d.estado = :estado', { estado: EstadoDocumento.ACTIVO })
-      .groupBy('d.id')
-      .orderBy('d.fechaCreacion', 'DESC')
-      .getRawAndEntities();
+      .where('d.estado = :estado', { estado: EstadoDocumento.ACTIVO });
 
-    return documentos.entities.map((doc, idx) => {
+    if (busqueda) {
+      queryBuilder.andWhere(
+        '(LOWER(d.titulo) LIKE LOWER(:busqueda) OR LOWER(d.nombreArchivo) LIKE LOWER(:busqueda))',
+        { busqueda: `%${busqueda}%` },
+      );
+    }
+
+    if (tipoUsuario && tipoUsuario !== 'TODOS') {
+      queryBuilder.andWhere('d.tipoUsuario = :tipoUsuario', { tipoUsuario });
+    }
+
+    if (categoria) {
+      queryBuilder.andWhere('LOWER(d.categoria) = LOWER(:categoria)', { categoria });
+    }
+
+    queryBuilder
+      .groupBy('d.id')
+      .orderBy('d.fechaCreacion', 'DESC');
+
+    // Si no hay paginación definida (ej. llamada interna sin query params), retornar array completo
+    if (!pagina && !limite && !busqueda && !tipoUsuario && !categoria) {
+      const documentos = await queryBuilder.getRawAndEntities();
+      return documentos.entities.map((doc, idx) => {
+        const raw = documentos.raw[idx];
+        const totalVectores = parseInt(raw?.total_vectores || '0', 10);
+        const totalFragmentos = parseInt(raw?.total_fragmentos || '0', 10);
+        return {
+          ...doc,
+          totalFragmentos,
+          totalVectores,
+          tieneVectores: totalVectores > 0,
+        };
+      });
+    }
+
+    const paginaActual = pagina || 1;
+    const limiteActual = limite || 10;
+    const offset = (paginaActual - 1) * limiteActual;
+
+    // Conteo total para paginación
+    const subQueryTotal = this.documentoRepository
+      .createQueryBuilder('d_count')
+      .where('d_count.estado = :estado', { estado: EstadoDocumento.ACTIVO });
+
+    if (busqueda) {
+      subQueryTotal.andWhere(
+        '(LOWER(d_count.titulo) LIKE LOWER(:busqueda) OR LOWER(d_count.nombreArchivo) LIKE LOWER(:busqueda))',
+        { busqueda: `%${busqueda}%` },
+      );
+    }
+    if (tipoUsuario && tipoUsuario !== 'TODOS') {
+      subQueryTotal.andWhere('d_count.tipoUsuario = :tipoUsuario', { tipoUsuario });
+    }
+    if (categoria) {
+      subQueryTotal.andWhere('LOWER(d_count.categoria) = LOWER(:categoria)', { categoria });
+    }
+
+    const total = await subQueryTotal.getCount();
+
+    queryBuilder.offset(offset).limit(limiteActual);
+
+    const documentos = await queryBuilder.getRawAndEntities();
+
+    const datos = documentos.entities.map((doc, idx) => {
       const raw = documentos.raw[idx];
       const totalVectores = parseInt(raw?.total_vectores || '0', 10);
       const totalFragmentos = parseInt(raw?.total_fragmentos || '0', 10);
@@ -358,6 +424,54 @@ export class DocumentosService {
         totalVectores,
         tieneVectores: totalVectores > 0,
       };
+    });
+
+    const totalPaginas = Math.ceil(total / limiteActual) || 1;
+
+    return {
+      datos,
+      meta: {
+        total,
+        pagina: paginaActual,
+        limite: limiteActual,
+        totalPaginas,
+        tienePaginaSiguiente: paginaActual < totalPaginas,
+        tienePaginaAnterior: paginaActual > 1,
+      },
+    };
+  }
+
+  /**
+   * Lista todas las categorías / features existentes y activas
+   */
+  async obtenerCategorias(): Promise<string[]> {
+    const resultados = await this.documentoRepository
+      .createQueryBuilder('d')
+      .select('DISTINCT COALESCE(NULLIF(TRIM(d.categoria), \'\'), \'General\')', 'categoria')
+      .where('d.estado = :estado', { estado: EstadoDocumento.ACTIVO })
+      .orderBy('categoria', 'ASC')
+      .getRawMany();
+
+    return resultados.map((r) => r.categoria as string);
+  }
+
+  /**
+   * Obtiene todos los documentos activos completos (con su contenido)
+   * Diseñado para exportaciones masivas como descarga de ZIP
+   */
+  async obtenerTodosCompletos(): Promise<Documento[]> {
+    return this.documentoRepository.find({
+      select: {
+        id: true,
+        titulo: true,
+        nombreArchivo: true,
+        contenido: true,
+        categoria: true,
+        tipoUsuario: true,
+        version: true,
+      },
+      where: { estado: EstadoDocumento.ACTIVO },
+      order: { categoria: 'ASC', titulo: 'ASC' },
     });
   }
 
@@ -457,7 +571,6 @@ export class DocumentosService {
   ) {
     const documentos = await this.documentoRepository.find({
       where: { estado: EstadoDocumento.ACTIVO },
-      withDeleted: true,
     });
 
     try {

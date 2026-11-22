@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   Headers,
   UseInterceptors,
   UploadedFile,
@@ -18,6 +19,7 @@ import 'multer';
 import { DocumentosService } from './documentos.service.js';
 import { CrearDocumentoDto } from './dto/crear-documento.dto.js';
 import { ActualizarDocumentoDto } from './dto/actualizar-documento.dto.js';
+import { PaginacionDto } from '../common/dto/paginacion.dto.js';
 
 @Controller('documentos')
 export class DocumentosController {
@@ -113,10 +115,22 @@ export class DocumentosController {
     );
   }
 
-  // 3. Listar todos los documentos activos
+  // 3. Listar documentos activos con soporte de paginación y filtros
   @Get()
-  findAll() {
-    return this.documentosService.findAll();
+  findAll(@Query() paginacionDto: PaginacionDto) {
+    return this.documentosService.findAll(paginacionDto);
+  }
+
+  // 3.1. Obtener lista de categorías disponibles
+  @Get('categorias')
+  obtenerCategorias() {
+    return this.documentosService.obtenerCategorias();
+  }
+
+  // 3.2. Obtener todos los documentos activos completos (para exportación / descarga ZIP)
+  @Get('exportar-todos')
+  obtenerTodosCompletos() {
+    return this.documentosService.obtenerTodosCompletos();
   }
 
   // 4. Obtener documento por ID

@@ -22,6 +22,7 @@ import {
 import { OpcionesGeneracionDto } from './dto/ejecutar-generacion.dto.js';
 import { GuardarConfigSistemaDto } from './dto/config-sistema.dto.js';
 import { ProbarIaDto } from './dto/probar-ia.dto.js';
+import { PaginacionDto, RespuestaPaginada } from '../common/dto/paginacion.dto.js';
 
 export interface ResumenCliente {
   id: string;
@@ -50,12 +51,14 @@ export class AutomanualService {
     await fs.ensureDir(this.rutas.directorioDocs);
   }
 
-  public async obtenerClientes(): Promise<ResumenCliente[]> {
+  public async obtenerClientes(
+    paginacionDto?: PaginacionDto,
+  ): Promise<RespuestaPaginada<ResumenCliente> | ResumenCliente[]> {
     await this.asegurarDirectorioClientes();
     const entradas = await fs.readdir(this.rutas.directorioClientes, {
       withFileTypes: true,
     });
-    const clientes: ResumenCliente[] = [];
+    let clientes: ResumenCliente[] = [];
 
     for (const entrada of entradas) {
       if (entrada.isDirectory() && !entrada.name.startsWith('_')) {
@@ -91,7 +94,41 @@ export class AutomanualService {
       }
     }
 
-    return clientes;
+    const busqueda = paginacionDto?.busqueda?.trim().toLowerCase();
+    if (busqueda) {
+      clientes = clientes.filter(
+        (c) =>
+          c.name.toLowerCase().includes(busqueda) ||
+          c.id.toLowerCase().includes(busqueda) ||
+          (c.appUrl && c.appUrl.toLowerCase().includes(busqueda)),
+      );
+    }
+
+    const pagina = paginacionDto?.pagina ? Number(paginacionDto.pagina) : undefined;
+    const limite = paginacionDto?.limite ? Number(paginacionDto.limite) : undefined;
+
+    if (!pagina && !limite && !busqueda) {
+      return clientes;
+    }
+
+    const paginaActual = pagina || 1;
+    const limiteActual = limite || 10;
+    const total = clientes.length;
+    const totalPaginas = Math.ceil(total / limiteActual) || 1;
+    const offset = (paginaActual - 1) * limiteActual;
+    const datos = clientes.slice(offset, offset + limiteActual);
+
+    return {
+      datos,
+      meta: {
+        total,
+        pagina: paginaActual,
+        limite: limiteActual,
+        totalPaginas,
+        tienePaginaSiguiente: paginaActual < totalPaginas,
+        tienePaginaAnterior: paginaActual > 1,
+      },
+    };
   }
 
   private normalizarConfiguracion(config: any): ConfiguracionCliente {
@@ -446,7 +483,8 @@ export class AutomanualService {
   }
 
   public async obtenerConfiguracionSistema() {
-    const clientes = await this.obtenerClientes();
+    const clientesRes = await this.obtenerClientes();
+    const totalClientes = Array.isArray(clientesRes) ? clientesRes.length : clientesRes.meta.total;
     const promptConfig = cargarConfiguracionPromptSincrono();
     const apiKey = process.env.GEMINI_API_KEY || '';
     const hasApiKey = Boolean(apiKey && apiKey.length > 5);
@@ -460,7 +498,7 @@ export class AutomanualService {
         version: '2.0.0-gestor',
         nodeVersion: process.version,
         platform: process.platform,
-        totalClients: clientes.length,
+        totalClients: totalClientes,
         docsPath: this.rutas.directorioDocs,
       },
       ai: {

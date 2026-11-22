@@ -17,14 +17,15 @@ import { OpcionesGeneracionDto } from './dto/ejecutar-generacion.dto.js';
 import { SubirLogoDto } from './dto/subir-logo.dto.js';
 import { GuardarConfigSistemaDto } from './dto/config-sistema.dto.js';
 import { ProbarIaDto } from './dto/probar-ia.dto.js';
+import { PaginacionDto } from '../common/dto/paginacion.dto.js';
 
 @Controller('api/automanual')
 export class AutomanualController {
   constructor(private readonly automanualService: AutomanualService) {}
 
   @Get('clientes')
-  async obtenerClientes() {
-    return this.automanualService.obtenerClientes();
+  async obtenerClientes(@Query() paginacionDto: PaginacionDto) {
+    return this.automanualService.obtenerClientes(paginacionDto);
   }
 
   @Get('clientes/:id')

@@ -57,11 +57,19 @@ Este documento define las reglas y estándares de desarrollo para la creación d
 - Rutas de recurso en plural: `@Controller('documentos')`.
 - Métodos del controlador homólogos al servicio:
   - `@Post()` $\rightarrow$ `create(@Body() dto: CreateDto)`
-  - `@Get()` $\rightarrow$ `findAll()`
+  - `@Get()` $\rightarrow$ `findAll(@Query() paginacionDto: PaginacionDto)` con soporte de paginación de backend
   - `@Get(':id')` $\rightarrow$ `findOne(@Param('id', ParseUUIDPipe) id: string)`
   - `@Patch(':id')` $\rightarrow$ `update(...)`
   - `@Delete(':id')` $\rightarrow$ `remove(...)`
 - Cero dependencias de autenticación/guards en recursos base hasta que el módulo auth sea requerido explícitamente.
+
+---
+
+## 3.1. Estándar Obligatorio de Paginación en Endpoints GET (Listados)
+
+Para optimizar el rendimiento y el consumo de memoria:
+- Todo endpoint `@Get()` que retorne listas o colecciones de registros (especialmente documentos y catálogos de base de conocimiento) debe admitir parámetros de consulta mediante `PaginacionDto` (`pagina`, `limite`, `busqueda`, etc.).
+- Las respuestas paginadas deben devolver la estructura canónica `RespuestaPaginada<T>` con su metadata correspondiente (`total`, `pagina`, `limite`, `totalPaginas`, `tienePaginaSiguiente`, `tienePaginaAnterior`), manteniendo fallback retrocompatible en caso de consultas sin parámetros específicos.
 
 ---
 
@@ -82,7 +90,24 @@ Para garantizar la precisión de las respuestas del modelo y la seguridad contex
 
 ---
 
-## 5. Regla Obligatoria de Sincronización de Documentación Interna
+## 5. Prevención Rigurosa de SQL Injection y Uso de TypeORM
+
+Para blindar la base de datos contra vulnerabilidades de inyección SQL (SQL Injection):
+- **Uso Estricto del ORM y QueryBuilder Parametrizado:**
+  - Toda consulta a la base de datos debe realizarse a través de la API estándar de TypeORM (`find`, `findOne`, `create`, `save`, `softDelete`, etc.) o mediante `createQueryBuilder`.
+  - En `createQueryBuilder`, **NUNCA** concatenar variables ni valores directos en las cláusulas SQL (prohibido: `.where(\`d.estado = '${estado}'\`)`).
+  - Utilizar **exclusivamente parámetros nombrados** con sanitización y binding automático: `.where('d.estado = :estado', { estado })`, `.andWhere('d.categoria = :categoria', { categoria })`.
+- **Consultas Nativas Crudas (`repository.query(...)`):**
+  - Se restringen únicamente a operaciones vectoriales especializadas de `pgvector` (operador de distancia `<=>`).
+  - En caso de requerirse `query(...)`, es mandatorio usar **Placeholders Posicionales Sanitizados** (`$1`, `$2`, `$3`) pasando el arreglo de valores como segundo argumento `repository.query(sql, [param1, param2])`.
+  - Queda terminantemente prohibido interpolar cadenas en templates literales dentro de sentencias SQL crudas.
+- **Validación de Duplicados y Estado de Registros:**
+  - Toda verificación de duplicidad (por nombre de archivo, contenido exacto o similitud vectorial semántica) debe evaluar únicamente registros con estado vigente (`estado = 'ACTIVO'` y `fecha_eliminacion IS NULL`).
+  - Si un documento idéntico o con el mismo nombre se encuentra en estado `ELIMINADO` (soft delete), **NO** debe considerarse conflicto ni bloquear la subida del nuevo archivo.
+
+---
+
+## 6. Regla Obligatoria de Sincronización de Documentación Interna
 
 Todo cambio, adición, eliminación o refactorización que afecte al backend (nuevos endpoints, cambios de esquemas de BD, modificaciones en servicios, prompts o configuraciones):
 1. **Debe actualizar obligatoriamente** los archivos correspondientes en `documentacion/Documentacion_Interna/` (`Arquitectura_Backend.md`, `Catalogo_Endpoints_API.md`, `Flujo_RAG_Vectores_Segmentacion.md`, etc.).

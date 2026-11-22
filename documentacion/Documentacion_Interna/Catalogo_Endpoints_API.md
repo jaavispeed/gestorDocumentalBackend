@@ -22,7 +22,9 @@ Este documento contiene la especificación completa de todos los endpoints dispo
 
 | Método | Endpoint | Descripción |
 | :--- | :--- | :--- |
-| `GET` | `/documentos` | Lista todos los documentos activos en base de datos con conteo de fragmentos y vectores |
+| `GET` | `/documentos` | Lista documentos activos con soporte de paginación plana (`pagina`, `limite`, `busqueda`, `tipoUsuario`, `categoria`) y recuento de fragmentos/vectores |
+| `GET` | `/documentos/categorias` | Obtiene el listado único de categorías/features existentes para selector de filtrado |
+| `GET` | `/documentos/estructura/carpetas` | Devuelve la estructura paginada por Features / Carpetas con sus documentos asociados completos |
 | `GET` | `/documentos/:id` | Obtiene el detalle completo de un documento y sus fragmentos |
 | `POST` | `/documentos` | Crea un documento directamente en JSON especificando `tipoUsuario` (`DEV` o `USUARIO`) |
 | `POST` | `/documentos/upload` | Sube un archivo físico `.md` con multipart/form-data |
