@@ -16,6 +16,11 @@ export enum EstadoDocumento {
   ELIMINADO = 'ELIMINADO',
 }
 
+export enum TipoUsuarioDocumento {
+  DEV = 'DEV',
+  USUARIO = 'USUARIO',
+}
+
 @Entity({ name: 'documentos' })
 export class Documento {
   @PrimaryGeneratedColumn('uuid')
@@ -29,6 +34,14 @@ export class Documento {
 
   @Column('text', { nullable: true })
   categoria?: string;
+
+  @Column({
+    type: 'enum',
+    enum: TipoUsuarioDocumento,
+    name: 'tipo_usuario',
+    default: TipoUsuarioDocumento.DEV,
+  })
+  tipoUsuario: TipoUsuarioDocumento;
 
   @Column('text')
   contenido: string;

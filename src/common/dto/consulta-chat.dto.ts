@@ -59,4 +59,8 @@ export class ConsultaChatDto {
   @IsOptional()
   @IsString()
   modeloPersonalizado?: string;
+
+  @IsOptional()
+  @IsString()
+  tipoUsuario?: 'DEV' | 'USUARIO' | 'INTERNO';
 }

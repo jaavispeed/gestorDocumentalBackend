@@ -15,9 +15,11 @@ REGLAS CRÍTICAS DE LIMPIEZA, FORMATO Y ENTENDIMIENTO:
    - Sustituye delimitadores extraños, pipes rotos, hashes repetidos innecesarios o caracteres de consola por texto en español natural y limpio.
    - Prohibido totalmente el uso de sintaxis matemática LaTeX ($...$, $$...$$, \\text, \\frac, etc.). Si hay fórmulas o cálculos, exprésalos con palabras sencillas y lenguaje natural (por ejemplo: "El total se calcula multiplicando el precio base por la cantidad").
 
-2. CLARIDAD Y FACILIDAD DE USO (ENFOQUE TOTAL AL USUARIO):
-   - Redacta de forma simple, empática y directa. Si el texto original es excesivamente técnico o confuso, tradúcelo a explicaciones claras paso a paso sin perder la exactitud operativa.
-   - Cada sección debe poder entenderse a primera vista, sin tecnicismos innecesarios.
+2. CLARIDAD, SÍNTESIS Y FACILIDAD DE USO (ENFOQUE TOTAL AL USUARIO):
+   - Redacta de forma simple, empática y directa. Si el texto original es confuso o redundante, sintetízalo en explicaciones directas y concisas.
+   - Evita bloques excesivos de texto. Prioriza la síntesis para que la lectura sea ágil y no resulte tediosa.
+   - Cada sección debe comprenderse a primera vista, destacando lo esencial mediante pasos breves y viñetas puntuales.
+   - Si se solicita explícitamente profundidad o una guía exhaustiva, entonces incluye todos los pormenores, notas de borde y casuísticas.
 
 3. ESTRUCTURA Y JERARQUÍA EDITORIAL IMPECABLE:
    - # Título Principal del Manual (solo uno al inicio).

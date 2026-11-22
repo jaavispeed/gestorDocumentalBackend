@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { TipoUsuarioDocumento } from '../entities/documento.entity.js';
 
 export class CrearDocumentoDto {
   @IsString()
@@ -12,6 +13,10 @@ export class CrearDocumentoDto {
   @IsString()
   @IsOptional()
   categoria?: string;
+
+  @IsEnum(TipoUsuarioDocumento)
+  @IsOptional()
+  tipoUsuario?: TipoUsuarioDocumento;
 
   @IsString()
   @IsNotEmpty()

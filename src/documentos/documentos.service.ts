@@ -154,6 +154,7 @@ export class DocumentosService {
         titulo: crearDocumentoDto.titulo,
         nombreArchivo: crearDocumentoDto.nombreArchivo,
         categoria: crearDocumentoDto.categoria || 'General',
+        tipoUsuario: crearDocumentoDto.tipoUsuario || ('DEV' as any),
         contenido: crearDocumentoDto.contenido,
         version: 1,
         estado: EstadoDocumento.ACTIVO,
@@ -213,6 +214,7 @@ export class DocumentosService {
 
     if (dto.titulo) documento.titulo = dto.titulo;
     if (dto.categoria) documento.categoria = dto.categoria;
+    if (dto.tipoUsuario) documento.tipoUsuario = dto.tipoUsuario;
     if (dto.contenido) documento.contenido = dto.contenido;
 
     const actualizado = await this.documentoRepository.save(documento);
@@ -241,6 +243,7 @@ export class DocumentosService {
     categoria?: string,
     apiKeyHeader?: string,
     modeloEmbeddingHeader?: string,
+    tipoUsuario?: 'DEV' | 'USUARIO',
   ) {
     if (!archivo) {
       throw new BadRequestException('No se ha proporcionado ningún archivo.');
@@ -263,6 +266,7 @@ export class DocumentosService {
         titulo,
         nombreArchivo: archivo.originalname,
         categoria: categoria || 'General',
+        tipoUsuario: (tipoUsuario as any) || 'DEV',
         contenido,
       },
       apiKeyHeader,
@@ -275,6 +279,7 @@ export class DocumentosService {
     categorias?: string | string[],
     apiKeyHeader?: string,
     modeloEmbeddingHeader?: string,
+    tipoUsuario?: 'DEV' | 'USUARIO' | string[],
   ) {
     if (!archivos || archivos.length === 0) {
       throw new BadRequestException('No se han proporcionado archivos.');
@@ -286,15 +291,23 @@ export class DocumentosService {
         ? [categorias]
         : [];
 
+    const tipoUsuarioArray = Array.isArray(tipoUsuario)
+      ? tipoUsuario
+      : typeof tipoUsuario === 'string'
+        ? [tipoUsuario]
+        : [];
+
     const resultados = [];
     for (let i = 0; i < archivos.length; i++) {
       const archivo = archivos[i];
       const categoria = categoriasArray[i] || categoriasArray[0] || 'General';
+      const usuarioTipo = (tipoUsuarioArray[i] || tipoUsuarioArray[0] || 'DEV') as 'DEV' | 'USUARIO';
       const doc = await this.procesarArchivoSubido(
         archivo,
         categoria,
         apiKeyHeader,
         modeloEmbeddingHeader,
+        usuarioTipo,
       );
       resultados.push(doc);
     }

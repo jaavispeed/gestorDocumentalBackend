@@ -51,6 +51,66 @@ export class ChatIaController {
     );
   }
 
+  @Post('api/ia/chat/dev')
+  @HttpCode(HttpStatus.OK)
+  async enviarChatDev(
+    @Body() consulta: ConsultaChatDto,
+    @Headers('x-gemini-key') apiKey?: string,
+    @Headers('x-gemini-model') modelo?: string,
+    @Headers('x-gemini-embedding-model') modeloEmbedding?: string,
+  ): Promise<RespuestaChatDto> {
+    const consultaDev: ConsultaChatDto = {
+      ...consulta,
+      tipoUsuario: 'DEV',
+    };
+    return this.chatIaService.procesarMensaje(
+      consultaDev,
+      apiKey,
+      modelo,
+      modeloEmbedding,
+    );
+  }
+
+  @Post('api/ia/chat/usuario')
+  @HttpCode(HttpStatus.OK)
+  async enviarChatUsuario(
+    @Body() consulta: ConsultaChatDto,
+    @Headers('x-gemini-key') apiKey?: string,
+    @Headers('x-gemini-model') modelo?: string,
+    @Headers('x-gemini-embedding-model') modeloEmbedding?: string,
+  ): Promise<RespuestaChatDto> {
+    const consultaUsuario: ConsultaChatDto = {
+      ...consulta,
+      tipoUsuario: 'USUARIO',
+    };
+    return this.chatIaService.procesarMensaje(
+      consultaUsuario,
+      apiKey,
+      modelo,
+      modeloEmbedding,
+    );
+  }
+
+  @Post('api/ia/chat/interno')
+  @HttpCode(HttpStatus.OK)
+  async enviarChatInterno(
+    @Body() consulta: ConsultaChatDto,
+    @Headers('x-gemini-key') apiKey?: string,
+    @Headers('x-gemini-model') modelo?: string,
+    @Headers('x-gemini-embedding-model') modeloEmbedding?: string,
+  ): Promise<RespuestaChatDto> {
+    const consultaInterna: ConsultaChatDto = {
+      ...consulta,
+      tipoUsuario: 'INTERNO',
+    };
+    return this.chatIaService.procesarMensaje(
+      consultaInterna,
+      apiKey,
+      modelo,
+      modeloEmbedding,
+    );
+  }
+
   @Post('api/ia/generar-doc-diff')
   @HttpCode(HttpStatus.OK)
   async generarDocDiff(

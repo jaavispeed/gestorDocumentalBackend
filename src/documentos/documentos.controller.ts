@@ -39,6 +39,7 @@ export class DocumentosController {
   uploadFile(
     @UploadedFile() file: Express.Multer.File,
     @Body('categoria') categoria?: string,
+    @Body('tipoUsuario') tipoUsuario?: 'DEV' | 'USUARIO',
     @Headers('x-gemini-key') apiKey?: string,
     @Headers('x-gemini-embedding-model') modeloEmbedding?: string,
   ) {
@@ -47,6 +48,7 @@ export class DocumentosController {
       categoria,
       apiKey,
       modeloEmbedding,
+      tipoUsuario,
     );
   }
 
@@ -56,6 +58,7 @@ export class DocumentosController {
   uploadMultipleFiles(
     @UploadedFiles() files: Express.Multer.File[],
     @Body('categorias') categorias?: string | string[],
+    @Body('tipoUsuario') tipoUsuario?: 'DEV' | 'USUARIO' | string[],
     @Headers('x-gemini-key') apiKey?: string,
     @Headers('x-gemini-embedding-model') modeloEmbedding?: string,
   ) {
@@ -64,6 +67,7 @@ export class DocumentosController {
       categorias,
       apiKey,
       modeloEmbedding,
+      tipoUsuario,
     );
   }
 

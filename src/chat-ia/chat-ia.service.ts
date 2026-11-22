@@ -21,6 +21,8 @@ import {
 } from '../common/dto/git-diff-doc.dto.js';
 import {
   PROMPT_ASISTENTE_DOCUMENTACION,
+  PROMPT_ASISTENTE_USUARIO,
+  PROMPT_ASISTENTE_INTERNO,
   PROMPT_GENERADOR_DOC_GIT_DIFF,
   PROMPT_COMPILADOR_MANUAL_UX,
   construirPromptConsultaRAG,
@@ -146,6 +148,8 @@ export class ChatIaService {
       process.env.GEMINI_MODELO ||
       'gemini-3.1-flash-lite';
 
+    const estrategiaUsuario = consulta.tipoUsuario || 'DEV';
+
     if (!claveFinal || claveFinal === 'tu_clave_gemini_aqui') {
       throw new ServiceUnavailableException(
         'No hay ninguna clave API de Gemini configurada. Configura GEMINI_API_KEY en las variables de entorno o en la cabecera x-gemini-key.',
@@ -155,14 +159,35 @@ export class ChatIaService {
     const clienteFinal = new GoogleGenAI({ apiKey: claveFinal });
 
     try {
-      // 1. Intentar recuperación semántica RAG mediante vectores (pgvector)
-      let { contextoDoc, citasDetectadas } = await this.buscarContextoVectorial(
-        preguntaTexto,
-        claveFinal,
-        modeloEmbeddingHeader,
-      );
-
+      let contextoDoc = '';
+      let citasDetectadas: string[] = [];
       let tipoEstrategia = 'rag-vectorial';
+
+      if (estrategiaUsuario === 'INTERNO') {
+        // Para el chatbot interno, leemos directamente los archivos de Documentacion_Interna
+        const rutaInterna = path.join(this.rutaDocumentacion, 'Documentacion_Interna');
+        if (fs.existsSync(rutaInterna)) {
+          const archivosInternos = this.leerArchivosMd(rutaInterna);
+          contextoDoc = archivosInternos
+            .map((a) => `[DOC INTERNA: ${path.basename(a.nombre)}]\n${a.contenido.trim()}`)
+            .join('\n\n---\n\n');
+          citasDetectadas = archivosInternos.map((a) => path.basename(a.nombre));
+          tipoEstrategia = 'rag-documentacion-interna';
+        }
+      }
+
+      if (!contextoDoc) {
+        // 1. Intentar recuperación semántica RAG mediante vectores (pgvector) filtrando por tipo de usuario
+        const resVec = await this.buscarContextoVectorial(
+          preguntaTexto,
+          claveFinal,
+          modeloEmbeddingHeader,
+          5,
+          estrategiaUsuario as any,
+        );
+        contextoDoc = resVec.contextoDoc;
+        citasDetectadas = resVec.citasDetectadas;
+      }
 
       // 2. Fallback a lectura de archivos físicos si no hay fragmentos vectoriales
       if (!contextoDoc) {
@@ -179,14 +204,21 @@ export class ChatIaService {
       const contextCharsSent = contenidoPrompt.length;
 
       this.logger.log(
-        `Procesando chat [modo: ${strategyUsed} / ${tipoEstrategia}] con modelo: ${modeloFinal} (${contextCharsSent} caracteres)`,
+        `Procesando chat [modo: ${strategyUsed} / ${tipoEstrategia} | tipoUsuario: ${estrategiaUsuario}] con modelo: ${modeloFinal} (${contextCharsSent} caracteres)`,
       );
+
+      const systemPromptSeleccionado =
+        estrategiaUsuario === 'USUARIO'
+          ? PROMPT_ASISTENTE_USUARIO
+          : estrategiaUsuario === 'INTERNO'
+            ? PROMPT_ASISTENTE_INTERNO
+            : PROMPT_ASISTENTE_DOCUMENTACION;
 
       const promesaConsulta = clienteFinal.models.generateContent({
         model: modeloFinal,
         contents: contenidoPrompt,
         config: {
-          systemInstruction: PROMPT_ASISTENTE_DOCUMENTACION,
+          systemInstruction: systemPromptSeleccionado,
           temperature: 0.1,
           maxOutputTokens: 1536,
         },
@@ -248,13 +280,15 @@ export class ChatIaService {
   }
 
   /**
-   * Realiza búsqueda semántica vectorial en PostgreSQL utilizando pgvector y similitud coseno.
+   * Realiza búsqueda semántica vectorial en PostgreSQL utilizando pgvector y similitud coseno,
+   * filtrando según el tipo de usuario (DEV o USUARIO).
    */
   private async buscarContextoVectorial(
     pregunta: string,
     claveGemini?: string,
     modeloEmbedding?: string,
     limite: number = 5,
+    tipoUsuario: 'DEV' | 'USUARIO' = 'DEV',
   ): Promise<{ contextoDoc: string; citasDetectadas: string[] }> {
     try {
       const vector = await this.embeddingsService.generarEmbedding(
@@ -269,7 +303,7 @@ export class ChatIaService {
 
       const vectorStr = `[${vector.join(',')}]`;
 
-      // Consultar los fragmentos más cercanos usando distancia coseno (<=>)
+      // Consultar los fragmentos más cercanos usando distancia coseno (<=>) filtrando por tipo de usuario
       const resultados: Array<{
         id: string;
         seccion: string;
@@ -293,10 +327,11 @@ export class ChatIaService {
         WHERE df.embedding IS NOT NULL
           AND d.estado = 'ACTIVO'
           AND d.fecha_eliminacion IS NULL
+          AND (d.tipo_usuario = $3 OR d.tipo_usuario IS NULL)
         ORDER BY df.embedding <=> $1::vector ASC
         LIMIT $2
         `,
-        [vectorStr, limite],
+        [vectorStr, limite, tipoUsuario],
       );
 
       if (!resultados || resultados.length === 0) {
