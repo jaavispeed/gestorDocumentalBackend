@@ -34,7 +34,7 @@ export class DocumentosService {
 
   /**
    * Valida defensivamente si ya existe un documento con el mismo nombre de archivo
-   * o si semánticamente / en texto es idéntico a uno existente en la base de datos.
+   * o si semánticamente / en texto es idéntico o casi idéntico a uno existente en la base de datos.
    */
   async validarDuplicado(
     nombreArchivo: string,
@@ -42,13 +42,16 @@ export class DocumentosService {
     apiKeyHeader?: string,
     modeloEmbeddingHeader?: string,
   ): Promise<void> {
-    const nombreLimpio = (nombreArchivo || '').trim().toLowerCase();
-    const contenidoLimpio = (contenido || '').trim();
+    const nombreLimpio = (nombreArchivo || '').trim();
+    // Normalizar saltos de línea y espacios en blanco de los extremos
+    const normalizarTexto = (t: string) =>
+      (t || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+    const contenidoLimpio = normalizarTexto(contenido);
 
     // 1. Detección por nombre de archivo exacto
     const existentePorNombre = await this.documentoRepository.findOne({
       where: {
-        nombreArchivo: nombreArchivo.trim(),
+        nombreArchivo: nombreLimpio,
         estado: EstadoDocumento.ACTIVO,
       },
       withDeleted: true,
@@ -60,25 +63,28 @@ export class DocumentosService {
       );
     }
 
-    // 2. Detección por coincidencia exacta de texto/contenido
-    const existentePorContenido = await this.documentoRepository.findOne({
-      where: {
-        contenido: contenidoLimpio,
-        estado: EstadoDocumento.ACTIVO,
-      },
-      withDeleted: true,
-    });
+    // 2. Detección por coincidencia de texto/contenido (normalizado contra base de datos)
+    const existentePorContenidoExacto = await this.documentoRepository
+      .createQueryBuilder('d')
+      .where('d.estado = :estado', { estado: EstadoDocumento.ACTIVO })
+      .andWhere('d.fecha_eliminacion IS NULL')
+      .andWhere(
+        "REPLACE(REPLACE(TRIM(d.contenido), '\r\n', '\n'), '\r', '\n') = :contenido",
+        { contenido: contenidoLimpio },
+      )
+      .getOne();
 
-    if (existentePorContenido) {
+    if (existentePorContenidoExacto) {
       throw new ConflictException(
-        `El contenido de "${nombreArchivo}" es idéntico al documento existente "${existentePorContenido.titulo}" (${existentePorContenido.nombreArchivo || 'sin archivo'}).`,
+        `El contenido de "${nombreArchivo}" es exactamente idéntico al documento existente "${existentePorContenidoExacto.titulo}" (${existentePorContenidoExacto.nombreArchivo || 'sin archivo'}).`,
       );
     }
 
-    // 3. Detección por alta similitud vectorial (mismo contenido semántico)
+    // 3. Detección por similitud vectorial semántica (pgvector)
     try {
-      const muestra = contenidoLimpio.substring(0, 1500);
-      if (muestra.length > 50) {
+      // Tomamos una muestra representativa de hasta 3.000 caracteres
+      const muestra = contenidoLimpio.substring(0, 3000);
+      if (muestra.length > 40) {
         const vector = await this.embeddingsService.generarEmbedding(
           muestra,
           apiKeyHeader,
@@ -87,6 +93,8 @@ export class DocumentosService {
 
         if (vector && vector.length > 0) {
           const vectorStr = `[${vector.join(',')}]`;
+
+          // Buscamos contra cualquier fragmento activo existente
           const duplicadoSemantico: Array<{
             id: string;
             titulo: string;
@@ -106,7 +114,6 @@ export class DocumentosService {
             WHERE df.embedding IS NOT NULL
               AND d.estado = 'ACTIVO'
               AND d.fecha_eliminacion IS NULL
-              AND df.indice = 0
             ORDER BY df.embedding <=> $1::vector ASC
             LIMIT 1
             `,
@@ -115,10 +122,13 @@ export class DocumentosService {
 
           if (duplicadoSemantico && duplicadoSemantico.length > 0) {
             const masCercano = duplicadoSemantico[0];
-            // Umbral de duplicidad estricta semántica (>= 0.985)
-            if (masCercano.similitud >= 0.985) {
+            const sim = Number(masCercano.similitud);
+
+            // Umbral de duplicidad semántica ajustado (>= 0.93 o 93%)
+            if (sim >= 0.93) {
+              const porcentaje = (sim * 100).toFixed(1);
               throw new ConflictException(
-                `Detección de duplicado por IA: El documento "${nombreArchivo}" contiene un texto prácticamente idéntico al documento existente "${masCercano.titulo}" (${(masCercano.similitud * 100).toFixed(1)}% de coincidencia semántica).`,
+                `Detección de contenido duplicado (IA - ${porcentaje}% de similitud): El archivo "${nombreArchivo}" tiene el mismo contenido que el documento existente "${masCercano.titulo}" (${masCercano.nombre_archivo || 'sin archivo'}, Feature: "${masCercano.categoria || 'General'}").`,
               );
             }
           }
@@ -129,7 +139,7 @@ export class DocumentosService {
         throw vectorError;
       }
       this.logger.warn(
-        `No se pudo ejecutar la validación vectorial previa: ${vectorError.message}`,
+        `Validación vectorial previa omitida por error técnico: ${vectorError.message}`,
       );
     }
   }
@@ -325,6 +335,7 @@ export class DocumentosService {
         'd.titulo',
         'd.nombreArchivo',
         'd.categoria',
+        'd.tipoUsuario',
         'd.estado',
         'd.version',
         'd.fechaCreacion',
@@ -497,15 +508,30 @@ export class DocumentosService {
   }
 
   /**
-   * Sugiere el Feature (categoría) más adecuado para un archivo analizando
-   * su nombre y una muestra de su contenido contra los vectores existentes en la base de datos (pgvector).
+   * Sugiere el Feature (categoría) y el tipo de documento (DEV o USUARIO) más adecuado para un archivo
+   * analizando su nombre y una muestra de su contenido contra los vectores existentes en la base de datos (pgvector).
    */
   async sugerirFeature(
     nombreArchivo: string,
     muestraContenido?: string,
     apiKeyHeader?: string,
     modeloEmbeddingHeader?: string,
-  ): Promise<{ featureSugerido: string; origen: 'vector' | 'heuristica'; confianza?: number }> {
+  ): Promise<{
+    featureSugerido: string;
+    tipoUsuarioSugerido: 'DEV' | 'USUARIO';
+    origen: 'vector' | 'heuristica';
+    confianza?: number;
+    duplicadoDetectado?: {
+      titulo: string;
+      nombreArchivo: string;
+      similitud: number;
+    };
+  }> {
+    const tipoUsuarioSugerido = this.detectarTipoUsuarioSugerido(
+      nombreArchivo,
+      muestraContenido,
+    );
+
     // 1. Extraer texto para vectorizar (combinación de nombre y muestra inicial del contenido)
     const textoConsulta = [
       nombreArchivo.replace(/\.md$/i, '').replace(/[-_]+/g, ' '),
@@ -528,12 +554,20 @@ export class DocumentosService {
 
           // Buscar los fragmentos más cercanos en documentos activos
           const coincidencias: Array<{
+            id: string;
+            titulo: string;
+            nombre_archivo: string;
             categoria: string;
+            tipo_usuario?: string;
             similitud: number;
           }> = await this.fragmentoRepository.query(
             `
             SELECT 
+              d.id,
+              d.titulo,
+              d.nombre_archivo,
               d.categoria,
+              d.tipo_usuario,
               1 - (df.embedding <=> $1::vector) AS similitud
             FROM documento_fragmentos df
             INNER JOIN documentos d ON d.id = df.documento_id
@@ -548,13 +582,34 @@ export class DocumentosService {
             [vectorStr],
           );
 
+          let duplicadoDetectado:
+            | { titulo: string; nombreArchivo: string; similitud: number }
+            | undefined = undefined;
+
           if (coincidencias && coincidencias.length > 0) {
+            const masCercano = coincidencias[0];
+            if (Number(masCercano.similitud) >= 0.93) {
+              duplicadoDetectado = {
+                titulo: masCercano.titulo,
+                nombreArchivo: masCercano.nombre_archivo,
+                similitud: Number(masCercano.similitud),
+              };
+            }
+
             // Contar votos ponderados por similitud para la mejor categoría
             const puntuaciones: Record<string, number> = {};
+            let votosDev = 0;
+            let votosUsuario = 0;
+
             for (const c of coincidencias) {
               if (c.categoria) {
                 puntuaciones[c.categoria] =
                   (puntuaciones[c.categoria] || 0) + Number(c.similitud);
+              }
+              if (c.tipo_usuario === 'USUARIO') {
+                votosUsuario += Number(c.similitud);
+              } else if (c.tipo_usuario === 'DEV') {
+                votosDev += Number(c.similitud);
               }
             }
 
@@ -567,12 +622,22 @@ export class DocumentosService {
               }
             }
 
-            // Si la similitud del primer resultado es representativa (>= 0.6)
+            // Si hay fuerte coherencia en los documentos vecinos encontrados vectorialmente
+            const tipoFinal =
+              votosUsuario > votosDev && votosUsuario >= 0.8
+                ? 'USUARIO'
+                : votosDev > votosUsuario && votosDev >= 0.8
+                  ? 'DEV'
+                  : tipoUsuarioSugerido;
+
+            // Si la similitud del primer resultado es representativa (>= 0.55)
             if (mejorCategoria && coincidencias[0].similitud >= 0.55) {
               return {
                 featureSugerido: mejorCategoria,
+                tipoUsuarioSugerido: tipoFinal,
                 origen: 'vector',
                 confianza: Number(coincidencias[0].similitud.toFixed(2)),
+                duplicadoDetectado,
               };
             }
           }
@@ -588,8 +653,96 @@ export class DocumentosService {
     const featureLimpio = this.limpiarYFormatearFeature(nombreArchivo);
     return {
       featureSugerido: featureLimpio,
+      tipoUsuarioSugerido,
       origen: 'heuristica',
     };
+  }
+
+  /**
+   * Detecta si un documento es para un usuario final o para un desarrollador técnico.
+   */
+  private detectarTipoUsuarioSugerido(
+    nombreArchivo: string,
+    muestraContenido?: string,
+  ): 'DEV' | 'USUARIO' {
+    const textoAnalisis = `${nombreArchivo} ${muestraContenido || ''}`.toLowerCase();
+
+    // Palabras e indicios que sugieren documentación funcional / usuario final
+    const indiciosUsuario = [
+      'usuario',
+      'manual de usuario',
+      'guia de usuario',
+      'guía de usuario',
+      'paso a paso',
+      'pantalla',
+      'flujo',
+      'cliente',
+      'operativo',
+      'operador',
+      'funcional',
+      'formulario',
+      'boton',
+      'botón',
+      'clic en',
+      'haga clic',
+      'seleccionar',
+      'captura de pantalla',
+      'manual-usuario',
+      'user guide',
+      'user-guide',
+    ];
+
+    // Palabras e indicios técnicos que sugieren documentación para devs
+    const indiciosDev = [
+      'api',
+      'endpoint',
+      'controller',
+      'service',
+      'schema',
+      'dto',
+      'token',
+      'jwt',
+      'backend',
+      'frontend',
+      'curl',
+      'post /',
+      'get /',
+      'patch /',
+      'delete /',
+      'json',
+      'sql',
+      'database',
+      'typescript',
+      'docker',
+      'git',
+      'http',
+      'payload',
+      'repositorio',
+      'arquitectura',
+      'sdk',
+      'dev',
+    ];
+
+    let puntuacionUsuario = 0;
+    let puntuacionDev = 0;
+
+    for (const palabra of indiciosUsuario) {
+      if (textoAnalisis.includes(palabra)) {
+        puntuacionUsuario += 1;
+      }
+    }
+
+    for (const palabra of indiciosDev) {
+      if (textoAnalisis.includes(palabra)) {
+        puntuacionDev += 1;
+      }
+    }
+
+    if (puntuacionUsuario > puntuacionDev) {
+      return 'USUARIO';
+    }
+
+    return 'DEV';
   }
 
   /**
