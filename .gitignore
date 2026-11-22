@@ -45,7 +45,13 @@ Thumbs.db
 !.env.example
 
 # AI Agents configuration
-.agents/*
+# Ignorar skills de diseño u otros skills pesados
+.agents/skills/
+skills-lock.json
+
+# Permitir explícitamente rules completas y los .md de .agents
+!.agents/AGENTS.md
+!.agents/**/*.md
 !.agents/rules/
 !.agents/rules/**
 skills-lock.json

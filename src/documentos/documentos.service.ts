@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   InternalServerErrorException,
   Logger,
@@ -31,12 +32,124 @@ export class DocumentosService {
     private readonly embeddingsService: EmbeddingsService,
   ) {}
 
+  /**
+   * Valida defensivamente si ya existe un documento con el mismo nombre de archivo
+   * o si semánticamente / en texto es idéntico a uno existente en la base de datos.
+   */
+  async validarDuplicado(
+    nombreArchivo: string,
+    contenido: string,
+    apiKeyHeader?: string,
+    modeloEmbeddingHeader?: string,
+  ): Promise<void> {
+    const nombreLimpio = (nombreArchivo || '').trim().toLowerCase();
+    const contenidoLimpio = (contenido || '').trim();
+
+    // 1. Detección por nombre de archivo exacto
+    const existentePorNombre = await this.documentoRepository.findOne({
+      where: {
+        nombreArchivo: nombreArchivo.trim(),
+        estado: EstadoDocumento.ACTIVO,
+      },
+      withDeleted: true,
+    });
+
+    if (existentePorNombre) {
+      throw new ConflictException(
+        `Ya existe un documento registrado con el archivo "${nombreArchivo}" (Título: "${existentePorNombre.titulo}", Feature: "${existentePorNombre.categoria || 'General'}").`,
+      );
+    }
+
+    // 2. Detección por coincidencia exacta de texto/contenido
+    const existentePorContenido = await this.documentoRepository.findOne({
+      where: {
+        contenido: contenidoLimpio,
+        estado: EstadoDocumento.ACTIVO,
+      },
+      withDeleted: true,
+    });
+
+    if (existentePorContenido) {
+      throw new ConflictException(
+        `El contenido de "${nombreArchivo}" es idéntico al documento existente "${existentePorContenido.titulo}" (${existentePorContenido.nombreArchivo || 'sin archivo'}).`,
+      );
+    }
+
+    // 3. Detección por alta similitud vectorial (mismo contenido semántico)
+    try {
+      const muestra = contenidoLimpio.substring(0, 1500);
+      if (muestra.length > 50) {
+        const vector = await this.embeddingsService.generarEmbedding(
+          muestra,
+          apiKeyHeader,
+          modeloEmbeddingHeader,
+        );
+
+        if (vector && vector.length > 0) {
+          const vectorStr = `[${vector.join(',')}]`;
+          const duplicadoSemantico: Array<{
+            id: string;
+            titulo: string;
+            nombre_archivo: string;
+            categoria: string;
+            similitud: number;
+          }> = await this.fragmentoRepository.query(
+            `
+            SELECT 
+              d.id,
+              d.titulo,
+              d.nombre_archivo,
+              d.categoria,
+              1 - (df.embedding <=> $1::vector) AS similitud
+            FROM documento_fragmentos df
+            INNER JOIN documentos d ON d.id = df.documento_id
+            WHERE df.embedding IS NOT NULL
+              AND d.estado = 'ACTIVO'
+              AND d.fecha_eliminacion IS NULL
+              AND df.indice = 0
+            ORDER BY df.embedding <=> $1::vector ASC
+            LIMIT 1
+            `,
+            [vectorStr],
+          );
+
+          if (duplicadoSemantico && duplicadoSemantico.length > 0) {
+            const masCercano = duplicadoSemantico[0];
+            // Umbral de duplicidad estricta semántica (>= 0.985)
+            if (masCercano.similitud >= 0.985) {
+              throw new ConflictException(
+                `Detección de duplicado por IA: El documento "${nombreArchivo}" contiene un texto prácticamente idéntico al documento existente "${masCercano.titulo}" (${(masCercano.similitud * 100).toFixed(1)}% de coincidencia semántica).`,
+              );
+            }
+          }
+        }
+      }
+    } catch (vectorError: any) {
+      if (vectorError instanceof ConflictException) {
+        throw vectorError;
+      }
+      this.logger.warn(
+        `No se pudo ejecutar la validación vectorial previa: ${vectorError.message}`,
+      );
+    }
+  }
+
   async create(
     crearDocumentoDto: CrearDocumentoDto,
     apiKeyHeader?: string,
     modeloEmbeddingHeader?: string,
   ) {
     try {
+      // Validación defensiva previa de duplicados
+      if (crearDocumentoDto.nombreArchivo) {
+        await this.validarDuplicado(
+          crearDocumentoDto.nombreArchivo,
+          crearDocumentoDto.contenido,
+          apiKeyHeader,
+          modeloEmbeddingHeader,
+        );
+      }
+
       const documento = this.documentoRepository.create({
         titulo: crearDocumentoDto.titulo,
         nombreArchivo: crearDocumentoDto.nombreArchivo,
@@ -189,12 +302,38 @@ export class DocumentosService {
     return resultados;
   }
 
-  findAll() {
-    // Retorna solo documentos con estado ACTIVO sin importar si tienen o no fecha de eliminación (withDeleted: true)
-    return this.documentoRepository.find({
-      where: { estado: EstadoDocumento.ACTIVO },
-      order: { fechaCreacion: 'DESC' },
-      withDeleted: true,
+  async findAll() {
+    // Retorna documentos con estado ACTIVO, con recuento de fragmentos/vectores generados
+    const documentos = await this.documentoRepository
+      .createQueryBuilder('d')
+      .leftJoin('d.fragmentos', 'f')
+      .select([
+        'd.id',
+        'd.titulo',
+        'd.nombreArchivo',
+        'd.categoria',
+        'd.estado',
+        'd.version',
+        'd.fechaCreacion',
+        'd.fechaActualizacion',
+      ])
+      .addSelect('COUNT(f.id)', 'total_fragmentos')
+      .addSelect('COUNT(CASE WHEN f.embedding IS NOT NULL THEN 1 END)', 'total_vectores')
+      .where('d.estado = :estado', { estado: EstadoDocumento.ACTIVO })
+      .groupBy('d.id')
+      .orderBy('d.fechaCreacion', 'DESC')
+      .getRawAndEntities();
+
+    return documentos.entities.map((doc, idx) => {
+      const raw = documentos.raw[idx];
+      const totalVectores = parseInt(raw?.total_vectores || '0', 10);
+      const totalFragmentos = parseInt(raw?.total_fragmentos || '0', 10);
+      return {
+        ...doc,
+        totalFragmentos,
+        totalVectores,
+        tieneVectores: totalVectores > 0,
+      };
     });
   }
 
@@ -493,8 +632,14 @@ export class DocumentosService {
   }
 
   private handleDBExceptions(error: any) {
+    if (error instanceof ConflictException || error instanceof BadRequestException) {
+      throw error;
+    }
+
     if (error.code === '23505') {
-      throw new BadRequestException(error.detail || 'El registro ya existe');
+      throw new ConflictException(
+        error.detail || 'El archivo o documento ya existe en la base de datos.',
+      );
     }
 
     this.logger.error(error);
