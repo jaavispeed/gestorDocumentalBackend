@@ -44,6 +44,50 @@ export class AutomanualController {
     return this.automanualService.eliminarCliente(id);
   }
 
+  @Post('clientes/:slug/modulos')
+  @HttpCode(HttpStatus.OK)
+  async guardarModulo(
+    @Param('slug') slug: string,
+    @Body() datos: { id?: string; identificador: string; nombre: string; orden?: number },
+  ) {
+    return this.automanualService.guardarModulo(slug, datos);
+  }
+
+  @Delete('clientes/:slug/modulos/:moduloId')
+  async eliminarModulo(
+    @Param('slug') slug: string,
+    @Param('moduloId') moduloId: string,
+  ) {
+    return this.automanualService.eliminarModuloPorId(slug, moduloId);
+  }
+
+  @Post('clientes/:slug/modulos/:moduloId/pantallas')
+  @HttpCode(HttpStatus.OK)
+  async guardarPantalla(
+    @Param('slug') slug: string,
+    @Param('moduloId') moduloId: string,
+    @Body()
+    datos: {
+      identificador: string;
+      nombre: string;
+      ruta: string;
+      descripcion?: string;
+      selectorEspera?: string;
+      orden?: number;
+    },
+  ) {
+    return this.automanualService.guardarPantalla(slug, moduloId, datos);
+  }
+
+  @Delete('clientes/:slug/modulos/:moduloId/pantallas/:pantallaId')
+  async eliminarPantalla(
+    @Param('slug') slug: string,
+    @Param('moduloId') moduloId: string,
+    @Param('pantallaId') pantallaId: string,
+  ) {
+    return this.automanualService.eliminarPantallaPorId(slug, moduloId, pantallaId);
+  }
+
   @Get('clientes/:id/logo')
   async obtenerLogo(@Param('id') id: string, @Res() res: Response) {
     const { stream, contentType } =
@@ -51,6 +95,45 @@ export class AutomanualController {
     res.setHeader('Content-Type', contentType);
     res.setHeader('Cache-Control', 'public, max-age=60');
     stream.pipe(res);
+  }
+
+  @Get('clientes/:slug/capturas')
+  async obtenerCapturas(
+    @Param('slug') slug: string,
+    @Query('moduloId') moduloId?: string,
+    @Query('seccionId') seccionId?: string,
+  ) {
+    return this.automanualService.obtenerCapturas(slug, moduloId, seccionId);
+  }
+
+  @Delete('capturas/:id')
+  async eliminarCaptura(@Param('id') id: string) {
+    return this.automanualService.eliminarCaptura(id);
+  }
+
+  @Get('clientes/:slug/casos-prueba')
+  async obtenerCasosPrueba(
+    @Param('slug') slug: string,
+    @Query('moduloId') moduloId?: string,
+    @Query('seccionId') seccionId?: string,
+  ) {
+    return this.automanualService.obtenerCasosPrueba(slug, moduloId, seccionId);
+  }
+
+  @Get('casos-prueba/:id')
+  async obtenerCasoPruebaPorId(@Param('id') id: string) {
+    return this.automanualService.obtenerCasoPruebaPorId(id);
+  }
+
+  @Post('casos-prueba')
+  @HttpCode(HttpStatus.OK)
+  async guardarCasoPrueba(@Body() datos: any) {
+    return this.automanualService.guardarCasoPrueba(datos);
+  }
+
+  @Delete('casos-prueba/:id')
+  async eliminarCasoPrueba(@Param('id') id: string) {
+    return this.automanualService.eliminarCasoPrueba(id);
   }
 
   @Post('clientes/:id/logo')
@@ -83,6 +166,18 @@ export class AutomanualController {
   @Get('estado-generacion')
   obtenerEstadoGeneracion() {
     return this.automanualService.obtenerEstadoGeneracion();
+  }
+
+  @Post('confirmar-revision')
+  @HttpCode(HttpStatus.OK)
+  async confirmarRevision(@Body() body: { capturasSeleccionadas: string[]; casosAprobados: any[] }) {
+    return this.automanualService.confirmarRevisionPendiente(body);
+  }
+
+  @Post('descartar-revision')
+  @HttpCode(HttpStatus.OK)
+  descartarRevision() {
+    return this.automanualService.descartarRevisionPendiente();
   }
 
   @Get('sistema/config')

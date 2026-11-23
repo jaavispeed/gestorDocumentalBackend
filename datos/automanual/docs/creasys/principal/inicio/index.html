@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard BackOffice | Creasys</title>
+  <link rel="stylesheet" href="../../assets/theme.css">
+  <link rel="stylesheet" href="../../assets/styles.css">
+</head>
+<body class="section-body">
+
+  <header class="top-navbar">
+    <div class="nav-left">
+      <a href="../../index.html" class="brand-link" title="Ir a la portada">
+        <img src="../../assets/default-logo.svg" alt="Logo" class="brand-logo" onerror="this.style.display='none'">
+        <span>Creasys</span>
+      </a>
+      <div class="nav-divider"></div>
+      <a href="../../index.html" class="nav-back-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <span>Portada</span>
+      </a>
+    </div>
+
+    <div class="nav-right">
+      <div class="section-picker-wrapper">
+        <svg class="picker-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <select class="section-picker-select" onchange="if(this.value) window.location.href=this.value;">
+          <optgroup label="Vistas del Sistema"><option value="../../principal/inicio/index.html" selected>Vistas del Sistema &rsaquo; Dashboard BackOffice</option></optgroup>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <main class="section-main-container">
+
+    <div class="breadcrumbs-row">
+      <span class="breadcrumb-item">Inicio</span><span class="breadcrumb-separator">&rsaquo;</span><span class="breadcrumb-item">Vistas del Sistema</span><span class="breadcrumb-separator">&rsaquo;</span><span class="breadcrumb-item breadcrumb-current">Dashboard BackOffice</span>
+    </div>
+
+    <div class="section-hero">
+      <div class="section-hero-badge">Vistas del Sistema</div>
+      <h1 class="section-hero-title">Dashboard BackOffice</h1>
+      <p class="section-hero-desc">
+        Esta pantalla permite gestionar y consultar la información operativa de dashboard backoffice.
+      </p>
+    </div>
+
+    
+      <div class="mac-window-frame" onclick="openLightboxAt(0)">
+        <div class="mac-titlebar">
+          <div class="mac-buttons">
+            <span class="mac-btn mac-btn-close"></span>
+            <span class="mac-btn mac-btn-min"></span>
+            <span class="mac-btn mac-btn-max"></span>
+          </div>
+          <div class="mac-title">Dashboard BackOffice &mdash; Vista Principal</div>
+          <div class="mac-zoom-hint">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+            <span>Clic para ampliar</span>
+          </div>
+        </div>
+        <img src="screenshots/01-vista-principal.png" alt="Dashboard" class="mac-screenshot-img">
+        
+      </div>
+    
+      <div class="extra-screenshots-section">
+        <h3 class="extra-screenshots-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          Estados y Subpantallas Exploradas (2)
+        </h3>
+        <div class="extra-screenshots-grid">
+          
+            <div class="extra-screenshot-card" onclick="openLightboxAt(1)">
+              <div class="extra-screenshot-thumb-box">
+                <img src="screenshots/02-selector-todos-los-niveles.png" alt="Selector desplegado: Todos los niveles" class="extra-screenshot-thumb" loading="lazy">
+                <span class="extra-screenshot-badge">selector</span>
+              </div>
+              <div class="extra-screenshot-meta">
+                <div class="extra-screenshot-caption">Selector desplegado: Todos los niveles</div>
+                <div class="extra-screenshot-note">Opciones disponibles (4): Todos los niveles, Solo Errores, Solo Warnings, Solo Observaciones</div>
+              </div>
+            </div>
+
+            <div class="extra-screenshot-card" onclick="openLightboxAt(2)">
+              <div class="extra-screenshot-thumb-box">
+                <img src="screenshots/03-tabla-datos.png" alt="Tabla de datos (1 registro)" class="extra-screenshot-thumb" loading="lazy">
+                <span class="extra-screenshot-badge">table</span>
+              </div>
+              <div class="extra-screenshot-meta">
+                <div class="extra-screenshot-caption">Tabla de datos (1 registro)</div>
+                <div class="extra-screenshot-note">Columnas: Motivo / Tarea, Incidencias, Acción</div>
+              </div>
+            </div>
+        </div>
+      </div>
+    
+      <div class="content-card">
+        <h2 class="content-card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+          Tablas, Filtros y Elementos en Pantalla
+        </h2>
+        <div class="fields-grid">
+          
+            <div class="field-item">
+              <div class="field-item-header">
+                <span class="field-name">Tabla de registros</span>
+                <span class="field-badge" style="background:var(--client-primary-subtle); color:var(--client-primary);">Tabla</span>
+              </div>
+              <div class="field-meaning">Muestra las columnas: Motivo / Tarea, Incidencias, Acción. (1 fila(s) cargadas).</div>
+            </div>
+        </div>
+      </div>
+    
+      <div class="content-card">
+        <h2 class="content-card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Campos y Parámetros de la Pantalla
+        </h2>
+        <p class="content-card-desc">Conoce el significado de cada campo y cómo completarlo correctamente:</p>
+        <div class="fields-grid">
+          
+            <div class="field-item">
+              <div class="field-item-header">
+                <span class="field-name">Todos los niveles</span>
+                <span class="field-badge badge-optional">
+                  Opcional
+                </span>
+              </div>
+              <div class="field-meaning">Menú desplegable para seleccionar todos los niveles.</div>
+              
+                <div class="field-options-box">
+                  <span class="field-options-title">Opciones disponibles:</span>
+                  <div class="field-options-tags">
+                    <span class="option-tag">Todos los niveles</span><span class="option-tag">Solo Errores</span><span class="option-tag">Solo Warnings</span><span class="option-tag">Solo Observaciones</span>
+                    
+                  </div>
+                </div>
+              <div class="field-example-row">
+                <span class="example-label">Ejemplo:</span>
+                <code class="example-code">Ej: Todos los niveles / Solo Errores / Solo Warnings</code>
+                <button class="copy-example-btn" onclick="copyExampleText('Ej: Todos los niveles / Solo Errores / Solo Warnings', this)" title="Copiar ejemplo">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              </div>
+            </div>
+        </div>
+      </div>
+    
+      <div class="content-card">
+        <h2 class="content-card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+          Acciones y Botones Disponibles
+        </h2>
+        <div class="actions-list">
+          
+            <div class="action-item">
+              <span class="action-btn-pill">USD 993,22</span>
+              <span class="action-desc">Ejecuta la acción de usd 993,22 en la pantalla.</span>
+            </div>
+
+            <div class="action-item">
+              <span class="action-btn-pill">UF 41.252,94</span>
+              <span class="action-desc">Ejecuta la acción de uf 41.252,94 en la pantalla.</span>
+            </div>
+
+            <div class="action-item">
+              <span class="action-btn-pill">EUR 1.109,37</span>
+              <span class="action-desc">Ejecuta la acción de eur 1.109,37 en la pantalla.</span>
+            </div>
+
+            <div class="action-item">
+              <span class="action-btn-pill">YEN 6,20</span>
+              <span class="action-desc">Ejecuta la acción de yen 6,20 en la pantalla.</span>
+            </div>
+
+            <div class="action-item">
+              <span class="action-btn-pill">Gestionar Mesa</span>
+              <span class="action-desc">Ejecuta la acción de gestionar mesa en la pantalla.</span>
+            </div>
+
+            <div class="action-item">
+              <span class="action-btn-pill">Exportar Excel</span>
+              <span class="action-desc">Ejecuta la acción de exportar excel en la pantalla.</span>
+            </div>
+        </div>
+      </div>
+
+    <div class="content-card">
+      <h2 class="content-card-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        Flujo de Uso Paso a Paso
+      </h2>
+      <div class="steps-compact-box">
+        
+          <div class="step-compact-item">
+            <span class="step-num">1</span>
+            <div class="step-content">
+              <h4 class="step-title">Ingresar parámetros</h4>
+              <p class="step-desc">Completa o selecciona los criterios en el formulario (&quot;Todos los niveles&quot;).</p>
+            </div>
+          </div>
+
+          <div class="step-compact-item">
+            <span class="step-num">2</span>
+            <div class="step-content">
+              <h4 class="step-title">Acción en pantalla</h4>
+              <p class="step-desc">Utiliza las opciones de acción como &quot;USD 993,22&quot; para interactuar con los datos.</p>
+            </div>
+          </div>
+
+          <div class="step-compact-item">
+            <span class="step-num">3</span>
+            <div class="step-content">
+              <h4 class="step-title">Exportar o procesar</h4>
+              <p class="step-desc">Revisa los datos obtenidos en la lista y presiona &quot;Exportar Excel&quot; si necesitas descargar un archivo de respaldo.</p>
+            </div>
+          </div>
+      </div>
+    </div>
+
+    
+    
+
+    <div class="section-footer-nav">
+      <a href="../../index.html" class="btn btn-secondary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        <span>Volver a la portada</span>
+      </a>
+      <span style="font-size:0.8rem; color:var(--text-muted);">Creasys &bull; Manual de Operación</span>
+    </div>
+
+  </main>
+
+  <div id="lightboxModal" class="lightbox-modal" onclick="closeLightbox()">
+    <button class="lightbox-close" aria-label="Cerrar modal" onclick="closeLightbox()">&times;</button>
+    <button id="lightboxPrev" class="lightbox-nav lightbox-prev" aria-label="Captura anterior" onclick="event.stopPropagation(); stepLightbox(-1)">&#8249;</button>
+    <div class="lightbox-stage" onclick="event.stopPropagation()">
+      <img id="lightboxImg" class="lightbox-content" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="Captura ampliada">
+      <div class="lightbox-caption-bar">
+        <div id="lightboxCaption" class="lightbox-caption-text"></div>
+        <div id="lightboxNote" class="lightbox-caption-note"></div>
+        <div id="lightboxCounter" class="lightbox-counter"></div>
+      </div>
+    </div>
+    <button id="lightboxNext" class="lightbox-nav lightbox-next" aria-label="Captura siguiente" onclick="event.stopPropagation(); stepLightbox(1)">&#8250;</button>
+  </div>
+
+  <script>
+    const lightboxItems = [{"src":"screenshots/01-vista-principal.png","caption":"Dashboard","note":""},{"src":"screenshots/02-selector-todos-los-niveles.png","caption":"Selector desplegado: Todos los niveles","note":"Opciones disponibles (4): Todos los niveles, Solo Errores, Solo Warnings, Solo Observaciones"},{"src":"screenshots/03-tabla-datos.png","caption":"Tabla de datos (1 registro)","note":"Columnas: Motivo / Tarea, Incidencias, Acción"}];
+    let currentLightboxIndex = 0;
+
+    function renderLightboxItem() {
+      if (!lightboxItems.length) return;
+      const item = lightboxItems[currentLightboxIndex];
+      document.getElementById('lightboxImg').src = item.src;
+      document.getElementById('lightboxCaption').textContent = item.caption || '';
+      const noteEl = document.getElementById('lightboxNote');
+      noteEl.textContent = item.note || '';
+      noteEl.style.display = item.note ? 'block' : 'none';
+      const counterEl = document.getElementById('lightboxCounter');
+      counterEl.textContent = lightboxItems.length > 1 ? (currentLightboxIndex + 1) + ' / ' + lightboxItems.length : '';
+      document.getElementById('lightboxPrev').style.display = lightboxItems.length > 1 ? 'flex' : 'none';
+      document.getElementById('lightboxNext').style.display = lightboxItems.length > 1 ? 'flex' : 'none';
+    }
+
+    function openLightboxAt(index) {
+      if (!lightboxItems.length) return;
+      currentLightboxIndex = Math.max(0, Math.min(index, lightboxItems.length - 1));
+      renderLightboxItem();
+      document.getElementById('lightboxModal').classList.add('active');
+    }
+
+    function stepLightbox(delta) {
+      if (lightboxItems.length <= 1) return;
+      currentLightboxIndex = (currentLightboxIndex + delta + lightboxItems.length) % lightboxItems.length;
+      renderLightboxItem();
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightboxModal').classList.remove('active');
+    }
+
+    document.addEventListener('keydown', (e) => {
+      const modal = document.getElementById('lightboxModal');
+      if (!modal.classList.contains('active')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowRight') stepLightbox(1);
+      if (e.key === 'ArrowLeft') stepLightbox(-1);
+    });
+
+    function copyExampleText(text, btn) {
+      navigator.clipboard.writeText(text).then(() => {
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
+        setTimeout(() => { btn.innerHTML = originalHtml; }, 1500);
+      });
+    }
+  </script>
+
+</body>
+</html>

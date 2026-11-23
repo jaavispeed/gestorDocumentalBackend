@@ -13,10 +13,23 @@ import { obtenerRutasAutomanual } from './rutas.js';
 
 export interface OpcionesEjecucionGeneracion {
   client: string;
+  configuracionCliente?: ConfiguracionCliente;
   all?: boolean;
   module?: string;
   section?: string;
   headless?: boolean;
+  onCapturasTomadas?: (datos: {
+    clienteSlug: string;
+    moduloId: string;
+    moduloTitulo: string;
+    seccionId: string;
+    seccionTitulo: string;
+    rutaApp: string;
+    screenshotsDir: string;
+    screenshots: any[];
+    liveDom: any;
+    casosPruebaGenerados?: any[];
+  }) => Promise<void>;
 }
 
 export class ComandanteDocumentacion {
@@ -43,14 +56,17 @@ export class ComandanteDocumentacion {
       clienteId,
       'config.json',
     );
-    if (!(await fs.pathExists(configPath))) {
-      throw new Error(`Cliente "${clienteId}" no encontrado en ${configPath}`);
+    if (await fs.pathExists(configPath)) {
+      return fs.readJson(configPath);
     }
-    return fs.readJson(configPath);
+    throw new Error(`Cliente "${clienteId}" no encontrado en disco`);
   }
 
-  public async iniciarSesionCliente(clienteId: string): Promise<void> {
-    const config = await this.cargarCliente(clienteId);
+  public async iniciarSesionCliente(
+    clienteId: string,
+    configuracion?: ConfiguracionCliente,
+  ): Promise<void> {
+    const config = configuracion || (await this.cargarCliente(clienteId));
     const clientPath = path.join(this.rutas.directorioClientes, config.id);
     await this.sessionManager.iniciarSesionYContinuar(
       config.appUrl,
@@ -61,8 +77,9 @@ export class ComandanteDocumentacion {
 
   public async descubrirRutasCliente(
     clienteId: string,
+    configuracion?: ConfiguracionCliente,
   ): Promise<ConfiguracionCliente> {
-    const config = await this.cargarCliente(clienteId);
+    const config = configuracion || (await this.cargarCliente(clienteId));
     const clientPath = path.join(this.rutas.directorioClientes, config.id);
     const sessionPath = this.sessionManager.obtenerRutaSesion(clientPath);
 
@@ -76,18 +93,16 @@ export class ComandanteDocumentacion {
 
     const modulosDescubiertos = await this.navDiscovery.descubrir({
       appUrl: config.appUrl,
-      storageStatePath: sessionPath,
+      storageStatePath: (await fs.pathExists(sessionPath)) ? sessionPath : undefined,
       authConfig: config.auth,
       headless: true,
     });
 
     if (modulosDescubiertos.length > 0) {
       config.modules = modulosDescubiertos;
-      const configFilePath = path.join(clientPath, 'config.json');
-      await fs.writeJson(configFilePath, config, { spaces: 2 });
       console.log(
         pc.green(
-          `Configuración de ${config.name} actualizada con ${config.modules.length} módulos.`,
+          `Módulos descubiertos para ${config.name}: ${config.modules.length} módulos.`,
         ),
       );
     }
@@ -98,13 +113,12 @@ export class ComandanteDocumentacion {
   public async ejecutarGeneracion(
     opciones: OpcionesEjecucionGeneracion,
   ): Promise<void> {
-    const config = await this.cargarCliente(opciones.client);
+    const config =
+      opciones.configuracionCliente || (await this.cargarCliente(opciones.client));
     const clientDir = path.join(this.rutas.directorioClientes, config.id);
     const clientOutDir = path.join(this.rutas.directorioDocs, config.id);
     const clientAssetsDir = path.join(clientOutDir, 'assets');
     const sessionPath = this.sessionManager.obtenerRutaSesion(clientDir);
-    const sessionExists = await fs.pathExists(sessionPath);
-    const activeSessionPath = sessionExists ? sessionPath : undefined;
 
     console.log(
       pc.bold(pc.cyan(`\n=== GENERADOR AUTOMANUAL ESTILO APPLE ===`)),
@@ -166,10 +180,51 @@ export class ComandanteDocumentacion {
             config.appUrl,
             sec,
             screenshotsDir,
-            activeSessionPath,
+            sessionPath,
             config.autoExplore,
+            config.auth,
           );
           totalScreenshotsCount += crawlResult.screenshots.length;
+
+          // Generación automática de casos de prueba con Gemini si la IA está disponible
+          let casosPruebaGenerados: any[] = [];
+          if (this.visionAnalyzer.estaDisponible() && crawlResult.screenshots.length > 0) {
+            try {
+              const primeraCapturaPath = path.join(screenshotsDir, crawlResult.screenshots[0].fileName);
+              casosPruebaGenerados = await this.visionAnalyzer.generarCasosPruebaE2E({
+                appName: config.name,
+                moduleTitle: mod.title,
+                sectionTitle: sec.title,
+                route: sec.route,
+                functionalDescription: sec.description,
+                screenshotPath: primeraCapturaPath,
+                fields: crawlResult.liveDom?.fields || [],
+                actions: crawlResult.liveDom?.actions || [],
+                tables: crawlResult.liveDom?.tables || [],
+              });
+            } catch (err: any) {
+              console.log(pc.yellow(`    ⚠ Advertencia al generar casos de prueba con IA: ${err.message}`));
+            }
+          }
+
+          if (opciones.onCapturasTomadas && crawlResult.screenshots.length > 0) {
+            try {
+              await opciones.onCapturasTomadas({
+                clienteSlug: config.id,
+                moduloId: mod.id,
+                moduloTitulo: mod.title,
+                seccionId: sec.id,
+                seccionTitulo: sec.title,
+                rutaApp: sec.route,
+                screenshotsDir,
+                screenshots: crawlResult.screenshots,
+                liveDom: crawlResult.liveDom,
+                casosPruebaGenerados,
+              });
+            } catch (err: any) {
+              console.log(pc.yellow(`    ⚠ Error al persistir capturas en Storage/BD: ${err.message}`));
+            }
+          }
 
           let visionResult = null;
           if (

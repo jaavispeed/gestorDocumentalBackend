@@ -12,6 +12,118 @@ export class GestorSesionPlaywright {
     return fs.existsSync(this.obtenerRutaSesion(directorioCliente));
   }
 
+  /**
+   * Comprueba si el archivo session.json contiene un token expirado
+   */
+  public estaSesionExpirada(rutaSesion: string): boolean {
+    try {
+      if (!fs.existsSync(rutaSesion)) return true;
+      const data = fs.readJsonSync(rutaSesion);
+      
+      // 1. Revisar si hay tokens en localStorage
+      for (const origin of data.origins || []) {
+        for (const item of origin.localStorage || []) {
+          if (item.name === 'session' || item.name.includes('token') || item.name.includes('auth')) {
+            try {
+              const parsed = JSON.parse(item.value);
+              if (parsed.accessToken) {
+                // Decodificar JWT payload
+                const parts = parsed.accessToken.split('.');
+                if (parts.length === 3) {
+                  const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
+                  if (payload.exp && Date.now() / 1000 > payload.exp) {
+                    return true; // Expirado
+                  }
+                }
+              }
+            } catch {}
+          }
+        }
+      }
+
+      // 2. Revisar si todas las cookies están expiradas
+      const ahoraSeg = Date.now() / 1000;
+      const cookiesConExp = (data.cookies || []).filter((c: any) => c.expires && c.expires > 0);
+      if (cookiesConExp.length > 0 && cookiesConExp.every((c: any) => c.expires < ahoraSeg)) {
+        return true;
+      }
+
+      return false;
+    } catch {
+      return true;
+    }
+  }
+
+  /**
+   * Intenta autenticarse automáticamente con las credenciales registradas
+   * y guarda el archivo session.json si no existe o ha expirado.
+   */
+  public async asegurarSesionCliente(
+    urlApp: string,
+    directorioCliente: string,
+    configAuth?: ConfiguracionAutenticacion,
+    headless: boolean = true,
+  ): Promise<string | undefined> {
+    await fs.ensureDir(directorioCliente);
+    const rutaSesion = this.obtenerRutaSesion(directorioCliente);
+
+    // Si ya existe la sesión en disco y NO está expirada, la usamos
+    if (await fs.pathExists(rutaSesion) && !this.estaSesionExpirada(rutaSesion)) {
+      console.log('✔ Sesión activa y vigente cargada desde disco.');
+      return rutaSesion;
+    }
+
+    if (await fs.pathExists(rutaSesion) && this.estaSesionExpirada(rutaSesion)) {
+      console.log('🔄 La sesión anterior ha expirado. Re-autenticando automáticamente...');
+    }
+
+    // Si no hay credenciales configuradas, no se puede hacer login silencioso
+    if (!configAuth?.username || !configAuth?.password) {
+      console.log('No hay credenciales configuradas para login automático. Continuando sin sesión previa.');
+      return undefined;
+    }
+
+    console.log(`🔐 Autenticando automáticamente en ${urlApp} con usuario "${configAuth.username}"...`);
+
+    let browser;
+    try {
+      browser = await chromium.launch({
+        headless,
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      });
+      const context = await browser.newContext({ viewport: { width: 1366, height: 768 } });
+      const page = await context.newPage();
+
+      await page.goto(urlApp, { waitUntil: 'domcontentloaded', timeout: 35000 });
+      await page.waitForTimeout(2000);
+
+      const ssoSelector =
+        configAuth.ssoTriggerSelector ||
+        "button:has-text('Iniciar Sesión'), button:has-text('Iniciar sesión segura'), [data-login-sso]";
+      const ssoBtn = page.locator(ssoSelector).first();
+      if (await ssoBtn.isVisible().catch(() => false)) {
+        await ssoBtn.click().catch(() => {});
+        await page.waitForTimeout(2000);
+      }
+
+      await this.rellenarCredenciales(page, configAuth);
+
+      // Esperar navegación post-login y obtención de tokens
+      await page.waitForTimeout(6000);
+
+      // Guardar el estado de autenticación renovado en session.json
+      await context.storageState({ path: rutaSesion });
+      console.log(`✔ Sesión iniciada y guardada exitosamente en ${path.basename(rutaSesion)}`);
+
+      await browser.close().catch(() => {});
+      return rutaSesion;
+    } catch (err: any) {
+      console.warn(`⚠ Aviso al intentar login automático: ${err.message}`);
+      if (browser) await browser.close().catch(() => {});
+      return undefined;
+    }
+  }
+
   public async iniciarSesionYContinuar(
     urlApp: string,
     directorioCliente: string,

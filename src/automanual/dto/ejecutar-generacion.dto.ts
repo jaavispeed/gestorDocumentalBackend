@@ -16,4 +16,13 @@ export class OpcionesGeneracionDto {
   @IsBoolean()
   @IsOptional()
   visibleBrowser?: boolean;
+
+  @IsOptional()
+  auth?: {
+    username?: string;
+    password?: string;
+    userSelector?: string;
+    passwordSelector?: string;
+    submitSelector?: string;
+  };
 }

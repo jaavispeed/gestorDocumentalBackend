@@ -6,6 +6,15 @@ Este documento define las reglas y estándares de desarrollo para la creación d
 
 ## 1. Entidades TypeORM
 
+- **Idioma Español Obligatorio en Tablas, Columnas y Clases:**
+  - Todas las clases, tablas y columnas de base de datos **DEBEN estar 100% en español**:
+    - Clases: `Documento`, `ClienteAutomanual`, `ModuloAutomanual`, `PantallaAutomanual`, `CapturaAutomanual`, `CasoPruebaAutomanual`.
+    - Tablas: `documentos`, `clientes_automanual`, `modulos_automanual`, `pantallas_automanual`, `capturas_automanual`, `casos_prueba_automanual`.
+    - Columnas: `nombre`, `identificador`, `urlApp`, `color`, `orden`, `ruta`, `selectorEspera`, `fechaCreacion`, `fechaActualizacion` (NO usar `name`, `slug`, `theme`, `createdAt`, `updatedAt`).
+- **Persistencia 100% en Base de Datos (Cero archivos locales/JSON para configuración):**
+  - **Prohibido guardar estado de negocio, configuración de clientes, módulos, pantallas o casos de prueba en archivos del sistema de archivos o repositorios (`config.json`, carpetas de datos locales).**
+  - Toda la configuración, módulos y pantallas debe residir exclusivamente en la base de datos (PostgreSQL / Supabase) para garantizar escalabilidad, stateless backend y despliegues serverless/Docker limpios.
+  - El sistema de archivos local (`fs`) solo se permite de forma efímera para el runtime inmediato de Playwright mientras corre la sesión o para escribir temporales antes de subirlos al Storage externo.
 - **Sin sufijo en nombres de clases:**
   - Usar nombres limpios en singular: `Documento`, `Categoria`, `Producto`, `DocumentoFragmento` (NO usar sufijos como `Entity`).
   - Nombre de archivo: `[recurso].entity.ts` (ej. `documento.entity.ts`).

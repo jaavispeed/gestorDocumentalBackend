@@ -9,6 +9,11 @@ import { AutomanualModule } from './automanual/automanual.module.js';
 import { Documento } from './documentos/entities/documento.entity.js';
 import { DocumentoFragmento } from './documentos/entities/documento-fragmento.entity.js';
 import { DocumentoHistorial } from './documentos/entities/documento-historial.entity.js';
+import { ClienteAutomanual } from './automanual/entities/cliente-automanual.entity.js';
+import { ModuloAutomanual } from './automanual/entities/modulo-automanual.entity.js';
+import { PantallaAutomanual } from './automanual/entities/pantalla-automanual.entity.js';
+import { CapturaAutomanual } from './automanual/entities/captura-automanual.entity.js';
+import { CasoPruebaAutomanual } from './automanual/entities/caso-prueba-automanual.entity.js';
 import { BearerAuthGuard } from './common/guards/bearer-auth.guard.js';
 
 @Module({
@@ -26,7 +31,16 @@ import { BearerAuthGuard } from './common/guards/bearer-auth.guard.js';
           return {
             type: 'postgres',
             url: dbUrl,
-            entities: [Documento, DocumentoFragmento, DocumentoHistorial],
+            entities: [
+              Documento,
+              DocumentoFragmento,
+              DocumentoHistorial,
+              ClienteAutomanual,
+              ModuloAutomanual,
+              PantallaAutomanual,
+              CapturaAutomanual,
+              CasoPruebaAutomanual,
+            ],
             synchronize: true,
             ssl: { rejectUnauthorized: false },
           };
@@ -39,7 +53,16 @@ import { BearerAuthGuard } from './common/guards/bearer-auth.guard.js';
           username: configService.get<string>('DB_USER', 'postgres'),
           password: configService.get<string>('DB_PASSWORD'),
           database: configService.get<string>('DB_NAME'),
-          entities: [Documento, DocumentoFragmento, DocumentoHistorial],
+          entities: [
+            Documento,
+            DocumentoFragmento,
+            DocumentoHistorial,
+            ClienteAutomanual,
+            ModuloAutomanual,
+            PantallaAutomanual,
+            CapturaAutomanual,
+            CasoPruebaAutomanual,
+          ],
           synchronize: true,
         };
       },

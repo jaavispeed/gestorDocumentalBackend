@@ -4,8 +4,16 @@ import {
   BadRequestException,
   ConflictException,
 } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, Like, ILike } from 'typeorm';
 import * as path from 'path';
 import fs from 'fs-extra';
+import { ClienteAutomanual } from './entities/cliente-automanual.entity.js';
+import { ModuloAutomanual } from './entities/modulo-automanual.entity.js';
+import { PantallaAutomanual } from './entities/pantalla-automanual.entity.js';
+import { CapturaAutomanual } from './entities/captura-automanual.entity.js';
+import { CasoPruebaAutomanual } from './entities/caso-prueba-automanual.entity.js';
+import { SupabaseStorageService } from './services/supabase-storage.service.js';
 import { obtenerRutasAutomanual } from './motor/rutas.js';
 import { ConfiguracionCliente } from './motor/tipos.js';
 import { ComandanteDocumentacion } from './motor/comandante-documentacion.js';
@@ -28,6 +36,7 @@ export interface ResumenCliente {
   id: string;
   name: string;
   appUrl: string;
+  color?: string;
   theme: any;
   hasSession: boolean;
   hasManual: boolean;
@@ -41,8 +50,38 @@ export class AutomanualService {
 
   private estaGenerando = false;
   private logsActuales: string[] = [];
+  // Almacena temporalmente el resultado de exploración/generación para revisión humana antes de guardar
+  private revisionPendiente: {
+    clienteSlug: string;
+    moduloId: string;
+    moduloTitulo: string;
+    seccionId: string;
+    seccionTitulo: string;
+    rutaApp: string;
+    capturas: Array<{
+      fileName: string;
+      caption: string;
+      tipo: string;
+      rutaLocal: string;
+      previewBase64: string;
+    }>;
+    casosPrueba: any[];
+    liveDom: any;
+  } | null = null;
 
-  constructor() {
+  constructor(
+    @InjectRepository(ClienteAutomanual)
+    private readonly clienteRepo: Repository<ClienteAutomanual>,
+    @InjectRepository(ModuloAutomanual)
+    private readonly moduloRepo: Repository<ModuloAutomanual>,
+    @InjectRepository(PantallaAutomanual)
+    private readonly pantallaRepo: Repository<PantallaAutomanual>,
+    @InjectRepository(CapturaAutomanual)
+    private readonly capturaRepo: Repository<CapturaAutomanual>,
+    @InjectRepository(CasoPruebaAutomanual)
+    private readonly casoPruebaRepo: Repository<CasoPruebaAutomanual>,
+    private readonly storageService: SupabaseStorageService,
+  ) {
     void this.asegurarDirectorioClientes();
   }
 
@@ -55,57 +94,56 @@ export class AutomanualService {
     paginacionDto?: PaginacionDto,
   ): Promise<RespuestaPaginada<ResumenCliente> | ResumenCliente[]> {
     await this.asegurarDirectorioClientes();
-    const entradas = await fs.readdir(this.rutas.directorioClientes, {
-      withFileTypes: true,
-    });
-    let clientes: ResumenCliente[] = [];
 
-    for (const entrada of entradas) {
-      if (entrada.isDirectory() && !entrada.name.startsWith('_')) {
-        const rutaConfig = path.join(
-          this.rutas.directorioClientes,
-          entrada.name,
-          'config.json',
-        );
+    const busqueda = paginacionDto?.busqueda?.trim();
+    const pagina = paginacionDto?.pagina ? Number(paginacionDto.pagina) : undefined;
+    const limite = paginacionDto?.limite ? Number(paginacionDto.limite) : undefined;
+
+    // Buscar en BD
+    let whereCondition: any = undefined;
+    if (busqueda) {
+      whereCondition = [
+        { nombre: ILike(`%${busqueda}%`) },
+        { identificador: ILike(`%${busqueda}%`) },
+        { urlApp: ILike(`%${busqueda}%`) },
+      ];
+    }
+
+    const [entidades, total] = await this.clienteRepo.findAndCount({
+      where: whereCondition,
+      order: { fechaActualizacion: 'DESC' },
+      skip: pagina && limite ? (pagina - 1) * limite : undefined,
+      take: limite || undefined,
+    });
+
+    const clientes: ResumenCliente[] = await Promise.all(
+      entidades.map(async (c) => {
         const rutaSesion = path.join(
           this.rutas.directorioClientes,
-          entrada.name,
+          c.identificador,
           'session.json',
         );
         const rutaManual = path.join(
           this.rutas.directorioDocs,
-          entrada.name,
+          c.identificador,
           'index.html',
         );
-
-        if (await fs.pathExists(rutaConfig)) {
-          try {
-            const config = await fs.readJson(rutaConfig);
-            clientes.push({
-              id: entrada.name,
-              name: config.name || entrada.name,
-              appUrl: config.appUrl,
-              theme: config.theme,
-              hasSession: await fs.pathExists(rutaSesion),
-              hasManual: await fs.pathExists(rutaManual),
-            });
-          } catch {}
-        }
-      }
-    }
-
-    const busqueda = paginacionDto?.busqueda?.trim().toLowerCase();
-    if (busqueda) {
-      clientes = clientes.filter(
-        (c) =>
-          c.name.toLowerCase().includes(busqueda) ||
-          c.id.toLowerCase().includes(busqueda) ||
-          (c.appUrl && c.appUrl.toLowerCase().includes(busqueda)),
-      );
-    }
-
-    const pagina = paginacionDto?.pagina ? Number(paginacionDto.pagina) : undefined;
-    const limite = paginacionDto?.limite ? Number(paginacionDto.limite) : undefined;
+        return {
+          id: c.identificador,
+          name: c.nombre,
+          appUrl: c.urlApp,
+          color: c.color,
+          theme: {
+            primaryColor: c.color,
+            secondaryColor: '#f5f5f7',
+            fontFamily: 'Inter',
+            logoPath: 'default-logo.svg',
+          },
+          hasSession: await fs.pathExists(rutaSesion),
+          hasManual: await fs.pathExists(rutaManual),
+        };
+      }),
+    );
 
     if (!pagina && !limite && !busqueda) {
       return clientes;
@@ -113,13 +151,10 @@ export class AutomanualService {
 
     const paginaActual = pagina || 1;
     const limiteActual = limite || 10;
-    const total = clientes.length;
     const totalPaginas = Math.ceil(total / limiteActual) || 1;
-    const offset = (paginaActual - 1) * limiteActual;
-    const datos = clientes.slice(offset, offset + limiteActual);
 
     return {
-      datos,
+      datos: clientes,
       meta: {
         total,
         pagina: paginaActual,
@@ -157,28 +192,66 @@ export class AutomanualService {
   }
 
   public async obtenerCliente(id: string): Promise<ConfiguracionCliente> {
-    const rutaConfig = path.join(
-      this.rutas.directorioClientes,
-      id,
-      'config.json',
-    );
-    if (!(await fs.pathExists(rutaConfig))) {
+    const entidad = await this.clienteRepo.findOne({
+      where: [{ identificador: id }],
+      relations: {
+        modulos: {
+          pantallas: true,
+        },
+      },
+    });
+
+    if (!entidad) {
       throw new NotFoundException(`Cliente "${id}" no encontrado`);
     }
 
-    const config = await fs.readJson(rutaConfig);
-    const normalizado = this.normalizarConfiguracion(config);
     const rutaSesion = path.join(
       this.rutas.directorioClientes,
       id,
       'session.json',
     );
     const rutaManual = path.join(this.rutas.directorioDocs, id, 'index.html');
+    const hasSession = await fs.pathExists(rutaSesion);
+    const hasManual = await fs.pathExists(rutaManual);
+
+    // Mapear entidades relacionales a ModuloCliente[]
+    const modulosMapeados = (entidad.modulos || [])
+      .sort((a, b) => a.orden - b.orden)
+      .map((m) => ({
+        id: m.identificador,
+        name: m.nombre,
+        title: m.nombre,
+        sections: (m.pantallas || [])
+          .sort((a, b) => a.orden - b.orden)
+          .map((p) => ({
+            id: p.identificador,
+            name: p.nombre,
+            title: p.nombre,
+            route: p.ruta,
+            description: p.descripcion,
+            waitForSelector: p.selectorEspera,
+          })),
+      }));
+
+    const normalizado = this.normalizarConfiguracion({
+      id: entidad.identificador,
+      name: entidad.nombre,
+      appUrl: entidad.urlApp,
+      color: entidad.color,
+      auth: entidad.auth,
+      theme: {
+        primaryColor: entidad.color,
+        secondaryColor: '#f5f5f7',
+        fontFamily: 'Inter',
+        logoPath: 'default-logo.svg',
+      },
+      modules: modulosMapeados,
+    });
 
     return {
       ...normalizado,
-      hasSession: await fs.pathExists(rutaSesion),
-      hasManual: await fs.pathExists(rutaManual),
+      hasSession,
+      hasManual,
     };
   }
 
@@ -192,36 +265,266 @@ export class AutomanualService {
     }
 
     const normalizado = this.normalizarConfiguracion(config);
-    const rutaCliente = path.join(this.rutas.directorioClientes, config.id);
-    await fs.ensureDir(rutaCliente);
-    await fs.writeJson(path.join(rutaCliente, 'config.json'), normalizado, {
-      spaces: 2,
-    });
 
-    const logoPredeterminado = path.join(
-      this.rutas.directorioClientes,
-      '_default',
-      'default-logo.svg',
-    );
-    const logoDestino = path.join(rutaCliente, 'default-logo.svg');
-    if (
-      !(await fs.pathExists(logoDestino)) &&
-      (await fs.pathExists(logoPredeterminado))
-    ) {
-      await fs.copy(logoPredeterminado, logoDestino);
+    // 1. Guardar o actualizar datos de ClienteAutomanual
+    const identificador = config.id.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '-');
+    let cliente = await this.clienteRepo.findOne({
+      where: [{ identificador }],
+      relations: {
+        modulos: {
+          pantallas: true,
+        },
+      },
+    });
+    const colorPrimario = config.color || config.theme?.primaryColor || '#0071e3';
+
+    const authConfig = config.auth || normalizado.auth;
+
+    if (!cliente) {
+      cliente = this.clienteRepo.create({
+        identificador,
+        nombre: normalizado.name,
+        urlApp: normalizado.appUrl,
+        color: colorPrimario,
+        auth: authConfig,
+      });
+      cliente = await this.clienteRepo.save(cliente);
+    } else {
+      cliente.nombre = normalizado.name;
+      cliente.urlApp = normalizado.appUrl;
+      cliente.color = colorPrimario;
+      if (authConfig) {
+        cliente.auth = authConfig;
+      }
+      cliente = await this.clienteRepo.save(cliente);
+    }
+
+    // 2. Persistir tablas relacionales modulos_automanual y pantallas_automanual
+    if (Array.isArray(normalizado.modules)) {
+      // Sincronizar módulos
+      const modulosExistentes = cliente.modulos || [];
+      const identificadoresNuevos = normalizado.modules.map((m: any) => m.id);
+
+      // Eliminar módulos que ya no existan en la lista recibida
+      for (const modExistente of modulosExistentes) {
+        if (!identificadoresNuevos.includes(modExistente.identificador)) {
+          await this.moduloRepo.remove(modExistente);
+        }
+      }
+
+      // Crear o actualizar cada módulo y sus pantallas
+      let ordenMod = 0;
+      for (const modInput of normalizado.modules) {
+        ordenMod++;
+        let modDb = await this.moduloRepo.findOne({
+          where: { clienteId: cliente.id, identificador: modInput.id },
+          relations: {
+            pantallas: true,
+          },
+        });
+
+        if (!modDb) {
+          modDb = this.moduloRepo.create({
+            clienteId: cliente.id,
+            identificador: modInput.id,
+            nombre: modInput.title || modInput.name || modInput.id,
+            orden: ordenMod,
+          });
+          modDb = await this.moduloRepo.save(modDb);
+        } else {
+          modDb.nombre = modInput.title || modInput.name || modInput.id;
+          modDb.orden = ordenMod;
+          modDb = await this.moduloRepo.save(modDb);
+        }
+
+        // Sincronizar pantallas dentro de este módulo
+        const pantallasInput = modInput.sections || [];
+        const pantallasExistentes = modDb.pantallas || [];
+        const identificadoresPantallas = pantallasInput.map((p: any) => p.id);
+
+        for (const pExistente of pantallasExistentes) {
+          if (!identificadoresPantallas.includes(pExistente.identificador)) {
+            await this.pantallaRepo.remove(pExistente);
+          }
+        }
+
+        let ordenPantalla = 0;
+        for (const secInput of pantallasInput) {
+          ordenPantalla++;
+          let pantallaDb = await this.pantallaRepo.findOne({
+            where: { moduloId: modDb.id, identificador: secInput.id },
+          });
+
+          if (!pantallaDb) {
+            pantallaDb = this.pantallaRepo.create({
+              moduloId: modDb.id,
+              identificador: secInput.id,
+              nombre: secInput.title || secInput.name || secInput.id,
+              ruta: secInput.route || '/',
+              descripcion: secInput.description,
+              selectorEspera: secInput.waitForSelector,
+              orden: ordenPantalla,
+            });
+          } else {
+            pantallaDb.nombre = secInput.title || secInput.name || secInput.id;
+            pantallaDb.ruta = secInput.route || '/';
+            pantallaDb.descripcion = secInput.description;
+            pantallaDb.selectorEspera = secInput.waitForSelector;
+            pantallaDb.orden = ordenPantalla;
+          }
+          await this.pantallaRepo.save(pantallaDb);
+        }
+      }
     }
 
     return { success: true, client: normalizado };
   }
 
+  // ==========================================
+  // GESTIÓN GRANULAR DE MÓDULOS Y PANTALLAS
+  // ==========================================
+
+  public async guardarModulo(
+    clienteIdentificador: string,
+    datos: { id?: string; identificador: string; nombre: string; orden?: number },
+  ): Promise<ModuloAutomanual> {
+    const cliente = await this.clienteRepo.findOne({
+      where: [{ identificador: clienteIdentificador }],
+    });
+    if (!cliente) {
+      throw new NotFoundException(`Cliente "${clienteIdentificador}" no encontrado`);
+    }
+
+    let modulo: ModuloAutomanual | null = null;
+    if (datos.id) {
+      modulo = await this.moduloRepo.findOne({ where: { id: datos.id, clienteId: cliente.id } });
+    }
+    if (!modulo) {
+      modulo = await this.moduloRepo.findOne({
+        where: { clienteId: cliente.id, identificador: datos.identificador },
+      });
+    }
+
+    if (!modulo) {
+      modulo = this.moduloRepo.create({
+        clienteId: cliente.id,
+        identificador: datos.identificador,
+        nombre: datos.nombre,
+        orden: datos.orden || 0,
+      });
+    } else {
+      modulo.nombre = datos.nombre;
+      if (datos.orden !== undefined) modulo.orden = datos.orden;
+    }
+
+    return this.moduloRepo.save(modulo);
+  }
+
+  public async eliminarModuloPorId(
+    clienteIdentificador: string,
+    moduloIdentificador: string,
+  ): Promise<{ success: boolean }> {
+    const cliente = await this.clienteRepo.findOne({
+      where: [{ identificador: clienteIdentificador }],
+    });
+    if (!cliente) return { success: false };
+
+    await this.moduloRepo.delete({
+      clienteId: cliente.id,
+      identificador: moduloIdentificador,
+    });
+    return { success: true };
+  }
+
+  public async guardarPantalla(
+    clienteIdentificador: string,
+    moduloIdentificador: string,
+    datos: {
+      identificador: string;
+      nombre: string;
+      ruta: string;
+      descripcion?: string;
+      selectorEspera?: string;
+      orden?: number;
+    },
+  ): Promise<PantallaAutomanual> {
+    const cliente = await this.clienteRepo.findOne({
+      where: [{ identificador: clienteIdentificador }],
+    });
+    if (!cliente) {
+      throw new NotFoundException(`Cliente "${clienteIdentificador}" no encontrado`);
+    }
+
+    let modulo = await this.moduloRepo.findOne({
+      where: { clienteId: cliente.id, identificador: moduloIdentificador },
+    });
+    if (!modulo) {
+      modulo = await this.moduloRepo.save(
+        this.moduloRepo.create({
+          clienteId: cliente.id,
+          identificador: moduloIdentificador,
+          nombre: moduloIdentificador,
+          orden: 1,
+        }),
+      );
+    }
+
+    let pantalla = await this.pantallaRepo.findOne({
+      where: { moduloId: modulo.id, identificador: datos.identificador },
+    });
+
+    if (!pantalla) {
+      pantalla = this.pantallaRepo.create({
+        moduloId: modulo.id,
+        identificador: datos.identificador,
+        nombre: datos.nombre,
+        ruta: datos.ruta || '/',
+        descripcion: datos.descripcion,
+        selectorEspera: datos.selectorEspera,
+        orden: datos.orden || 1,
+      });
+    } else {
+      pantalla.nombre = datos.nombre;
+      pantalla.ruta = datos.ruta || '/';
+      pantalla.descripcion = datos.descripcion;
+      pantalla.selectorEspera = datos.selectorEspera;
+      if (datos.orden !== undefined) pantalla.orden = datos.orden;
+    }
+
+    return this.pantallaRepo.save(pantalla);
+  }
+
+  public async eliminarPantallaPorId(
+    clienteIdentificador: string,
+    moduloIdentificador: string,
+    pantallaIdentificador: string,
+  ): Promise<{ success: boolean }> {
+    const cliente = await this.clienteRepo.findOne({
+      where: [{ identificador: clienteIdentificador }],
+    });
+    if (!cliente) return { success: false };
+
+    const modulo = await this.moduloRepo.findOne({
+      where: { clienteId: cliente.id, identificador: moduloIdentificador },
+    });
+    if (!modulo) return { success: false };
+
+    await this.pantallaRepo.delete({
+      moduloId: modulo.id,
+      identificador: pantallaIdentificador,
+    });
+    return { success: true };
+  }
+
   public async eliminarCliente(
     id: string,
   ): Promise<{ success: boolean; message: string }> {
+    await this.clienteRepo.delete({ identificador: id });
+
     const rutaCliente = path.join(this.rutas.directorioClientes, id);
-    if (!(await fs.pathExists(rutaCliente))) {
-      throw new NotFoundException(`Cliente "${id}" no existe`);
+    if (await fs.pathExists(rutaCliente)) {
+      await fs.remove(rutaCliente);
     }
-    await fs.remove(rutaCliente);
 
     const rutaDocs = path.join(this.rutas.directorioDocs, id);
     if (await fs.pathExists(rutaDocs)) {
@@ -234,25 +537,145 @@ export class AutomanualService {
     };
   }
 
+  public async obtenerCapturas(
+    clienteIdentificador: string,
+    moduloId?: string,
+    seccionId?: string,
+  ): Promise<CapturaAutomanual[]> {
+    const cliente = await this.clienteRepo.findOne({
+      where: [{ identificador: clienteIdentificador }],
+    });
+    if (!cliente) return [];
+
+    const where: any = { clienteId: cliente.id };
+    if (moduloId) where.moduloId = moduloId;
+    if (seccionId) where.seccionId = seccionId;
+
+    return this.capturaRepo.find({
+      where,
+      order: { fechaCreacion: 'DESC' },
+    });
+  }
+
+  public async guardarCaptura(datos: Partial<CapturaAutomanual>): Promise<CapturaAutomanual> {
+    const nueva = this.capturaRepo.create(datos);
+    return this.capturaRepo.save(nueva);
+  }
+
+  public async eliminarCaptura(id: string): Promise<{ success: boolean }> {
+    const captura = await this.capturaRepo.findOne({ where: { id } });
+    if (!captura) {
+      throw new NotFoundException(`Captura con ID ${id} no encontrada`);
+    }
+
+    if (captura.metadata?.storagePath && this.storageService.estaDisponible()) {
+      await this.storageService.eliminarArchivos([captura.metadata.storagePath]);
+    }
+
+    await this.capturaRepo.delete(id);
+    return { success: true };
+  }
+
+  // ==========================================
+  // GESTIÓN DE CASOS DE PRUEBA (QA E2E)
+  // ==========================================
+
+  public async obtenerCasosPrueba(
+    clienteIdentificador: string,
+    moduloId?: string,
+    seccionId?: string,
+  ): Promise<CasoPruebaAutomanual[]> {
+    const cliente = await this.clienteRepo.findOne({
+      where: [{ identificador: clienteIdentificador }],
+    });
+    if (!cliente) return [];
+
+    const where: any = { clienteId: cliente.id };
+    if (moduloId) where.moduloId = moduloId;
+    if (seccionId) where.seccionId = seccionId;
+
+    return this.casoPruebaRepo.find({
+      where,
+      order: { fechaCreacion: 'ASC' },
+    });
+  }
+
+  public async obtenerCasoPruebaPorId(id: string): Promise<CasoPruebaAutomanual> {
+    const caso = await this.casoPruebaRepo.findOne({ where: { id } });
+    if (!caso) {
+      throw new NotFoundException(`Caso de prueba con ID ${id} no encontrado`);
+    }
+    return caso;
+  }
+
+  public async guardarCasoPrueba(
+    datos: Partial<CasoPruebaAutomanual> & { clienteIdentificador?: string },
+  ): Promise<CasoPruebaAutomanual> {
+    if (!datos.clienteId && datos.clienteIdentificador) {
+      const cliente = await this.clienteRepo.findOne({
+        where: [{ identificador: datos.clienteIdentificador }],
+      });
+      if (cliente) {
+        datos.clienteId = cliente.id;
+      }
+    }
+
+    if (!datos.clienteId || !datos.moduloId || !datos.seccionId || !datos.titulo) {
+      throw new BadRequestException('Faltan campos obligatorios para el caso de prueba');
+    }
+
+    // Vincular automáticamente con PantallaAutomanual si no viene pantallaId
+    if (!datos.pantallaId) {
+      const pantalla = await this.pantallaRepo
+        .createQueryBuilder('p')
+        .innerJoin('p.modulo', 'm')
+        .where('m.clienteId = :clienteId', { clienteId: datos.clienteId })
+        .andWhere('m.identificador = :modId', { modId: datos.moduloId })
+        .andWhere('p.identificador = :secId', { secId: datos.seccionId })
+        .getOne();
+      if (pantalla) {
+        datos.pantallaId = pantalla.id;
+      }
+    }
+
+    let caso: CasoPruebaAutomanual;
+    if (datos.id) {
+      const existente = await this.casoPruebaRepo.findOne({ where: { id: datos.id } });
+      if (!existente) {
+        throw new NotFoundException(`Caso de prueba con ID ${datos.id} no existe`);
+      }
+      Object.assign(existente, datos);
+      caso = existente;
+    } else {
+      caso = this.casoPruebaRepo.create(datos);
+    }
+
+    return this.casoPruebaRepo.save(caso);
+  }
+
+  public async eliminarCasoPrueba(id: string): Promise<{ success: boolean }> {
+    const caso = await this.casoPruebaRepo.findOne({ where: { id } });
+    if (!caso) {
+      throw new NotFoundException(`Caso de prueba con ID ${id} no existe`);
+    }
+    await this.casoPruebaRepo.delete(id);
+    return { success: true };
+  }
+
   public async obtenerFlujoLogo(id: string) {
     const rutaCliente = path.join(this.rutas.directorioClientes, id);
-    const rutaConfig = path.join(rutaCliente, 'config.json');
     let rutaLogo = path.join(
       this.rutas.directorioClientes,
       '_default',
       'default-logo.svg',
     );
 
-    if (await fs.pathExists(rutaConfig)) {
-      const config = await fs.readJson(rutaConfig);
-      if (config.theme?.logoPath) {
-        const candidato = path.join(
-          rutaCliente,
-          path.basename(config.theme.logoPath),
-        );
-        if (await fs.pathExists(candidato)) {
-          rutaLogo = candidato;
-        }
+    // Buscar logo del cliente en su carpeta si existe
+    if (await fs.pathExists(rutaCliente)) {
+      const archivos = await fs.readdir(rutaCliente);
+      const archivoLogo = archivos.find((f) => f.startsWith('logo.'));
+      if (archivoLogo) {
+        rutaLogo = path.join(rutaCliente, archivoLogo);
       }
     }
 
@@ -280,14 +703,13 @@ export class AutomanualService {
       );
     }
 
-    const rutaCliente = path.join(this.rutas.directorioClientes, id);
-    const rutaConfig = path.join(rutaCliente, 'config.json');
-    if (!(await fs.pathExists(rutaConfig))) {
+    const entidad = await this.clienteRepo.findOne({ where: [{ identificador: id }] });
+    if (!entidad) {
       throw new NotFoundException(`Cliente "${id}" no encontrado`);
     }
 
-    const config = await fs.readJson(rutaConfig);
-    const prevLogo = config.theme?.logoPath || 'default-logo.svg';
+    const rutaCliente = path.join(this.rutas.directorioClientes, id);
+    await fs.ensureDir(rutaCliente);
 
     const ext = path.extname(fileName).toLowerCase() || '.png';
     const cleanFileName = `logo${ext}`;
@@ -297,61 +719,10 @@ export class AutomanualService {
     const buffer = Buffer.from(base64Data, 'base64');
     await fs.writeFile(targetFile, buffer);
 
-    config.theme = config.theme || {
-      primaryColor: '#0071e3',
-      secondaryColor: '#1d1d1f',
-      fontFamily: 'sans-serif',
-      logoPath: cleanFileName,
-    };
-    config.theme.logoPath = cleanFileName;
-    await fs.writeJson(rutaConfig, config, { spaces: 2 });
-
     const clientDocsDir = path.join(this.rutas.directorioDocs, id);
     const clientAssetsDir = path.join(clientDocsDir, 'assets');
     if (await fs.pathExists(clientAssetsDir)) {
       await fs.copy(targetFile, path.join(clientAssetsDir, cleanFileName));
-
-      const newHomeHtml = this.motorPlantillas.generarPortada(config, 0);
-      await fs.writeFile(
-        path.join(clientDocsDir, 'index.html'),
-        newHomeHtml,
-        'utf-8',
-      );
-
-      const themeCss = generarCssTema(config.theme);
-      await fs.writeFile(
-        path.join(clientAssetsDir, 'theme.css'),
-        themeCss,
-        'utf-8',
-      );
-
-      const actualizarHtmls = async (dir: string) => {
-        const entries = await fs.readdir(dir, { withFileTypes: true });
-        for (const entry of entries) {
-          const fullPath = path.join(dir, entry.name);
-          if (entry.isDirectory()) {
-            await actualizarHtmls(fullPath);
-          } else if (
-            entry.isFile() &&
-            entry.name === 'index.html' &&
-            dir !== clientDocsDir
-          ) {
-            let content = await fs.readFile(fullPath, 'utf-8');
-            const prevBase = path.basename(prevLogo);
-            content = content.replace(
-              new RegExp(`assets/${prevBase}`, 'g'),
-              `assets/${cleanFileName}`,
-            );
-            content = content.replace(
-              /assets\/default-logo\.svg/g,
-              `assets/${cleanFileName}`,
-            );
-            await fs.writeFile(fullPath, content, 'utf-8');
-          }
-        }
-      };
-
-      await actualizarHtmls(clientDocsDir);
     }
 
     return {
@@ -412,8 +783,17 @@ export class AutomanualService {
     };
 
     try {
-      const configActualizada =
-        await this.comandante.descubrirRutasCliente(clienteId);
+      const clienteConfig = await this.obtenerCliente(clienteId);
+      const configActualizada = await this.comandante.descubrirRutasCliente(
+        clienteId,
+        clienteConfig,
+      );
+
+      // Persistir los módulos descubiertos 100% en las tablas relacionales de la BD
+      if (configActualizada.modules && configActualizada.modules.length > 0) {
+        await this.guardarCliente(configActualizada);
+      }
+
       this.logsActuales.push(
         `✔ Auto-descubrimiento completado: ${configActualizada.modules?.length || 0} módulos encontrados.`,
       );
@@ -455,12 +835,84 @@ export class AutomanualService {
             ? false
             : opciones.all !== false;
 
+        const clienteDb = await this.clienteRepo.findOne({
+          where: [{ identificador: clienteId }],
+        });
+
+        const clienteConfig = await this.obtenerCliente(clienteId);
+
+        // Si se enviaron credenciales desde el frontend (localStorage del usuario), usarlas para esta ejecución
+        if (opciones.auth && (opciones.auth.username || opciones.auth.password)) {
+          clienteConfig.auth = {
+            ...clienteConfig.auth,
+            ...opciones.auth,
+          };
+        }
+
         await this.comandante.ejecutarGeneracion({
           client: clienteId,
+          configuracionCliente: clienteConfig,
           all: esCompleto,
           section: opciones.sectionId,
           module: opciones.moduleId,
           headless: opciones.visibleBrowser === false,
+          onCapturasTomadas: async (datos) => {
+            // Estrategia 1: Limpieza previa de capturas anteriores de esta pantalla en la BD
+            if (clienteDb) {
+              await this.capturaRepo.delete({
+                clienteId: clienteDb.id,
+                moduloId: datos.moduloId,
+                seccionId: datos.seccionId,
+              });
+            }
+
+            // Asociar con PantallaAutomanual si existe
+            let pantallaDb: PantallaAutomanual | null = null;
+            if (clienteDb) {
+              pantallaDb = await this.pantallaRepo
+                .createQueryBuilder('p')
+                .innerJoin('p.modulo', 'm')
+                .where('m.clienteId = :clienteId', { clienteId: clienteDb.id })
+                .andWhere('m.identificador = :modId', { modId: datos.moduloId })
+                .andWhere('p.identificador = :secId', { secId: datos.seccionId })
+                .getOne();
+            }
+
+            // Procesar cada captura tomada por Playwright y preparar previsualizaciones base64
+            const capturasParaRevision: any[] = [];
+            for (const shot of datos.screenshots) {
+              const rutaLocal = path.join(datos.screenshotsDir, shot.fileName);
+              if (!(await fs.pathExists(rutaLocal))) continue;
+
+              const buffer = await fs.readFile(rutaLocal);
+              const previewBase64 = `data:image/png;base64,${buffer.toString('base64')}`;
+
+              capturasParaRevision.push({
+                fileName: shot.fileName,
+                caption: shot.caption || `${datos.seccionTitulo} - ${shot.fileName}`,
+                tipo: (shot.kind as any) || 'main',
+                rutaLocal,
+                previewBase64,
+              });
+            }
+
+            // Guardar para revisión humana previa
+            this.revisionPendiente = {
+              clienteSlug: datos.clienteSlug,
+              moduloId: datos.moduloId,
+              moduloTitulo: datos.moduloTitulo,
+              seccionId: datos.seccionId,
+              seccionTitulo: datos.seccionTitulo,
+              rutaApp: datos.rutaApp,
+              capturas: capturasParaRevision,
+              casosPrueba: datos.casosPruebaGenerados || [],
+              liveDom: datos.liveDom,
+            };
+
+            this.logsActuales.push(
+              `✨ Exploración lista: ${capturasParaRevision.length} capturas y ${(datos.casosPruebaGenerados || []).length} casos generados por IA esperando tu revisión y aprobación.`,
+            );
+          },
         });
 
         this.logsActuales.push('✔ ¡Manual generado con éxito!');
@@ -479,6 +931,120 @@ export class AutomanualService {
     return {
       isGenerating: this.estaGenerando,
       logs: this.logsActuales,
+      revisionPendiente: this.revisionPendiente,
+    };
+  }
+
+  public descartarRevisionPendiente() {
+    this.revisionPendiente = null;
+    return { success: true };
+  }
+
+  public async confirmarRevisionPendiente(datosConfirmados: {
+    capturasSeleccionadas: string[]; // fileNames de las capturas aprobadas
+    casosAprobados: any[]; // casos de prueba aprobados/editados por el usuario
+  }) {
+    if (!this.revisionPendiente) {
+      throw new BadRequestException('No hay ninguna revisión pendiente.');
+    }
+
+    const rev = this.revisionPendiente;
+    const clienteDb = await this.clienteRepo.findOne({
+      where: [{ identificador: rev.clienteSlug }],
+    });
+    if (!clienteDb) {
+      throw new NotFoundException(`Cliente "${rev.clienteSlug}" no encontrado.`);
+    }
+
+    let pantallaDb: PantallaAutomanual | null = null;
+    pantallaDb = await this.pantallaRepo
+      .createQueryBuilder('p')
+      .innerJoin('p.modulo', 'm')
+      .where('m.clienteId = :clienteId', { clienteId: clienteDb.id })
+      .andWhere('m.identificador = :modId', { modId: rev.moduloId })
+      .andWhere('p.identificador = :secId', { secId: rev.seccionId })
+      .getOne();
+
+    // 1. Subir a Supabase Storage y guardar en BD únicamente las capturas aprobadas
+    for (const cap of rev.capturas) {
+      if (!datosConfirmados.capturasSeleccionadas.includes(cap.fileName)) {
+        continue;
+      }
+
+      if (!(await fs.pathExists(cap.rutaLocal))) continue;
+
+      const extension = path.extname(cap.fileName) || '.png';
+      const baseName = path.basename(cap.fileName, extension);
+      const storagePath = `clientes/${rev.clienteSlug}/${rev.moduloId}/${rev.seccionId}/${baseName}${extension}`;
+
+      let publicUrl = '';
+      if (this.storageService.estaDisponible()) {
+        const subida = await this.storageService.subirArchivoDesdeDisco(
+          cap.rutaLocal,
+          storagePath,
+          'image/png',
+        );
+        if (subida) {
+          publicUrl = subida.url;
+        }
+      }
+
+      const stats = await fs.stat(cap.rutaLocal);
+      const metadata = {
+        storagePath,
+        viewport: { width: 1366, height: 768 },
+        pesoBytes: stats.size,
+        resumenDom: {
+          campos: rev.liveDom?.fields?.map((f: any) => f.label) || [],
+          botones: rev.liveDom?.actions?.map((a: any) => a.name) || [],
+          tieneTabla: Boolean(rev.liveDom?.tables && rev.liveDom.tables.length > 0),
+          totalFilasTabla: rev.liveDom?.tables?.[0]?.rowCount || 0,
+        },
+        erroresConsola: [],
+      };
+
+      await this.capturaRepo.save(
+        this.capturaRepo.create({
+          clienteId: clienteDb.id,
+          pantallaId: pantallaDb?.id,
+          moduloId: rev.moduloId,
+          moduloTitulo: rev.moduloTitulo,
+          seccionId: rev.seccionId,
+          seccionTitulo: rev.seccionTitulo,
+          rutaApp: rev.rutaApp,
+          url: publicUrl || `/manuals/${rev.clienteSlug}/${rev.moduloId}/${rev.seccionId}/screenshots/${cap.fileName}`,
+          tipo: cap.tipo as any,
+          titulo: cap.caption,
+          estadoQa: 'PASS',
+          metadata,
+        }),
+      );
+    }
+
+    // 2. Guardar los casos de prueba aprobados en la base de datos
+    for (const caso of datosConfirmados.casosAprobados) {
+      await this.casoPruebaRepo.save(
+        this.casoPruebaRepo.create({
+          clienteId: clienteDb.id,
+          pantallaId: pantallaDb?.id,
+          moduloId: rev.moduloId,
+          moduloTitulo: rev.moduloTitulo,
+          seccionId: rev.seccionId,
+          seccionTitulo: rev.seccionTitulo,
+          codigo: caso.codigo,
+          titulo: caso.titulo,
+          descripcion: caso.descripcion,
+          pasos: caso.pasos || [],
+          resultadoEsperado: caso.criterioAsercion || caso.resultadoEsperado || { tipo: 'selector_visible', selector: 'body' },
+          ultimoResultado: 'PENDIENTE',
+        }),
+      );
+    }
+
+    this.revisionPendiente = null;
+    return {
+      success: true,
+      message: 'Evidencias y casos de prueba confirmados y guardados en PostgreSQL y Supabase Storage.',
     };
   }
 

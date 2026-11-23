@@ -47,6 +47,7 @@ export class RastreadorNavegador {
     screenshotsDir: string,
     storageStatePath?: string,
     autoExploreConfig?: boolean | ConfiguracionAutoExploracion,
+    authConfig?: any,
   ): Promise<ResultadoRastreo> {
     if (!this.browser) {
       await this.iniciar();
@@ -67,13 +68,75 @@ export class RastreadorNavegador {
     const page = await context.newPage();
     let screenshots: CapturaPantalla[] = [];
 
+    // =========================================================================
+    // PASO 1: SIEMPRE IR PRIMERO A LA URL BASE (LOGIN) Y AUTENTICAR SI ES NECESARIO
+    // =========================================================================
+    console.log(pc.cyan(`\n  🔑 [Paso 1/2] Iniciando en la URL principal: ${baseUrl}`));
+    try {
+      await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+      await page.waitForTimeout(2000);
+
+      // Comprobar si hay botón SSO o campos de login
+      const ssoSelector =
+        authConfig?.ssoTriggerSelector ||
+        "button:has-text('Iniciar Sesión'), button:has-text('Iniciar sesión segura'), [data-login-sso]";
+      const ssoBtn = page.locator(ssoSelector).first();
+      if (await ssoBtn.isVisible({ timeout: 2000 }).catch(() => false)) {
+        console.log(pc.cyan('  → Detectado botón de acceso SSO. Avanzando a login...'));
+        await ssoBtn.click().catch(() => {});
+        await page.waitForTimeout(2000);
+      }
+
+      const passSel =
+        authConfig?.passwordSelector ||
+        "input[name*='Pass' i], input[type='password']";
+      const passField = page.locator(passSel).first();
+      const hayPasswordVisible = await passField.isVisible({ timeout: 2000 }).catch(() => false);
+
+      if (hayPasswordVisible && authConfig?.username && authConfig?.password) {
+        console.log(pc.yellow(`  🔐 Ingresando credenciales para "${authConfig.username}"...`));
+        
+        const userSel =
+          authConfig.userSelector ||
+          "input[name*='User' i], input[type='email'], input[name*='user' i], input[name*='email' i], input[type='text']:not([type='password'])";
+        const userField = page.locator(userSel).first();
+        if (await userField.isVisible().catch(() => false)) {
+          await userField.fill(authConfig.username);
+        }
+        await passField.fill(authConfig.password);
+        await page.waitForTimeout(500);
+
+        const btnSel =
+          authConfig.submitSelector ||
+          "button[type='submit'], button:has-text('Ingresar'), button:has-text('Iniciar'), button:has-text('Login'), input[type='submit']";
+        const submitBtn = page.locator(btnSel).first();
+        if (await submitBtn.isVisible().catch(() => false)) {
+          await submitBtn.click().catch(() => {});
+          console.log(pc.green('  ✔ Formulario de autenticación enviado. Esperando sesión...'));
+          await page.waitForTimeout(5000);
+        }
+
+        // Guardar la sesión actualizada para no perderla
+        if (storageStatePath) {
+          await context.storageState({ path: storageStatePath }).catch(() => {});
+        }
+      } else {
+        console.log(pc.green('  ✔ Sesión ya activa o no requiere rellenar login.'));
+      }
+    } catch (err: any) {
+      console.log(pc.yellow(`  ⚠ Aviso en paso inicial de autenticación: ${err.message}`));
+    }
+
+    // =========================================================================
+    // PASO 2: NAVEGAR DIRECTAMENTE A LA RUTA DE LA PANTALLA YA AUTENTICADO
+    // =========================================================================
     const targetUrl = new URL(section.route, baseUrl).toString();
-    console.log(pc.blue(`  🌐 Navegando a ${targetUrl}...`));
+    console.log(pc.blue(`  🌐 [Paso 2/2] Navegando ya autenticado a pantalla: ${targetUrl}...`));
 
     try {
       await page.goto(targetUrl, {
         waitUntil: 'domcontentloaded',
-        timeout: 15000,
+        timeout: 25000,
       });
     } catch (err: any) {
       console.log(
@@ -87,7 +150,7 @@ export class RastreadorNavegador {
         .catch(() => {});
     }
 
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(2000);
 
     if (section.menuPath && section.menuPath.length > 0) {
       try {

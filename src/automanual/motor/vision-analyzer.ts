@@ -34,6 +34,25 @@ export interface ResultadoAnalisisVision {
   tips?: string[];
 }
 
+export interface CasoPruebaGeneradoIa {
+  codigo: string;
+  titulo: string;
+  descripcion: string;
+  tipo: string;
+  criterioAsercion?: {
+    tipo: 'selector_visible' | 'texto_presente' | 'url_contiene';
+    selector?: string;
+    valorEsperado?: string;
+  };
+  pasos: Array<{
+    orden: number;
+    accion: 'navegar' | 'escribir' | 'clic' | 'seleccionar' | 'esperar_visible';
+    descripcion: string;
+    selector?: string;
+    valor?: string;
+  }>;
+}
+
 const APENDICE_CONTRATO_JSON = `
 FORMATO DE SALIDA OBLIGATORIO (JSON válido, sin texto adicional ni bloques markdown):
 {
@@ -280,6 +299,134 @@ export class AnalizadorVision {
     } catch (err: any) {
       console.warn(`  ⚠ Error general en análisis de visión: ${err.message}`);
       return null;
+    }
+  }
+
+  /**
+   * Genera casos de prueba E2E (QA) con Gemini analizando la imagen de la pantalla y los elementos descubiertos en el DOM.
+   */
+  public async generarCasosPruebaE2E(opciones: {
+    appName: string;
+    moduleTitle: string;
+    sectionTitle: string;
+    route: string;
+    functionalDescription?: string;
+    screenshotPath?: string;
+    fields?: CampoFormularioUsuario[];
+    actions?: AccionPantallaUsuario[];
+    tables?: any[];
+  }): Promise<CasoPruebaGeneradoIa[]> {
+    this.sincronizarEntorno();
+    if (!this.estaDisponible()) {
+      return [];
+    }
+
+    try {
+      const camposTexto =
+        opciones.fields && opciones.fields.length > 0
+          ? opciones.fields
+              .map((f) => `- Campo: "${f.label}" (descripción/significado: ${f.meaning || 'dato de formulario'})`)
+              .join('\n')
+          : 'No se detectaron campos de entrada.';
+
+      const accionesTexto =
+        opciones.actions && opciones.actions.length > 0
+          ? opciones.actions
+              .map((a) => `- Botón/Acción: "${a.name}" (${a.description || 'acción en pantalla'})`)
+              .join('\n')
+          : 'No se detectaron botones relevantes.';
+
+      const instruccionFuncional = opciones.functionalDescription?.trim()
+        ? `\nDIRECTIVA OBLIGATORIA DEL USUARIO / REGLA DE NEGOCIO:\n"${opciones.functionalDescription}"\nDEBES RESPETAR ESTRICTAMENTE ESTA DIRECTIVA (por ejemplo, si indica "solo capturar textos" o "no probar formularios", genera exclusivamente casos acordes a esa directriz).\n`
+        : '';
+
+      const promptCasos = `Actúa como un Ingeniero QA Senior especializado en pruebas automatizadas E2E con Playwright.
+Analiza la pantalla "${opciones.sectionTitle}" (ruta: "${opciones.route}") del módulo "${opciones.moduleTitle}" en la aplicación "${opciones.appName}".
+${instruccionFuncional}
+Elementos detectados en la interfaz:
+Campos de entrada:
+${camposTexto}
+
+Botones y acciones:
+${accionesTexto}
+
+INSTRUCCIONES:
+Genera entre 2 y 4 casos de prueba automatizados para validar exhaustivamente esta pantalla respetando cualquier directiva obligatoria anterior.
+Cada caso de prueba debe tener una secuencia ordenada de pasos ejecutables por Playwright ('navegar', 'escribir', 'clic', 'seleccionar', 'esperar_visible').
+
+RESPONDE ÚNICAMENTE CON UN ARREGLO JSON VÁLIDO CON ESTA ESTRUCTURA (sin bloques markdown ni explicaciones):
+[
+  {
+    "codigo": "CP-01",
+    "titulo": "Carga inicial y visibilidad de componentes",
+    "descripcion": "Verifica que la pantalla cargue correctamente y los elementos principales estén visibles.",
+    "criterioAsercion": {
+      "tipo": "selector_visible",
+      "selector": "body"
+    },
+    "pasos": [
+      {
+        "orden": 1,
+        "accion": "navegar",
+        "descripcion": "Navegar a la ruta de la pantalla",
+        "valor": "${opciones.route}"
+      },
+      {
+        "orden": 2,
+        "accion": "esperar_visible",
+        "descripcion": "Esperar a que cargue el contenedor principal",
+        "selector": "main"
+      }
+    ]
+  }
+]`;
+
+      const partesContenido: Array<{
+        inlineData?: { mimeType: string; data: string };
+        text?: string;
+      }> = [];
+
+      if (opciones.screenshotPath && (await fs.pathExists(opciones.screenshotPath))) {
+        const buffer = await fs.readFile(opciones.screenshotPath);
+        partesContenido.push({
+          inlineData: {
+            mimeType: 'image/png',
+            data: buffer.toString('base64'),
+          },
+        });
+      }
+
+      partesContenido.push({ text: promptCasos });
+
+      const modeloActivo = this.model || 'gemini-2.5-flash';
+      const colaModelos = [modeloActivo, 'gemini-2.5-flash-lite', 'gemini-2.0-flash'];
+
+      for (const mod of colaModelos) {
+        try {
+          const response = await this.ai!.models.generateContent({
+            model: mod,
+            contents: [{ role: 'user', parts: partesContenido }],
+            config: {
+              temperature: 0.2,
+              responseMimeType: 'application/json',
+            },
+          });
+
+          const texto = (response.text || '').replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+          const casos = JSON.parse(texto) as CasoPruebaGeneradoIa[];
+          if (Array.isArray(casos) && casos.length > 0) {
+            console.log(pc.green(`  ✔ ${casos.length} casos de prueba generados con IA (${mod}) para ${opciones.sectionTitle}`));
+            return casos;
+          }
+        } catch (err: any) {
+          console.warn(`  ⚠ Fallo al generar casos con ${mod}: ${err.message}`);
+        }
+      }
+
+      return [];
+    } catch (err: any) {
+      console.warn(`  ⚠ Error general en generación de casos de prueba con IA: ${err.message}`);
+      return [];
     }
   }
 }

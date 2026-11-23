@@ -36,22 +36,23 @@ export const VARIABLES_PROMPT_VISION: InfoVariablePrompt[] = [
   },
 ];
 
-export const PROMPT_VISION_PREDETERMINADO = `Eres un redactor técnico experto en documentación de software y experiencia de usuario.
-Analiza con atención la captura de pantalla adjunta de la sección "{{sectionTitle}}" perteneciente al módulo "{{moduleTitle}}" del sistema "{{appName}}".
+export const PROMPT_VISION_PREDETERMINADO = `Eres un Ingeniero de Calidad de Software (QA Automation) y Documentador Técnico Senior.
+Analiza con rigor la captura de pantalla adjunta correspondiente a la pantalla "{{sectionTitle}}" del módulo "{{moduleTitle}}" en el sistema "{{appName}}".
 
-Contexto detectado automáticamente en pantalla:
-- Campos y filtros visibles: {{fields}}
-- Botones y acciones visibles: {{actions}}
+Contexto técnico detectado por Playwright en el DOM:
+- Campos de entrada, selects y filtros: {{fields}}
+- Botones, disparadores y acciones interactivas: {{actions}}
 
-Instrucciones de análisis:
-1. Redacta en español claro, directo y sin jerga técnica ni código, pensado para el usuario final.
-2. Describe únicamente lo que realmente aparece en la imagen o en el contexto detectado (no inventes botones, campos ni columnas inexistentes).
-3. En "purpose", explica en 2 a 3 líneas el objetivo práctico de negocio de esta pantalla.
-4. En "howToUse", resume en un párrafo claro cómo operar la pantalla de inicio a fin.
-5. En "stepByStep", redacta entre 3 y 5 pasos numerados (según la complejidad real de la vista) que guíen al usuario de principio a fin.
-6. En "visualElements", describe las tablas, columnas clave, tarjetas de indicadores (KPI), gráficos, paneles o filtros visibles en la captura y para qué sirven.
-7. En "alerts", enumera validaciones, campos obligatorios, estados de alerta o advertencias visibles en pantalla que el usuario deba tener en cuenta.
-8. En "tips", aporta de 1 a 3 consejos prácticos de uso diario basados en la interfaz observada.`;
+Directivas obligatorias de análisis y QA:
+1. Precisión Absoluta: Describe única y exclusivamente lo visible en la captura y los selectores reales detectados. No inventes elementos inexistentes.
+2. Propósito de la Pantalla ("purpose"): Define en 2 líneas el objetivo operativo y de negocio de la pantalla.
+3. Operación Funcional ("howToUse"): Explica de forma concisa cómo debe operar el usuario esta vista de principio a fin.
+4. Flujo de Prueba E2E ("stepByStep"): Diseña entre 3 y 5 pasos secuenciales y ejecutables que un tester o Playwright deba seguir para validar el funcionamiento de esta vista (ej: 1. Ingresar datos requeridos, 2. Aplicar filtros, 3. Disparar acción principal).
+5. Radiografía de Elementos ("visualElements"): Identifica tablas de datos, columnas principales, badges de estado, tarjetas KPI y paneles de navegación indicando su rol funcional.
+6. Validaciones y Criterios de Aceptación ("alerts"): Enumera validaciones requeridas, campos obligatorios (*), estados de error posibles y alertas de confirmación esperadas.
+7. Buenas Prácticas y Consejos ("tips"): Detalla 2 a 3 recomendaciones prácticas de uso y atajos operativos.
+
+El resultado debe ser un JSON estricto sin bloques markdown adicionales.`;
 
 export interface ConfigPromptSistema {
   visionPrompt: string;
