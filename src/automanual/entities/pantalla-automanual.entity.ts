@@ -9,23 +9,32 @@ import {
   JoinColumn,
   Index,
 } from 'typeorm';
+import type { ClienteAutomanual } from './cliente-automanual.entity.js';
 import type { ModuloAutomanual } from './modulo-automanual.entity.js';
 import type { CapturaAutomanual } from './captura-automanual.entity.js';
 import type { CasoPruebaAutomanual } from './caso-prueba-automanual.entity.js';
 
 @Entity('pantallas_automanual')
-@Index(['moduloId', 'identificador'], { unique: true })
+@Index(['clienteId', 'identificador'])
 export class PantallaAutomanual {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ name: 'modulo_id', type: 'uuid' })
+  @Column({ name: 'cliente_id', type: 'uuid', nullable: true })
   @Index()
-  moduloId: string;
+  clienteId?: string;
 
-  @ManyToOne('ModuloAutomanual', 'pantallas', { onDelete: 'CASCADE' })
+  @ManyToOne('ClienteAutomanual', 'pantallas', { onDelete: 'CASCADE', nullable: true })
+  @JoinColumn({ name: 'cliente_id' })
+  cliente?: ClienteAutomanual;
+
+  @Column({ name: 'modulo_id', type: 'uuid', nullable: true })
+  @Index()
+  moduloId?: string;
+
+  @ManyToOne('ModuloAutomanual', 'pantallas', { onDelete: 'SET NULL', nullable: true })
   @JoinColumn({ name: 'modulo_id' })
-  modulo: ModuloAutomanual;
+  modulo?: ModuloAutomanual;
 
   @Column({ name: 'identificador', length: 100 })
   identificador: string;
@@ -38,6 +47,9 @@ export class PantallaAutomanual {
 
   @Column({ name: 'descripcion', type: 'text', nullable: true })
   descripcion?: string;
+
+  @Column({ name: 'indicacion_ia', type: 'text', nullable: true })
+  indicacionIa?: string;
 
   @Column({ name: 'selector_espera', length: 255, nullable: true })
   selectorEspera?: string;

@@ -47,3 +47,13 @@ Este documento detalla la estructura interna, controladores, servicios, flujos d
 2. Nombres canónicos de métodos CRUD: `create`, `findAll`, `findOne`, `update`, `remove`.
 3. Inyección limpia de repositorios y tipado ESM (`import type` para evitar ciclos).
 4. Manejo centralizado de errores de BD (`handleDBExceptions`).
+
+### Flujo QA AutoManual (Cliente → Pantalla → Evidencias & Casos)
+- `PantallaAutomanual` soporta asociación directa a `ClienteAutomanual` (`cliente_id`) con `modulo_id` opcional.
+- `RastreadorNavegador` y `AutoExplorer` capturan imágenes de página completa (`fullPage: true`) y `AnalizadorVision` analiza todas las capturas generadas de la pantalla.
+- `EjecutorCasosPrueba` (`src/automanual/motor/test-runner.ts`) permite la re-ejecución en 1 clic de los casos guardados en `casos_prueba_automanual`, actualizando `ultimo_resultado`, `detalle_ultimo_fallo`, `captura_evidencia_url` y `ultima_ejecucion`.
+- Arquitectura SOLID del motor QA (`src/automanual/motor/`):
+  - `contratos-qa.ts`: Interfaces `IAutenticadorWeb`, `IExploradorPantalla` y contratos de datos (`EvidenciaCapturada`, `ResultadoExploracionPantalla`).
+  - `explorador-interactivo.ts`: `ExploradorInteractivo` + `RegistroAntiLoop` (profundidad 1, registro de URLs visitadas y firmas clickeadas para evitar loops y salidas de dominio).
+  - `orquestador-flujo-qa.ts`: `OrquestadorFlujoQa` ejecuta el flujo lineal en 4 pasos (1. Autenticar en `urlApp`, 2. Abrir link objetivo, 3. Explorar clickeables y cambios de URL, 4. Generar casos con Gemini Vision incluyendo `url_pantalla` por caso).
+- Clasificación en Supabase Storage: `clientes/<cliente>/pantallas/<pantalla>/exploracion/<archivo>.png` y `clientes/<cliente>/pantallas/<pantalla>/casos/<codigo-caso>/<archivo>.png`.

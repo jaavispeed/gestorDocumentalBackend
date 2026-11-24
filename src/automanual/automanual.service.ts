@@ -28,6 +28,12 @@ import {
   VARIABLES_PROMPT_VISION,
 } from './motor/config-sistema.js';
 import { OpcionesGeneracionDto } from './dto/ejecutar-generacion.dto.js';
+import {
+  GuardarPantallaQaDto,
+  EjecutarCasosPantallaDto,
+} from './dto/pantalla-qa.dto.js';
+import { EjecutorCasosPrueba } from './motor/test-runner.js';
+import { OrquestadorFlujoQa } from './motor/orquestador-flujo-qa.js';
 import { GuardarConfigSistemaDto } from './dto/config-sistema.dto.js';
 import { ProbarIaDto } from './dto/probar-ia.dto.js';
 import { PaginacionDto, RespuestaPaginada } from '../common/dto/paginacion.dto.js';
@@ -47,12 +53,31 @@ export class AutomanualService {
   private rutas = obtenerRutasAutomanual();
   private comandante = new ComandanteDocumentacion();
   private motorPlantillas = new MotorPlantillas();
+  private ejecutorCasos = new EjecutorCasosPrueba();
+  private orquestadorQa = new OrquestadorFlujoQa();
 
   private estaGenerando = false;
   private logsActuales: string[] = [];
+  private estadoRegresion: {
+    clienteSlug: string;
+    enCurso: boolean;
+    pantallas: Array<{
+      pantallaId: string;
+      nombre: string;
+      ruta: string;
+      esLogin: boolean;
+      estado: 'PENDIENTE' | 'EJECUTANDO' | 'PASS' | 'FAIL' | 'SIN_CASOS';
+      totalCasos: number;
+      passed: number;
+      failed: number;
+      detalleFallo?: string;
+    }>;
+  } | null = null;
   // Almacena temporalmente el resultado de exploración/generación para revisión humana antes de guardar
   private revisionPendiente: {
     clienteSlug: string;
+    pantallaId?: string;
+    reemplazarExistentes?: boolean;
     moduloId: string;
     moduloTitulo: string;
     seccionId: string;
@@ -64,6 +89,13 @@ export class AutomanualService {
       tipo: string;
       rutaLocal: string;
       previewBase64: string;
+      url?: string;
+    }>;
+    pantallasDetectadas?: Array<{
+      nombre: string;
+      ruta: string;
+      disparador?: string;
+      capturaFileName?: string;
     }>;
     casosPrueba: any[];
     liveDom: any;
@@ -620,17 +652,30 @@ export class AutomanualService {
       }
     }
 
-    if (!datos.clienteId || !datos.moduloId || !datos.seccionId || !datos.titulo) {
+    if (datos.pantallaId) {
+      const pantalla = await this.pantallaRepo.findOne({
+        where: { id: datos.pantallaId },
+        relations: { modulo: true },
+      });
+      if (pantalla) {
+        datos.clienteId = datos.clienteId || pantalla.clienteId || pantalla.modulo?.clienteId;
+        datos.moduloId = datos.moduloId || pantalla.modulo?.identificador || 'pantallas';
+        datos.moduloTitulo = datos.moduloTitulo || pantalla.modulo?.nombre || 'Pantallas QA';
+        datos.seccionId = datos.seccionId || pantalla.identificador;
+        datos.seccionTitulo = datos.seccionTitulo || pantalla.nombre;
+      }
+    }
+
+    if (!datos.clienteId || !datos.titulo) {
       throw new BadRequestException('Faltan campos obligatorios para el caso de prueba');
     }
 
     // Vincular automáticamente con PantallaAutomanual si no viene pantallaId
-    if (!datos.pantallaId) {
+    if (!datos.pantallaId && datos.moduloId && datos.seccionId) {
       const pantalla = await this.pantallaRepo
         .createQueryBuilder('p')
-        .innerJoin('p.modulo', 'm')
-        .where('m.clienteId = :clienteId', { clienteId: datos.clienteId })
-        .andWhere('m.identificador = :modId', { modId: datos.moduloId })
+        .leftJoin('p.modulo', 'm')
+        .where('(p.clienteId = :clienteId OR m.clienteId = :clienteId)', { clienteId: datos.clienteId })
         .andWhere('p.identificador = :secId', { secId: datos.seccionId })
         .getOne();
       if (pantalla) {
@@ -932,10 +977,17 @@ export class AutomanualService {
       isGenerating: this.estaGenerando,
       logs: this.logsActuales,
       revisionPendiente: this.revisionPendiente,
+      estadoRegresion: this.estadoRegresion,
     };
   }
 
-  public descartarRevisionPendiente() {
+  public async descartarRevisionPendiente() {
+    if (this.revisionPendiente) {
+      for (const cap of this.revisionPendiente.capturas) {
+        await fs.remove(cap.rutaLocal).catch(() => {});
+      }
+    }
+
     this.revisionPendiente = null;
     return { success: true };
   }
@@ -943,6 +995,7 @@ export class AutomanualService {
   public async confirmarRevisionPendiente(datosConfirmados: {
     capturasSeleccionadas: string[]; // fileNames de las capturas aprobadas
     casosAprobados: any[]; // casos de prueba aprobados/editados por el usuario
+    pantallasDetectadasAprobadas?: Array<{ nombre: string; ruta: string }>;
   }) {
     if (!this.revisionPendiente) {
       throw new BadRequestException('No hay ninguna revisión pendiente.');
@@ -957,15 +1010,27 @@ export class AutomanualService {
     }
 
     let pantallaDb: PantallaAutomanual | null = null;
-    pantallaDb = await this.pantallaRepo
-      .createQueryBuilder('p')
-      .innerJoin('p.modulo', 'm')
-      .where('m.clienteId = :clienteId', { clienteId: clienteDb.id })
-      .andWhere('m.identificador = :modId', { modId: rev.moduloId })
-      .andWhere('p.identificador = :secId', { secId: rev.seccionId })
-      .getOne();
+    if (rev.pantallaId) {
+      pantallaDb = await this.pantallaRepo.findOne({ where: { id: rev.pantallaId } });
+    }
+    if (!pantallaDb) {
+      pantallaDb = await this.pantallaRepo
+        .createQueryBuilder('p')
+        .leftJoin('p.modulo', 'm')
+        .where('(p.clienteId = :clienteId OR m.clienteId = :clienteId)', { clienteId: clienteDb.id })
+        .andWhere('p.identificador = :secId', { secId: rev.seccionId })
+        .getOne();
+    }
 
-    // 1. Subir a Supabase Storage y guardar en BD únicamente las capturas aprobadas
+    // 1. Subir a Supabase Storage clasificadas por cliente / pantallas / <pantalla> / exploracion
+    const pantallaSlug = this.slugificarTexto(
+      pantallaDb?.identificador || rev.seccionId || rev.seccionTitulo || 'pantalla',
+    );
+    const urlsPorArchivo: Record<string, string> = {};
+    const rutasLocalesPorArchivo: Record<string, string> = {};
+    let primeraRutaLocal: string | undefined;
+    let primeraUrlEvidencia: string | undefined;
+
     for (const cap of rev.capturas) {
       if (!datosConfirmados.capturasSeleccionadas.includes(cap.fileName)) {
         continue;
@@ -975,21 +1040,34 @@ export class AutomanualService {
 
       const extension = path.extname(cap.fileName) || '.png';
       const baseName = path.basename(cap.fileName, extension);
-      const storagePath = `clientes/${rev.clienteSlug}/${rev.moduloId}/${rev.seccionId}/${baseName}${extension}`;
+      const storagePath = `clientes/${rev.clienteSlug}/pantallas/${pantallaSlug}/exploracion/${baseName}${extension}`;
 
-      let publicUrl = '';
-      if (this.storageService.estaDisponible()) {
-        const subida = await this.storageService.subirArchivoDesdeDisco(
-          cap.rutaLocal,
-          storagePath,
-          'image/png',
+      if (!this.storageService.estaDisponible()) {
+        throw new BadRequestException(
+          'Supabase Storage no está configurado. No se permite guardar imágenes localmente.',
         );
-        if (subida) {
-          publicUrl = subida.url;
-        }
+      }
+
+      const subida = await this.storageService.subirArchivoDesdeDisco(
+        cap.rutaLocal,
+        storagePath,
+        'image/png',
+      );
+      if (!subida?.url) {
+        throw new BadRequestException(
+          `No se pudo subir la captura "${cap.fileName}" a Supabase Storage.`,
+        );
       }
 
       const stats = await fs.stat(cap.rutaLocal);
+      const urlFinal = subida.url;
+      urlsPorArchivo[cap.fileName] = urlFinal;
+      rutasLocalesPorArchivo[cap.fileName] = cap.rutaLocal;
+      if (!primeraUrlEvidencia) {
+        primeraUrlEvidencia = urlFinal;
+        primeraRutaLocal = cap.rutaLocal;
+      }
+
       const metadata = {
         storagePath,
         viewport: { width: 1366, height: 768 },
@@ -1012,7 +1090,7 @@ export class AutomanualService {
           seccionId: rev.seccionId,
           seccionTitulo: rev.seccionTitulo,
           rutaApp: rev.rutaApp,
-          url: publicUrl || `/manuals/${rev.clienteSlug}/${rev.moduloId}/${rev.seccionId}/screenshots/${cap.fileName}`,
+          url: urlFinal,
           tipo: cap.tipo as any,
           titulo: cap.caption,
           estadoQa: 'PASS',
@@ -1021,8 +1099,37 @@ export class AutomanualService {
       );
     }
 
-    // 2. Guardar los casos de prueba aprobados en la base de datos
-    for (const caso of datosConfirmados.casosAprobados) {
+    // 2. Si viene de generación completa ("Generar Casos con IA"), reemplazar casos previos de la pantalla al confirmar
+    if (rev.reemplazarExistentes && pantallaDb?.id) {
+      await this.casoPruebaRepo.delete({ pantallaId: pantallaDb.id });
+    }
+
+    // 3. Guardar cada caso aprobado clasificando su evidencia en Supabase bajo pantallas/<pantalla>/casos/<codigo>/
+    for (let idx = 0; idx < datosConfirmados.casosAprobados.length; idx++) {
+      const caso = datosConfirmados.casosAprobados[idx];
+      const casoCarpeta = this.slugificarTexto(
+        caso.codigo || `caso-${idx + 1}`,
+      );
+      const rutaLocalOrigen =
+        (caso.capturaFileName && rutasLocalesPorArchivo[caso.capturaFileName]) ||
+        primeraRutaLocal;
+
+      let evidenciaUrl =
+        (caso.capturaFileName && urlsPorArchivo[caso.capturaFileName]) ||
+        primeraUrlEvidencia;
+
+      if (rutaLocalOrigen && (await fs.pathExists(rutaLocalOrigen))) {
+        const storageCasoPath = `clientes/${rev.clienteSlug}/pantallas/${pantallaSlug}/casos/${casoCarpeta}/evidencia-${Date.now()}.png`;
+        const subidaCaso = await this.storageService.subirArchivoDesdeDisco(
+          rutaLocalOrigen,
+          storageCasoPath,
+          'image/png',
+        );
+        if (subidaCaso?.url) {
+          evidenciaUrl = subidaCaso.url;
+        }
+      }
+
       await this.casoPruebaRepo.save(
         this.casoPruebaRepo.create({
           clienteId: clienteDb.id,
@@ -1033,12 +1140,44 @@ export class AutomanualService {
           seccionTitulo: rev.seccionTitulo,
           codigo: caso.codigo,
           titulo: caso.titulo,
+          urlPantalla: caso.urlPantalla || rev.rutaApp,
           descripcion: caso.descripcion,
           pasos: caso.pasos || [],
           resultadoEsperado: caso.criterioAsercion || caso.resultadoEsperado || { tipo: 'selector_visible', selector: 'body' },
+          capturaEvidenciaUrl: evidenciaUrl,
           ultimoResultado: 'PENDIENTE',
         }),
       );
+    }
+
+    // 4. Registrar opcionalmente las nuevas pantallas/URLs detectadas que el QA aprobó
+    if (
+      Array.isArray(datosConfirmados.pantallasDetectadasAprobadas) &&
+      datosConfirmados.pantallasDetectadasAprobadas.length > 0
+    ) {
+      for (const pDet of datosConfirmados.pantallasDetectadasAprobadas) {
+        if (!pDet.ruta?.trim() || !pDet.nombre?.trim()) continue;
+        const yaExiste = await this.pantallaRepo.findOne({
+          where: { clienteId: clienteDb.id, ruta: pDet.ruta.trim() },
+        });
+        if (!yaExiste) {
+          await this.pantallaRepo.save(
+            this.pantallaRepo.create({
+              clienteId: clienteDb.id,
+              identificador: `${this.slugificarTexto(pDet.nombre)}-${Date.now().toString().slice(-4)}`,
+              nombre: pDet.nombre.trim(),
+              ruta: pDet.ruta.trim(),
+              descripcion: `Detectada automáticamente desde "${rev.seccionTitulo}".`,
+              orden: 10,
+            }),
+          );
+        }
+      }
+    }
+
+    // Limpiar cualquier captura no seleccionada de la carpeta temporal
+    for (const cap of rev.capturas) {
+      await fs.remove(cap.rutaLocal).catch(() => {});
     }
 
     this.revisionPendiente = null;
@@ -1168,5 +1307,746 @@ export class AutomanualService {
 
   public async probarConexionIa(dto: ProbarIaDto) {
     return AnalizadorVision.probarConexion(dto.apiKey, dto.model);
+  }
+
+  // =========================================================================
+  // FLUJO QA DIRECTO POR CLIENTE -> PANTALLA -> EVIDENCIAS & CASOS DE PRUEBA
+  // =========================================================================
+
+  private slugificarTexto(texto: string): string {
+    return texto
+      .toString()
+      .toLowerCase()
+      .trim()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/[^\w-]+/g, '')
+      .replace(/--+/g, '-');
+  }
+
+  public async obtenerPantallasCliente(clienteSlug: string) {
+    const cliente = await this.clienteRepo.findOne({
+      where: [{ identificador: clienteSlug }],
+    });
+    if (!cliente) {
+      throw new NotFoundException(`Cliente "${clienteSlug}" no encontrado`);
+    }
+
+    const pantallas = await this.pantallaRepo
+      .createQueryBuilder('p')
+      .leftJoin('p.modulo', 'm')
+      .where('p.clienteId = :clienteId OR m.clienteId = :clienteId', {
+        clienteId: cliente.id,
+      })
+      .orderBy('p.orden', 'ASC')
+      .addOrderBy('p.fechaCreacion', 'ASC')
+      .getMany();
+
+    const resultado = await Promise.all(
+      pantallas.map(async (p) => {
+        const [totalCapturas, casos] = await Promise.all([
+          this.capturaRepo.count({ where: { pantallaId: p.id } }),
+          this.casoPruebaRepo.find({
+            where: { pantallaId: p.id },
+            select: { id: true, ultimoResultado: true, estado: true },
+          }),
+        ]);
+
+        let ultimoEstadoQa: 'PASS' | 'FAIL' | 'PENDIENTE' = 'PENDIENTE';
+        if (casos.length > 0) {
+          if (casos.some((c) => c.ultimoResultado === 'FAIL' || c.ultimoResultado === 'BLOCKED')) {
+            ultimoEstadoQa = 'FAIL';
+          } else if (casos.every((c) => c.ultimoResultado === 'PASS')) {
+            ultimoEstadoQa = 'PASS';
+          }
+        }
+
+        return {
+          id: p.id,
+          identificador: p.identificador,
+          nombre: p.nombre,
+          ruta: p.ruta,
+          descripcion: p.descripcion || '',
+          indicacionIa: p.indicacionIa || '',
+          selectorEspera: p.selectorEspera || '',
+          orden: p.orden,
+          esLogin: p.identificador === 'login-inicio',
+          totalCapturas,
+          totalCasos: casos.length,
+          ultimoEstadoQa,
+          fechaActualizacion: p.fechaActualizacion,
+        };
+      }),
+    );
+
+    return resultado;
+  }
+
+  public async guardarPantallaDirecta(
+    clienteSlug: string,
+    dto: GuardarPantallaQaDto,
+  ) {
+    const cliente = await this.clienteRepo.findOne({
+      where: [{ identificador: clienteSlug }],
+    });
+    if (!cliente) {
+      throw new NotFoundException(`Cliente "${clienteSlug}" no encontrado`);
+    }
+
+    let pantalla: PantallaAutomanual | null = null;
+    if (dto.id) {
+      pantalla = await this.pantallaRepo.findOne({ where: { id: dto.id } });
+    }
+
+    const identificador =
+      dto.identificador?.trim() ||
+      pantalla?.identificador ||
+      `${this.slugificarTexto(dto.nombre)}-${Date.now().toString().slice(-4)}`;
+
+    if (pantalla) {
+      pantalla.clienteId = cliente.id;
+      pantalla.identificador = identificador;
+      pantalla.nombre = dto.nombre.trim();
+      pantalla.ruta = dto.ruta.trim();
+      pantalla.descripcion = dto.descripcion?.trim();
+      pantalla.selectorEspera = dto.selectorEspera?.trim();
+      if (dto.orden !== undefined) pantalla.orden = dto.orden;
+    } else {
+      pantalla = this.pantallaRepo.create({
+        clienteId: cliente.id,
+        identificador,
+        nombre: dto.nombre.trim(),
+        ruta: dto.ruta.trim(),
+        descripcion: dto.descripcion?.trim(),
+        selectorEspera: dto.selectorEspera?.trim(),
+        orden: dto.orden ?? 0,
+      });
+    }
+
+    return this.pantallaRepo.save(pantalla);
+  }
+
+  public async eliminarPantallaDirecta(pantallaId: string) {
+    const pantalla = await this.pantallaRepo.findOne({ where: { id: pantallaId } });
+    if (!pantalla) {
+      throw new NotFoundException(`Pantalla con ID ${pantallaId} no encontrada`);
+    }
+    await this.pantallaRepo.delete(pantallaId);
+    return { success: true };
+  }
+
+  public async obtenerCapturasPorPantalla(pantallaId: string) {
+    return this.capturaRepo.find({
+      where: { pantallaId },
+      order: { fechaCreacion: 'DESC' },
+    });
+  }
+
+  public async obtenerCasosPorPantalla(pantallaId: string) {
+    return this.casoPruebaRepo.find({
+      where: { pantallaId },
+      order: { fechaCreacion: 'ASC' },
+    });
+  }
+
+  public async iniciarGeneracionPantalla(
+    pantallaId: string,
+    opciones: {
+      visibleBrowser?: boolean;
+      auth?: any;
+      indicacionIa?: string;
+      geminiApiKey?: string;
+      geminiModel?: string;
+    },
+  ) {
+    if (this.estaGenerando) {
+      throw new ConflictException('Ya hay un proceso de Playwright en ejecución.');
+    }
+
+    const pantalla = await this.pantallaRepo.findOne({
+      where: { id: pantallaId },
+      relations: { cliente: true, modulo: { cliente: true } },
+    });
+    if (!pantalla) {
+      throw new NotFoundException(`Pantalla con ID ${pantallaId} no encontrada`);
+    }
+
+    const indicacionEfectiva =
+      opciones.indicacionIa !== undefined
+        ? opciones.indicacionIa.trim()
+        : pantalla.indicacionIa?.trim() || '';
+
+    if (opciones.indicacionIa !== undefined) {
+      pantalla.indicacionIa = indicacionEfectiva || undefined;
+      await this.pantallaRepo.save(pantalla);
+    }
+
+    const clienteEntity = pantalla.cliente || pantalla.modulo?.cliente;
+    if (!clienteEntity) {
+      throw new NotFoundException('La pantalla no tiene un cliente asociado');
+    }
+
+    const clienteConfig = await this.obtenerCliente(clienteEntity.identificador);
+    if (opciones.auth && (opciones.auth.username || opciones.auth.password)) {
+      clienteConfig.auth = { ...clienteConfig.auth, ...opciones.auth };
+    }
+
+    // Asegurar que la configuración temporal contenga esta pantalla individual
+    const modId = pantalla.modulo?.identificador || 'pantallas';
+    const modTitle = pantalla.modulo?.nombre || 'Pantallas QA';
+    clienteConfig.modules = [
+      {
+        id: modId,
+        name: modTitle,
+        title: modTitle,
+        sections: [
+          {
+            id: pantalla.identificador,
+            name: pantalla.nombre,
+            title: pantalla.nombre,
+            route: pantalla.ruta,
+            description: pantalla.descripcion,
+            waitForSelector: pantalla.selectorEspera,
+          },
+        ],
+      },
+    ];
+
+    this.estaGenerando = true;
+    this.logsActuales = [
+      `▶ Iniciando Playwright + Gemini Vision para pantalla "${pantalla.nombre}" (${pantalla.ruta})...`,
+    ];
+
+    const originalLog = console.log;
+    const originalWarn = console.warn;
+    const capturarLog = (...args: any[]) => {
+      originalLog(...args);
+      const texto = args
+        .map((a) => (typeof a === 'string' ? a : JSON.stringify(a)))
+        .join(' ');
+      this.logsActuales.push(texto);
+    };
+    console.log = capturarLog;
+    console.warn = capturarLog;
+
+    void (async () => {
+      try {
+        const directorioCapturas = path.join(
+          this.rutas.directorioDocs,
+          clienteEntity.identificador,
+          pantalla.identificador,
+          `run-${Date.now()}`,
+        );
+
+        const { exploracion, casosGenerados } = await this.orquestadorQa.ejecutar({
+          nombreApp: clienteEntity.nombre,
+          urlInicioLogin: clienteEntity.urlApp,
+          nombrePantalla: pantalla.nombre,
+          rutaPantalla: pantalla.ruta,
+          descripcionPantalla: pantalla.descripcion,
+          indicacionIa: indicacionEfectiva || undefined,
+          authConfig: { ...clienteEntity.auth, ...(opciones.auth || {}) },
+          headless: opciones.visibleBrowser === false,
+          directorioCapturas,
+          geminiApiKey: opciones.geminiApiKey,
+          geminiModel: opciones.geminiModel,
+          modo: 'completo',
+        });
+
+        const capturasParaRevision: any[] = [];
+        for (const cap of exploracion.capturas) {
+          if (!(await fs.pathExists(cap.rutaLocal))) continue;
+          const buffer = await fs.readFile(cap.rutaLocal);
+          capturasParaRevision.push({
+            fileName: cap.fileName,
+            caption: cap.caption,
+            tipo: cap.tipo,
+            rutaLocal: cap.rutaLocal,
+            previewBase64: `data:image/png;base64,${buffer.toString('base64')}`,
+            url: cap.url,
+          });
+        }
+
+        this.revisionPendiente = {
+          clienteSlug: clienteEntity.identificador,
+          pantallaId: pantalla.id,
+          reemplazarExistentes: true,
+          moduloId: pantalla.modulo?.identificador || 'pantallas',
+          moduloTitulo: pantalla.modulo?.nombre || 'Pantallas QA',
+          seccionId: pantalla.identificador,
+          seccionTitulo: pantalla.nombre,
+          rutaApp: pantalla.ruta,
+          capturas: capturasParaRevision,
+          pantallasDetectadas: exploracion.pantallasDetectadas,
+          casosPrueba: casosGenerados,
+          liveDom: {
+            fields: exploracion.campos,
+            actions: exploracion.acciones,
+          },
+        };
+
+        this.logsActuales.push(
+          `✨ Listo para revisión: ${capturasParaRevision.length} captura(s) completa(s), ${exploracion.pantallasDetectadas.length} cambio(s) de URL y ${casosGenerados.length} caso(s) generado(s).`,
+        );
+      } catch (err: any) {
+        this.logsActuales.push(`✖ Error en generación: ${err.message}`);
+      } finally {
+        console.log = originalLog;
+        console.warn = originalWarn;
+        this.estaGenerando = false;
+      }
+    })();
+
+    return {
+      success: true,
+      message: `Análisis Playwright + IA iniciado para "${pantalla.nombre}".`,
+    };
+  }
+
+  /**
+   * Endpoint granular aparte: navega guiado por IA hacia lo que el QA indicó que faltó,
+   * saca nuevas capturas completas y genera SOLO los casos de prueba faltantes.
+   */
+  public async generarCasosFaltantesPantalla(
+    pantallaId: string,
+    opciones: {
+      indicacionIa: string;
+      visibleBrowser?: boolean;
+      auth?: any;
+      geminiApiKey?: string;
+      geminiModel?: string;
+    },
+  ) {
+    if (this.estaGenerando) {
+      throw new ConflictException('Ya hay un proceso de Playwright en ejecución.');
+    }
+
+    if (!opciones.indicacionIa?.trim()) {
+      throw new BadRequestException(
+        'Escribe una indicación de qué faltó probar para que la IA pueda buscarlo.',
+      );
+    }
+
+    const pantalla = await this.pantallaRepo.findOne({
+      where: { id: pantallaId },
+      relations: { cliente: true, modulo: { cliente: true } },
+    });
+    if (!pantalla) {
+      throw new NotFoundException(`Pantalla con ID ${pantallaId} no encontrada`);
+    }
+
+    const clienteEntity = pantalla.cliente || pantalla.modulo?.cliente;
+    if (!clienteEntity) {
+      throw new NotFoundException('La pantalla no tiene un cliente asociado');
+    }
+
+    pantalla.indicacionIa = opciones.indicacionIa.trim();
+    await this.pantallaRepo.save(pantalla);
+
+    const casosExistentes = await this.casoPruebaRepo.find({
+      where: { pantallaId: pantalla.id },
+      select: { codigo: true, titulo: true },
+      order: { fechaCreacion: 'ASC' },
+    });
+
+    this.estaGenerando = true;
+    this.logsActuales = [
+      `▶ Buscando faltantes en "${pantalla.nombre}" según indicación: "${opciones.indicacionIa.trim()}"`,
+    ];
+
+    const originalLog = console.log;
+    const originalWarn = console.warn;
+    const capturarLog = (...args: any[]) => {
+      originalLog(...args);
+      const texto = args
+        .map((a) => (typeof a === 'string' ? a : JSON.stringify(a)))
+        .join(' ');
+      this.logsActuales.push(texto);
+    };
+    console.log = capturarLog;
+    console.warn = capturarLog;
+
+    void (async () => {
+      try {
+        const directorioCapturas = path.join(
+          this.rutas.directorioDocs,
+          clienteEntity.identificador,
+          pantalla.identificador,
+          `faltantes-${Date.now()}`,
+        );
+
+        const { exploracion, casosGenerados } = await this.orquestadorQa.ejecutar({
+          nombreApp: clienteEntity.nombre,
+          urlInicioLogin: clienteEntity.urlApp,
+          nombrePantalla: pantalla.nombre,
+          rutaPantalla: pantalla.ruta,
+          descripcionPantalla: pantalla.descripcion,
+          indicacionIa: opciones.indicacionIa,
+          casosExistentes,
+          authConfig: { ...clienteEntity.auth, ...(opciones.auth || {}) },
+          headless: opciones.visibleBrowser === false,
+          directorioCapturas,
+          geminiApiKey: opciones.geminiApiKey,
+          geminiModel: opciones.geminiModel,
+          modo: 'faltantes',
+        });
+
+        const capturasParaRevision: any[] = [];
+        for (const cap of exploracion.capturas) {
+          if (!(await fs.pathExists(cap.rutaLocal))) continue;
+          const buf = await fs.readFile(cap.rutaLocal);
+          capturasParaRevision.push({
+            fileName: cap.fileName,
+            caption: cap.caption,
+            tipo: cap.tipo,
+            rutaLocal: cap.rutaLocal,
+            previewBase64: `data:image/png;base64,${buf.toString('base64')}`,
+            url: cap.url,
+          });
+        }
+
+        this.revisionPendiente = {
+          clienteSlug: clienteEntity.identificador,
+          pantallaId: pantalla.id,
+          reemplazarExistentes: false,
+          moduloId: pantalla.modulo?.identificador || 'pantallas',
+          moduloTitulo: pantalla.modulo?.nombre || 'Pantallas QA',
+          seccionId: pantalla.identificador,
+          seccionTitulo: pantalla.nombre,
+          rutaApp: pantalla.ruta,
+          capturas: capturasParaRevision,
+          pantallasDetectadas: exploracion.pantallasDetectadas,
+          casosPrueba: casosGenerados,
+          liveDom: {},
+        };
+
+        this.logsActuales.push(
+          `✨ Faltantes listos para revisión: ${capturasParaRevision.length} captura(s) nueva(s) y ${casosGenerados.length} caso(s) nuevo(s).`,
+        );
+      } catch (err: any) {
+        this.logsActuales.push(`✖ Error buscando faltantes: ${err.message}`);
+      } finally {
+        console.log = originalLog;
+        console.warn = originalWarn;
+        this.estaGenerando = false;
+      }
+    })();
+
+    return {
+      success: true,
+      message: `Búsqueda de casos faltantes iniciada para "${pantalla.nombre}".`,
+    };
+  }
+
+  public async ejecutarCasosDePantalla(
+    pantallaId: string,
+    dto: EjecutarCasosPantallaDto & { geminiApiKey?: string; geminiModel?: string },
+  ) {
+    if (this.estaGenerando) {
+      throw new ConflictException('Ya hay un proceso de Playwright en ejecución.');
+    }
+
+    const pantalla = await this.pantallaRepo.findOne({
+      where: { id: pantallaId },
+      relations: { cliente: true, modulo: { cliente: true } },
+    });
+    if (!pantalla) {
+      throw new NotFoundException(`Pantalla con ID ${pantallaId} no encontrada`);
+    }
+
+    const clienteEntity = pantalla.cliente || pantalla.modulo?.cliente;
+    if (!clienteEntity) {
+      throw new NotFoundException('La pantalla no tiene un cliente asociado');
+    }
+
+    const whereCasos: any = { pantallaId: pantalla.id, estado: 'ACTIVO' };
+    if (dto.casoId) {
+      whereCasos.id = dto.casoId;
+    }
+
+    const casos = await this.casoPruebaRepo.find({
+      where: whereCasos,
+      order: { fechaCreacion: 'ASC' },
+    });
+
+    if (casos.length === 0) {
+      throw new BadRequestException(
+        'Esta pantalla no tiene casos de prueba activos guardados para re-ejecutar.',
+      );
+    }
+
+    this.estaGenerando = true;
+    this.logsActuales = [
+      `▶ Re-ejecución 1-Click en "${pantalla.nombre}": ${casos.length} caso(s) de prueba...`,
+    ];
+
+    const originalLog = console.log;
+    console.log = (...args: any[]) => {
+      originalLog(...args);
+      const texto = args
+        .map((a) => (typeof a === 'string' ? a : JSON.stringify(a)))
+        .join(' ');
+      this.logsActuales.push(texto);
+    };
+
+    try {
+      const clientDir = path.join(this.rutas.directorioClientes, clienteEntity.identificador);
+      const sessionPath = path.join(clientDir, 'session.json');
+      const evidenciasDir = path.join(
+        this.rutas.directorioDocs,
+        clienteEntity.identificador,
+        'evidencias-qa',
+        pantalla.id,
+      );
+
+      const authConfig = {
+        ...clienteEntity.auth,
+        ...(dto.auth || {}),
+      };
+
+      const resultados = await this.ejecutorCasos.ejecutarCasosDePantalla({
+        baseUrl: clienteEntity.urlApp,
+        rutaPantalla: pantalla.ruta,
+        authConfig,
+        casos,
+        evidenciasDir,
+        headless: dto.visibleBrowser === false,
+        geminiApiKey: dto.geminiApiKey,
+        geminiModel: dto.geminiModel,
+      });
+
+      const ahora = new Date();
+      const pantallaSlug = this.slugificarTexto(
+        pantalla.identificador || pantalla.nombre || pantalla.id,
+      );
+      for (const res of resultados) {
+        let evidenciaUrl: string | undefined;
+        if (res.screenshotLocalPath && (await fs.pathExists(res.screenshotLocalPath))) {
+          const fileName = path.basename(res.screenshotLocalPath);
+          const casoSlug = this.slugificarTexto(res.codigo || res.casoId.slice(0, 8));
+          const storagePath = `clientes/${clienteEntity.identificador}/pantallas/${pantallaSlug}/casos/${casoSlug}/${fileName}`;
+          if (this.storageService.estaDisponible()) {
+            const subida = await this.storageService.subirArchivoDesdeDisco(
+              res.screenshotLocalPath,
+              storagePath,
+              'image/png',
+            );
+            if (subida) evidenciaUrl = subida.url;
+          }
+          // Borrar siempre el archivo temporal tras subirlo a Supabase
+          await fs.remove(res.screenshotLocalPath).catch(() => {});
+        }
+
+        await this.casoPruebaRepo.update(res.casoId, {
+          ultimoResultado: res.resultado,
+          detalleUltimoFallo: res.detalleFallo || undefined,
+          capturaEvidenciaUrl: evidenciaUrl,
+          ultimaEjecucion: ahora,
+        });
+      }
+
+      const passed = resultados.filter((r) => r.resultado === 'PASS').length;
+      const failed = resultados.filter((r) => r.resultado !== 'PASS').length;
+      this.logsActuales.push(
+        `✔ Re-ejecución finalizada: ${passed} PASS, ${failed} FAIL.`,
+      );
+
+      return {
+        success: true,
+        total: resultados.length,
+        passed,
+        failed,
+        resultados,
+      };
+    } finally {
+      console.log = originalLog;
+      this.estaGenerando = false;
+    }
+  }
+
+  /**
+   * Regresión General: Ejecuta en orden todas las pantallas del cliente (Login Paso 1 primero)
+   * actualizando en tiempo real `estadoRegresion` para visualizar tarjetitas PASS/FAIL en vivo.
+   */
+  public async ejecutarRegresionCliente(
+    clienteSlug: string,
+    dto: EjecutarCasosPantallaDto & { geminiApiKey?: string; geminiModel?: string },
+  ) {
+    if (this.estaGenerando) {
+      throw new ConflictException('Ya hay un proceso de Playwright en ejecución.');
+    }
+
+    const clienteEntity = await this.clienteRepo.findOne({
+      where: [{ identificador: clienteSlug }],
+    });
+    if (!clienteEntity) {
+      throw new NotFoundException(`Cliente "${clienteSlug}" no encontrado`);
+    }
+
+    const pantallas = await this.pantallaRepo
+      .createQueryBuilder('p')
+      .leftJoin('p.modulo', 'm')
+      .where('p.clienteId = :clienteId OR m.clienteId = :clienteId', {
+        clienteId: clienteEntity.id,
+      })
+      .orderBy('p.orden', 'ASC')
+      .addOrderBy('p.fechaCreacion', 'ASC')
+      .getMany();
+
+    // Asegurar que login-inicio vaya siempre primero
+    pantallas.sort((a, b) => {
+      if (a.identificador === 'login-inicio') return -1;
+      if (b.identificador === 'login-inicio') return 1;
+      return (a.orden ?? 0) - (b.orden ?? 0);
+    });
+
+    const tarjetasIniciales = await Promise.all(
+      pantallas.map(async (p) => {
+        const totalCasos = await this.casoPruebaRepo.count({
+          where: { pantallaId: p.id, estado: 'ACTIVO' },
+        });
+        return {
+          pantallaId: p.id,
+          nombre: p.nombre,
+          ruta: p.ruta,
+          esLogin: p.identificador === 'login-inicio',
+          estado: (totalCasos === 0 ? 'SIN_CASOS' : 'PENDIENTE') as
+            | 'PENDIENTE'
+            | 'EJECUTANDO'
+            | 'PASS'
+            | 'FAIL'
+            | 'SIN_CASOS',
+          totalCasos,
+          passed: 0,
+          failed: 0,
+        };
+      }),
+    );
+
+    this.estaGenerando = true;
+    this.estadoRegresion = {
+      clienteSlug,
+      enCurso: true,
+      pantallas: tarjetasIniciales,
+    };
+    this.logsActuales = [
+      `▶ Iniciando Regresión General para "${clienteEntity.nombre}" (${pantallas.length} pantallas)...`,
+    ];
+
+    const originalLog = console.log;
+    console.log = (...args: any[]) => {
+      originalLog(...args);
+      const texto = args
+        .map((a) => (typeof a === 'string' ? a : JSON.stringify(a)))
+        .join(' ');
+      this.logsActuales.push(texto);
+    };
+
+    void (async () => {
+      try {
+        const clientDir = path.join(this.rutas.directorioClientes, clienteEntity.identificador);
+        const sessionPath = path.join(clientDir, 'session.json');
+        const authConfig = {
+          ...clienteEntity.auth,
+          ...(dto.auth || {}),
+        };
+
+        for (let i = 0; i < pantallas.length; i++) {
+          const p = pantallas[i];
+          const tarjeta = this.estadoRegresion!.pantallas[i];
+          if (tarjeta.totalCasos === 0) {
+            this.logsActuales.push(
+              `ℹ [${p.nombre}] Sin casos activos configurados. Omitida.`,
+            );
+            continue;
+          }
+
+          tarjeta.estado = 'EJECUTANDO';
+          this.logsActuales.push(
+            `\n🌐 Ejecutando pantalla ${i + 1}/${pantallas.length}: "${p.nombre}" (${p.ruta})...`,
+          );
+
+          try {
+            const casos = await this.casoPruebaRepo.find({
+              where: { pantallaId: p.id, estado: 'ACTIVO' },
+              order: { fechaCreacion: 'ASC' },
+            });
+
+            const evidenciasDir = path.join(
+              this.rutas.directorioDocs,
+              clienteEntity.identificador,
+              'evidencias-qa',
+              p.id,
+            );
+
+            const resultados = await this.ejecutorCasos.ejecutarCasosDePantalla({
+              baseUrl: clienteEntity.urlApp,
+              rutaPantalla: p.ruta,
+              authConfig,
+              casos,
+              evidenciasDir,
+              headless: dto.visibleBrowser === false,
+              geminiApiKey: dto.geminiApiKey,
+              geminiModel: dto.geminiModel,
+            });
+
+            const ahora = new Date();
+            const pantallaSlug = this.slugificarTexto(p.identificador || p.nombre || p.id);
+            for (const res of resultados) {
+              let evidenciaUrl: string | undefined;
+              if (res.screenshotLocalPath && (await fs.pathExists(res.screenshotLocalPath))) {
+                const fileName = path.basename(res.screenshotLocalPath);
+                const casoSlug = this.slugificarTexto(res.codigo || res.casoId.slice(0, 8));
+                const storagePath = `clientes/${clienteEntity.identificador}/pantallas/${pantallaSlug}/casos/${casoSlug}/${fileName}`;
+                if (this.storageService.estaDisponible()) {
+                  const subida = await this.storageService.subirArchivoDesdeDisco(
+                    res.screenshotLocalPath,
+                    storagePath,
+                    'image/png',
+                  );
+                  if (subida) evidenciaUrl = subida.url;
+                }
+                await fs.remove(res.screenshotLocalPath).catch(() => {});
+              }
+
+              await this.casoPruebaRepo.update(res.casoId, {
+                ultimoResultado: res.resultado,
+                detalleUltimoFallo: res.detalleFallo || undefined,
+                capturaEvidenciaUrl: evidenciaUrl,
+                ultimaEjecucion: ahora,
+              });
+            }
+
+            const passed = resultados.filter((r) => r.resultado === 'PASS').length;
+            const failed = resultados.filter((r) => r.resultado !== 'PASS').length;
+            const primerFallo = resultados.find((r) => r.resultado !== 'PASS')?.detalleFallo;
+
+            tarjeta.passed = passed;
+            tarjeta.failed = failed;
+            tarjeta.detalleFallo = primerFallo;
+            tarjeta.estado = failed > 0 ? 'FAIL' : 'PASS';
+          } catch (err: any) {
+            tarjeta.failed = tarjeta.totalCasos;
+            tarjeta.detalleFallo = err?.message || 'Error ejecutando pantalla';
+            tarjeta.estado = 'FAIL';
+            this.logsActuales.push(`✖ Error en "${p.nombre}": ${tarjeta.detalleFallo}`);
+          }
+        }
+
+        this.logsActuales.push('\n✔ Regresión General finalizada.');
+      } finally {
+        if (this.estadoRegresion) {
+          this.estadoRegresion.enCurso = false;
+        }
+        console.log = originalLog;
+        this.estaGenerando = false;
+      }
+    })();
+
+    return {
+      success: true,
+      message: `Regresión general iniciada sobre ${pantallas.length} pantalla(s).`,
+    };
   }
 }

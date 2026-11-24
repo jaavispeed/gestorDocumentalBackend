@@ -18,6 +18,10 @@ export interface OpcionesEjecucionGeneracion {
   module?: string;
   section?: string;
   headless?: boolean;
+  geminiApiKey?: string;
+  geminiModel?: string;
+  indicacionIa?: string;
+  casosExistentes?: Array<{ codigo?: string; titulo: string }>;
   onCapturasTomadas?: (datos: {
     clienteSlug: string;
     moduloId: string;
@@ -29,6 +33,7 @@ export interface OpcionesEjecucionGeneracion {
     screenshots: any[];
     liveDom: any;
     casosPruebaGenerados?: any[];
+    pantallasDetectadas?: any[];
   }) => Promise<void>;
 }
 
@@ -113,6 +118,10 @@ export class ComandanteDocumentacion {
   public async ejecutarGeneracion(
     opciones: OpcionesEjecucionGeneracion,
   ): Promise<void> {
+    this.visionAnalyzer.actualizarConfiguracion(
+      opciones.geminiApiKey,
+      opciones.geminiModel,
+    );
     const config =
       opciones.configuracionCliente || (await this.cargarCliente(opciones.client));
     const clientDir = path.join(this.rutas.directorioClientes, config.id);
@@ -180,24 +189,45 @@ export class ComandanteDocumentacion {
             config.appUrl,
             sec,
             screenshotsDir,
-            sessionPath,
+            undefined,
             config.autoExplore,
             config.auth,
           );
           totalScreenshotsCount += crawlResult.screenshots.length;
 
-          // Generación automática de casos de prueba con Gemini si la IA está disponible
+          // Generación automática de casos de prueba con Gemini analizando TODAS las imágenes completas
           let casosPruebaGenerados: any[] = [];
-          if (this.visionAnalyzer.estaDisponible() && crawlResult.screenshots.length > 0) {
+          if (!this.visionAnalyzer.estaDisponible()) {
+            console.log(
+              pc.yellow(
+                '    ⚠ Gemini AI no está disponible (falta GEMINI_API_KEY en .env o Ajustes de IA). No se generaron casos con IA.',
+              ),
+            );
+          } else if (crawlResult.screenshots.length > 0) {
             try {
-              const primeraCapturaPath = path.join(screenshotsDir, crawlResult.screenshots[0].fileName);
+              console.log(
+                pc.cyan(
+                  `    🤖 Analizando ${crawlResult.screenshots.length} captura(s) completa(s) con Gemini (${this.visionAnalyzer.obtenerModelo()})...`,
+                ),
+              );
+              const todasLasCapturasPaths = crawlResult.screenshots.map((s) =>
+                path.join(screenshotsDir, s.fileName),
+              );
               casosPruebaGenerados = await this.visionAnalyzer.generarCasosPruebaE2E({
                 appName: config.name,
                 moduleTitle: mod.title,
                 sectionTitle: sec.title,
                 route: sec.route,
                 functionalDescription: sec.description,
-                screenshotPath: primeraCapturaPath,
+                indicacionIa: opciones.indicacionIa,
+                casosExistentes: opciones.casosExistentes,
+                screenshotPath: todasLasCapturasPaths[0],
+                screenshotPaths: todasLasCapturasPaths,
+                capturasConUrl: crawlResult.screenshots.map((s) => ({
+                  fileName: s.fileName,
+                  caption: s.caption,
+                  url: s.url,
+                })),
                 fields: crawlResult.liveDom?.fields || [],
                 actions: crawlResult.liveDom?.actions || [],
                 tables: crawlResult.liveDom?.tables || [],
@@ -220,6 +250,7 @@ export class ComandanteDocumentacion {
                 screenshots: crawlResult.screenshots,
                 liveDom: crawlResult.liveDom,
                 casosPruebaGenerados,
+                pantallasDetectadas: crawlResult.pantallasDetectadas || [],
               });
             } catch (err: any) {
               console.log(pc.yellow(`    ⚠ Error al persistir capturas en Storage/BD: ${err.message}`));

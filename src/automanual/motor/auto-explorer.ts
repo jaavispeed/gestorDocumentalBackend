@@ -5,11 +5,16 @@ import {
   ConfiguracionAutoExploracion as AutoExploreConfig,
   CapturaPantalla as CapturedScreenshot,
   InformacionTablaDescubierta as DiscoveredTableInfo,
+  PantallaDetectadaPorUrl,
 } from './tipos.js';
 import {
   InspectorDom as DOMInspector,
   InspeccionPaginaEnVivo as LivePageInspection,
 } from './dom-inspector.js';
+import {
+  capturarPaginaCompleta,
+  esRutaDeAccesoPublico,
+} from './playwright-utils.js';
 
 const IGNORE_CHROME_SELECTOR =
   "header, .top-navbar, .navbar, mat-sidenav, .sidebar, nav, [role='navigation']";
@@ -111,6 +116,7 @@ export function resolveAutoExploreConfig(
 export interface AutoExploreResult {
   screenshots: CapturedScreenshot[];
   liveDom: LivePageInspection;
+  pantallasDetectadas?: PantallaDetectadaPorUrl[];
 }
 
 export class AutoExplorer {
@@ -139,9 +145,10 @@ export class AutoExplorer {
     const cfg = resolveAutoExploreConfig(options.config);
     const screenshots: CapturedScreenshot[] = [...options.existingScreenshots];
     let liveDom: LivePageInspection = options.initialDom;
+    const pantallasDetectadas: PantallaDetectadaPorUrl[] = [];
 
     if (!cfg.enabled) {
-      return { screenshots, liveDom };
+      return { screenshots, liveDom, pantallasDetectadas };
     }
 
     const { page, screenshotsDir } = options;
@@ -289,6 +296,20 @@ export class AutoExplorer {
         screenshots.push(...tabOutcome.screenshots);
       }
 
+      // 7. Exploración general de elementos clickeables seguros y detección de cambios de URL
+      if (canCaptureMore()) {
+        const urlOutcome = await this.exploreSafeClickablesAndUrls(
+          page,
+          originUrl,
+          screenshotsDir,
+          visitedMainButtons,
+          nextShotName,
+          canCaptureMore,
+        );
+        screenshots.push(...urlOutcome.screenshots);
+        pantallasDetectadas.push(...urlOutcome.pantallasDetectadas);
+      }
+
       if (blockedRequests > 0) {
         console.log(
           pc.gray(
@@ -306,7 +327,12 @@ export class AutoExplorer {
       }
     }
 
-    return { screenshots, liveDom };
+    const screenshotsConUrl = screenshots.map((s) => ({
+      ...s,
+      url: s.url || originUrl,
+    }));
+
+    return { screenshots: screenshotsConUrl, liveDom, pantallasDetectadas };
   }
 
   /**
@@ -404,7 +430,7 @@ export class AutoExplorer {
         if (revealedFields.length > 0 && canCaptureMore()) {
           const fileName = nextShotName('filtros-desplegados');
           const filePath = path.join(screenshotsDir, fileName);
-          await page.screenshot({ path: filePath, fullPage: false });
+          await page.screenshot({ path: filePath, fullPage: true });
 
           const preview = revealedFields
             .slice(0, 6)
@@ -758,7 +784,7 @@ export class AutoExplorer {
               await page.waitForTimeout(150);
               const fileName = nextShotName(`selector-${item.label}`);
               const filePath = path.join(screenshotsDir, fileName);
-              await page.screenshot({ path: filePath, fullPage: false });
+              await page.screenshot({ path: filePath, fullPage: true });
 
               const preview = discoveredOptions.slice(0, 8).join(', ');
               newShots.push({
@@ -887,7 +913,7 @@ export class AutoExplorer {
               if (capturedCount < maxSelectCaptures && canCaptureMore()) {
                 const fileName = nextShotName(`selector-${item.label}`);
                 const filePath = path.join(screenshotsDir, fileName);
-                await page.screenshot({ path: filePath, fullPage: false });
+                await page.screenshot({ path: filePath, fullPage: true });
 
                 const preview = discoveredOptions.slice(0, 8).join(', ');
                 newShots.push({
@@ -1113,7 +1139,7 @@ export class AutoExplorer {
 
             const fileName = nextShotName('resultados-consulta');
             const filePath = path.join(screenshotsDir, fileName);
-            await page.screenshot({ path: filePath, fullPage: false });
+            await page.screenshot({ path: filePath, fullPage: true });
 
             const colSummary =
               afterBestTable.columns.length > 0
@@ -1135,7 +1161,7 @@ export class AutoExplorer {
           } else if ((columnsGrew || notesGrew) && canCaptureMore()) {
             const fileName = nextShotName('resultado-consulta');
             const filePath = path.join(screenshotsDir, fileName);
-            await page.screenshot({ path: filePath, fullPage: false });
+            await page.screenshot({ path: filePath, fullPage: true });
 
             const noteText = afterDom.notes[0]
               ? afterDom.notes[0]
@@ -1202,7 +1228,7 @@ export class AutoExplorer {
 
             const fileName = nextShotName('tabla-datos');
             const filePath = path.join(screenshotsDir, fileName);
-            await page.screenshot({ path: filePath, fullPage: false });
+            await page.screenshot({ path: filePath, fullPage: true });
 
             const colSummary =
               bestTable.columns.length > 0
@@ -1378,7 +1404,7 @@ export class AutoExplorer {
           const shotKind = modalOpened && !urlChanged ? 'modal' : 'detail';
           const fileName = nextShotName(`detalle-${effectiveLabel}`);
           const filePath = path.join(screenshotsDir, fileName);
-          await page.screenshot({ path: filePath, fullPage: false });
+          await page.screenshot({ path: filePath, fullPage: true });
 
           const noteParts: string[] = [];
           if (urlChanged) noteParts.push(`Ruta: ${shortenUrl(afterState.url)}`);
@@ -1553,7 +1579,7 @@ export class AutoExplorer {
             `${isModal ? 'modal' : 'subpantalla'}-${candidate.label}`,
           );
           const filePath = path.join(screenshotsDir, fileName);
-          await page.screenshot({ path: filePath, fullPage: false });
+          await page.screenshot({ path: filePath, fullPage: true });
 
           const noteParts: string[] = [];
           if (urlChanged) noteParts.push(`Ruta: ${shortenUrl(afterState.url)}`);
@@ -2319,7 +2345,7 @@ export class AutoExplorer {
             : candidate.label;
           const fileName = nextShotName(`accion-${slugPrefix}`);
           const filePath = path.join(screenshotsDir, fileName);
-          await page.screenshot({ path: filePath, fullPage: false });
+          await page.screenshot({ path: filePath, fullPage: true });
 
           const noteParts: string[] = [];
           if (urlChanged) noteParts.push(`Ruta: ${shortenUrl(afterState.url)}`);
@@ -2456,7 +2482,7 @@ export class AutoExplorer {
 
           const fileName = nextShotName(`detalle-pestana-${tabLabel}`);
           const filePath = path.join(screenshotsDir, fileName);
-          await page.screenshot({ path: filePath, fullPage: false });
+          await page.screenshot({ path: filePath, fullPage: true });
 
           const bestTbl = this.getBestTable(tabDom.tables);
           const noteParts: string[] = [
@@ -2708,7 +2734,7 @@ export class AutoExplorer {
 
         const fileName = nextShotName(`pestana-${tabLabel}`);
         const filePath = path.join(screenshotsDir, fileName);
-        await page.screenshot({ path: filePath, fullPage: false });
+        await page.screenshot({ path: filePath, fullPage: true });
 
         const bestTbl = this.getBestTable(tabDom.tables);
         const noteParts: string[] = [];
@@ -2895,6 +2921,153 @@ export class AutoExplorer {
     }
 
     await page.waitForTimeout(300);
+  }
+
+  /**
+   * 7. Recorre elementos clickeables seguros de la pantalla actual y detecta cambios de URL
+   *    para capturar cada nueva subpantalla con su URL exacta.
+   */
+  private async exploreSafeClickablesAndUrls(
+    page: Page,
+    originUrl: string,
+    screenshotsDir: string,
+    visitedLabels: Set<string>,
+    nextShotName: (slug: string) => string,
+    canCaptureMore: () => boolean,
+  ): Promise<{
+    screenshots: CapturedScreenshot[];
+    pantallasDetectadas: PantallaDetectadaPorUrl[];
+  }> {
+    const screenshots: CapturedScreenshot[] = [];
+    const pantallasDetectadas: PantallaDetectadaPorUrl[] = [];
+    const urlsVistas = new Set<string>([originUrl.replace(/\/+$/, '')]);
+
+    const candidatos = await page
+      .evaluate(() => {
+        const lista: Array<{ texto: string; selectorHint: string }> = [];
+        const els = document.querySelectorAll(
+          'a[href], button:not([disabled]), [role="button"], [role="menuitem"], [routerLink], mat-card, .card, div[class*="cursor-pointer"]',
+        );
+        const vistos = new Set<string>();
+        els.forEach((el) => {
+          const htmlEl = el as HTMLElement;
+          const rect = htmlEl.getBoundingClientRect();
+          if (rect.width === 0 || rect.height === 0) return;
+          const texto = (
+            htmlEl.innerText ||
+            el.getAttribute('aria-label') ||
+            el.getAttribute('title') ||
+            ''
+          )
+            .trim()
+            .replace(/\s+/g, ' ');
+          if (!texto || texto.length < 2 || texto.length > 60) return;
+          const key = texto.toLowerCase();
+          if (vistos.has(key)) return;
+          vistos.add(key);
+          const tag = el.tagName.toLowerCase();
+          const selectorHint = el.id ? `#${el.id}` : tag;
+          lista.push({ texto, selectorHint });
+        });
+        return lista.slice(0, 12);
+      })
+      .catch(() => []);
+
+    for (const item of candidatos) {
+      if (!canCaptureMore()) break;
+      const key = item.texto.toLowerCase();
+      if (visitedLabels.has(key)) continue;
+      if (
+        UNSAFE_EXPLORE_BUTTON_REGEX.test(item.texto) ||
+        DANGEROUS_ACTION_REGEX.test(item.texto) ||
+        /cerrar\s+sesi[óo]n|logout|salir|sign\s*out/i.test(item.texto)
+      ) {
+        continue;
+      }
+
+      visitedLabels.add(key);
+
+      try {
+        const loc = page
+          .locator(
+            'a[href], button:not([disabled]), [role="button"], [role="menuitem"], [routerLink], mat-card, .card, div[class*="cursor-pointer"]',
+          )
+          .filter({ hasText: item.texto })
+          .first();
+
+        if (!(await loc.isVisible({ timeout: 1000 }).catch(() => false))) continue;
+
+        const urlAntes = page.url();
+        await loc.click({ timeout: 2500 }).catch(() => {});
+        await page.waitForLoadState('networkidle', { timeout: 3000 }).catch(() => {});
+        await page.waitForTimeout(900);
+
+        const urlDespues = page.url();
+        const urlNorm = urlDespues.replace(/\/+$/, '');
+
+        if (
+          urlNorm !== urlAntes.replace(/\/+$/, '') &&
+          !urlsVistas.has(urlNorm) &&
+          !esRutaDeAccesoPublico(urlDespues) &&
+          !MUTATING_URL_REGEX.test(urlDespues)
+        ) {
+          urlsVistas.add(urlNorm);
+          const shotName = nextShotName(`url-${item.texto}`);
+          const shotPath = path.join(screenshotsDir, shotName);
+          await capturarPaginaCompleta(page, shotPath);
+
+          const tituloVista = await page
+            .evaluate(() => {
+              const h = document.querySelector('h1, h2, .page-title');
+              return (h?.textContent || document.title || '').trim().replace(/\s+/g, ' ');
+            })
+            .catch(() => item.texto);
+
+          const nombreFinal = tituloVista && tituloVista.length <= 80 ? tituloVista : item.texto;
+          console.log(
+            pc.cyan(`    🧭 Cambio de URL detectado al clicar "${item.texto}" -> ${urlDespues}`),
+          );
+
+          screenshots.push({
+            fileName: shotName,
+            caption: `${nombreFinal} (${item.texto})`,
+            kind: 'subview',
+            url: urlDespues,
+          });
+
+          pantallasDetectadas.push({
+            nombre: nombreFinal,
+            ruta: urlDespues,
+            disparador: item.texto,
+            capturaFileName: shotName,
+          });
+
+          await this.returnToOrigin(page, originUrl, false);
+        } else {
+          // Si abrió un diálogo o modal en la misma URL, cerrarlo limpiamente
+          const dialogVisible = await page
+            .locator(DIALOG_SELECTOR)
+            .first()
+            .isVisible({ timeout: 400 })
+            .catch(() => false);
+          if (dialogVisible) {
+            const shotName = nextShotName(`click-${item.texto}`);
+            const shotPath = path.join(screenshotsDir, shotName);
+            await capturarPaginaCompleta(page, shotPath);
+            screenshots.push({
+              fileName: shotName,
+              caption: `Interacción: ${item.texto}`,
+              kind: 'modal',
+              url: page.url(),
+            });
+            await page.keyboard.press('Escape').catch(() => {});
+            await page.waitForTimeout(400);
+          }
+        }
+      } catch {}
+    }
+
+    return { screenshots, pantallasDetectadas };
   }
 }
 

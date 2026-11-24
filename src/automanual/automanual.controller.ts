@@ -6,6 +6,7 @@ import {
   Param,
   Body,
   Query,
+  Headers,
   Res,
   HttpCode,
   HttpStatus,
@@ -14,6 +15,10 @@ import type { Response } from 'express';
 import { AutomanualService } from './automanual.service.js';
 import { GuardarClienteDto } from './dto/cliente-automanual.dto.js';
 import { OpcionesGeneracionDto } from './dto/ejecutar-generacion.dto.js';
+import {
+  GuardarPantallaQaDto,
+  EjecutarCasosPantallaDto,
+} from './dto/pantalla-qa.dto.js';
 import { SubirLogoDto } from './dto/subir-logo.dto.js';
 import { GuardarConfigSistemaDto } from './dto/config-sistema.dto.js';
 import { ProbarIaDto } from './dto/probar-ia.dto.js';
@@ -170,7 +175,14 @@ export class AutomanualController {
 
   @Post('confirmar-revision')
   @HttpCode(HttpStatus.OK)
-  async confirmarRevision(@Body() body: { capturasSeleccionadas: string[]; casosAprobados: any[] }) {
+  async confirmarRevision(
+    @Body()
+    body: {
+      capturasSeleccionadas: string[];
+      casosAprobados: any[];
+      pantallasDetectadasAprobadas?: Array<{ nombre: string; ruta: string }>;
+    },
+  ) {
     return this.automanualService.confirmarRevisionPendiente(body);
   }
 
@@ -200,5 +212,98 @@ export class AutomanualController {
   @HttpCode(HttpStatus.OK)
   async probarConexionIa(@Body() dto: ProbarIaDto) {
     return this.automanualService.probarConexionIa(dto);
+  }
+
+  // =========================================================================
+  // ENDPOINTS QA DIRECTOS POR PANTALLA (CLIENTE -> PANTALLA -> CASOS/EVIDENCIA)
+  // =========================================================================
+
+  @Get('clientes/:slug/pantallas')
+  async obtenerPantallasCliente(@Param('slug') slug: string) {
+    return this.automanualService.obtenerPantallasCliente(slug);
+  }
+
+  @Post('clientes/:slug/pantallas')
+  @HttpCode(HttpStatus.OK)
+  async guardarPantallaDirecta(
+    @Param('slug') slug: string,
+    @Body() dto: GuardarPantallaQaDto,
+  ) {
+    return this.automanualService.guardarPantallaDirecta(slug, dto);
+  }
+
+  @Delete('pantallas/:pantallaId')
+  async eliminarPantallaDirecta(@Param('pantallaId') pantallaId: string) {
+    return this.automanualService.eliminarPantallaDirecta(pantallaId);
+  }
+
+  @Get('pantallas/:pantallaId/capturas')
+  async obtenerCapturasPorPantalla(@Param('pantallaId') pantallaId: string) {
+    return this.automanualService.obtenerCapturasPorPantalla(pantallaId);
+  }
+
+  @Get('pantallas/:pantallaId/casos-prueba')
+  async obtenerCasosPorPantalla(@Param('pantallaId') pantallaId: string) {
+    return this.automanualService.obtenerCasosPorPantalla(pantallaId);
+  }
+
+  @Post('pantallas/:pantallaId/generar')
+  @HttpCode(HttpStatus.OK)
+  async iniciarGeneracionPantalla(
+    @Param('pantallaId') pantallaId: string,
+    @Body() body: { visibleBrowser?: boolean; auth?: any; indicacionIa?: string },
+    @Headers('x-gemini-key') geminiApiKey?: string,
+    @Headers('x-gemini-model') geminiModel?: string,
+  ) {
+    return this.automanualService.iniciarGeneracionPantalla(pantallaId, {
+      ...body,
+      geminiApiKey,
+      geminiModel,
+    });
+  }
+
+  @Post('pantallas/:pantallaId/generar-faltantes')
+  @HttpCode(HttpStatus.OK)
+  async generarCasosFaltantesPantalla(
+    @Param('pantallaId') pantallaId: string,
+    @Body() body: { indicacionIa: string; visibleBrowser?: boolean; auth?: any },
+    @Headers('x-gemini-key') geminiApiKey?: string,
+    @Headers('x-gemini-model') geminiModel?: string,
+  ) {
+    return this.automanualService.generarCasosFaltantesPantalla(pantallaId, {
+      ...body,
+      geminiApiKey,
+      geminiModel,
+    });
+  }
+
+  @Post('pantallas/:pantallaId/ejecutar-casos')
+  @HttpCode(HttpStatus.OK)
+  async ejecutarCasosDePantalla(
+    @Param('pantallaId') pantallaId: string,
+    @Body() dto: EjecutarCasosPantallaDto,
+    @Headers('x-gemini-key') geminiApiKey?: string,
+    @Headers('x-gemini-model') geminiModel?: string,
+  ) {
+    return this.automanualService.ejecutarCasosDePantalla(pantallaId, {
+      ...dto,
+      geminiApiKey,
+      geminiModel,
+    });
+  }
+
+  @Post('clientes/:slug/ejecutar-regresion')
+  @HttpCode(HttpStatus.OK)
+  async ejecutarRegresionCliente(
+    @Param('slug') slug: string,
+    @Body() dto: EjecutarCasosPantallaDto,
+    @Headers('x-gemini-key') geminiApiKey?: string,
+    @Headers('x-gemini-model') geminiModel?: string,
+  ) {
+    return this.automanualService.ejecutarRegresionCliente(slug, {
+      ...dto,
+      geminiApiKey,
+      geminiModel,
+    });
   }
 }

@@ -39,6 +39,14 @@ export interface CapturaPantalla {
   caption: string;
   kind?: TipoCaptura;
   userNote?: string;
+  url?: string;
+}
+
+export interface PantallaDetectadaPorUrl {
+  nombre: string;
+  ruta: string;
+  disparador?: string;
+  capturaFileName?: string;
 }
 
 export interface InformacionTablaDescubierta {

@@ -25,3 +25,7 @@ Este proyecto sigue una arquitectura modular en NestJS enfocada en legibilidad, 
    - El backend provee servicios desacoplados para los 3 pilares del ecosistema: **Gestor Documental** (dev/código), **AutoManual** (Playwright/procesos) y **Chatbot** (consumo/RAG).
    - Los documentos generados convergen en el repositorio central de documentación.
    - **Segmentación por Audiencia (`DEV` vs `USUARIO`):** Toda documentación y búsqueda RAG debe restringirse según el tipo de usuario para responder con la precisión y el tono adecuados (ver `reglas-desarrollo-backend.md`).
+
+5. **[Cero Hardcode y Cero Imágenes en el Repositorio](./cero-hardcode-y-sin-archivos-en-repo.md):**
+   - Prohibido hardcodear selectores específicos de clientes, credenciales o rutas de negocio; todo debe ser genérico y configurable.
+   - Prohibido guardar imágenes, capturas o sesiones dentro del repositorio: usar únicamente `os.tmpdir()` de forma efímera y persistir exclusivamente en **Supabase Storage** clasificado por cliente, pantalla y caso de prueba.

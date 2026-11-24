@@ -58,27 +58,30 @@ export class CasoPruebaAutomanual {
   @Index()
   pantallaId?: string;
 
-  @ManyToOne('PantallaAutomanual', 'casosPrueba', { onDelete: 'SET NULL', nullable: true })
+  @ManyToOne('PantallaAutomanual', 'casosPrueba', { onDelete: 'CASCADE', nullable: true })
   @JoinColumn({ name: 'pantalla_id' })
   pantalla?: PantallaAutomanual;
 
-  @Column({ name: 'modulo_id', length: 100 })
-  moduloId: string;
+  @Column({ name: 'modulo_id', length: 100, nullable: true })
+  moduloId?: string;
 
-  @Column({ name: 'modulo_titulo', length: 255 })
-  moduloTitulo: string;
+  @Column({ name: 'modulo_titulo', length: 255, nullable: true })
+  moduloTitulo?: string;
 
-  @Column({ name: 'seccion_id', length: 100 })
-  seccionId: string;
+  @Column({ name: 'seccion_id', length: 100, nullable: true })
+  seccionId?: string;
 
-  @Column({ name: 'seccion_titulo', length: 255 })
-  seccionTitulo: string;
+  @Column({ name: 'seccion_titulo', length: 255, nullable: true })
+  seccionTitulo?: string;
 
   @Column({ name: 'codigo', length: 50, nullable: true })
   codigo?: string;
 
   @Column({ name: 'titulo', length: 255 })
   titulo: string;
+
+  @Column({ name: 'url_pantalla', length: 1000, nullable: true })
+  urlPantalla?: string;
 
   @Column({ name: 'descripcion', type: 'text', nullable: true })
   descripcion?: string;
@@ -110,6 +113,9 @@ export class CasoPruebaAutomanual {
 
   @Column({ name: 'detalle_ultimo_fallo', type: 'text', nullable: true })
   detalleUltimoFallo?: string;
+
+  @Column({ name: 'captura_evidencia_url', length: 1000, nullable: true })
+  capturaEvidenciaUrl?: string;
 
   @Column({ name: 'ultima_ejecucion', type: 'timestamp with time zone', nullable: true })
   ultimaEjecucion?: Date;

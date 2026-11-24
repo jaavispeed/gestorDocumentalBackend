@@ -60,21 +60,21 @@ export class CapturaAutomanual {
   @Index()
   pantallaId?: string;
 
-  @ManyToOne('PantallaAutomanual', 'capturas', { onDelete: 'SET NULL', nullable: true })
+  @ManyToOne('PantallaAutomanual', 'capturas', { onDelete: 'CASCADE', nullable: true })
   @JoinColumn({ name: 'pantalla_id' })
   pantalla?: PantallaAutomanual;
 
-  @Column({ name: 'modulo_id', length: 100 })
-  moduloId: string;
+  @Column({ name: 'modulo_id', length: 100, nullable: true })
+  moduloId?: string;
 
-  @Column({ name: 'modulo_titulo', length: 255 })
-  moduloTitulo: string;
+  @Column({ name: 'modulo_titulo', length: 255, nullable: true })
+  moduloTitulo?: string;
 
-  @Column({ name: 'seccion_id', length: 100 })
-  seccionId: string;
+  @Column({ name: 'seccion_id', length: 100, nullable: true })
+  seccionId?: string;
 
-  @Column({ name: 'seccion_titulo', length: 255 })
-  seccionTitulo: string;
+  @Column({ name: 'seccion_titulo', length: 255, nullable: true })
+  seccionTitulo?: string;
 
   @Column({ name: 'ruta_app', length: 500, nullable: true })
   rutaApp?: string;

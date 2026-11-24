@@ -37,6 +37,8 @@ export interface ResultadoAnalisisVision {
 export interface CasoPruebaGeneradoIa {
   codigo: string;
   titulo: string;
+  urlPantalla?: string;
+  capturaFileName?: string;
   descripcion: string;
   tipo: string;
   criterioAsercion?: {
@@ -93,7 +95,8 @@ export class AnalizadorVision {
 
   private sincronizarEntorno(): void {
     const envKey = process.env.GEMINI_API_KEY || null;
-    const envModel = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+    const envModel =
+      process.env.GEMINI_MODELO || process.env.GEMINI_MODEL || 'gemini-2.5-flash';
 
     const targetKey = this.explicitApiKey ? this.apiKey : envKey;
     const targetModel = this.explicitModel ? this.model : envModel;
@@ -119,11 +122,11 @@ export class AnalizadorVision {
 
   public actualizarConfiguracion(apiKey?: string, model?: string) {
     if (apiKey !== undefined) {
-      this.apiKey = apiKey;
+      this.apiKey = apiKey || null;
       this.explicitApiKey = Boolean(apiKey);
     }
     if (model !== undefined) {
-      this.model = model;
+      this.model = model || this.model;
       this.explicitModel = Boolean(model);
     }
     if (this.apiKey) {
@@ -311,7 +314,11 @@ export class AnalizadorVision {
     sectionTitle: string;
     route: string;
     functionalDescription?: string;
+    indicacionIa?: string;
+    casosExistentes?: Array<{ codigo?: string; titulo: string }>;
     screenshotPath?: string;
+    screenshotPaths?: string[];
+    capturasConUrl?: Array<{ fileName: string; caption: string; url?: string }>;
     fields?: CampoFormularioUsuario[];
     actions?: AccionPantallaUsuario[];
     tables?: any[];
@@ -340,9 +347,32 @@ export class AnalizadorVision {
         ? `\nDIRECTIVA OBLIGATORIA DEL USUARIO / REGLA DE NEGOCIO:\n"${opciones.functionalDescription}"\nDEBES RESPETAR ESTRICTAMENTE ESTA DIRECTIVA (por ejemplo, si indica "solo capturar textos" o "no probar formularios", genera exclusivamente casos acordes a esa directriz).\n`
         : '';
 
+      const instruccionFeedback = opciones.indicacionIa?.trim()
+        ? `\nMENSAJE / ENFOQUE PRIORITARIO DEL QA PARA ESTA EJECUCIÓN:\n"${opciones.indicacionIa.trim()}"\nCéntrate específicamente en identificar, analizar y generar casos de prueba para lo que el QA indicó en este mensaje.\n`
+        : '';
+
+      const siguientesCodigo = `CP-${String((opciones.casosExistentes?.length || 0) + 1).padStart(2, '0')}`;
+      const instruccionExistentes =
+        opciones.casosExistentes && opciones.casosExistentes.length > 0
+          ? `\nCASOS DE PRUEBA YA GUARDADOS EN BASE DE DATOS (NO REPETIR):\n${opciones.casosExistentes
+              .map((c) => `- [${c.codigo || 'CP'}] ${c.titulo}`)
+              .join('\n')}\nREGLA ESTRICTA: NO vuelvas a generar ninguno de los casos anteriores ni duplicados. Genera ÚNICAMENTE casos NUEVOS que falten para complementar la cobertura, continuando la numeración desde ${siguientesCodigo}.\n`
+          : '';
+
+      const mapaCapturasTexto =
+        opciones.capturasConUrl && opciones.capturasConUrl.length > 0
+          ? `\nCAPTURAS Y URLS DETECTADAS POR PLAYWRIGHT (en orden):\n${opciones.capturasConUrl
+              .slice(0, 6)
+              .map(
+                (c, i) =>
+                  `- Imagen ${i + 1} (${c.fileName}): "${c.caption}" | URL: ${c.url || opciones.route}`,
+              )
+              .join('\n')}\n`
+          : '';
+
       const promptCasos = `Actúa como un Ingeniero QA Senior especializado en pruebas automatizadas E2E con Playwright.
 Analiza la pantalla "${opciones.sectionTitle}" (ruta: "${opciones.route}") del módulo "${opciones.moduleTitle}" en la aplicación "${opciones.appName}".
-${instruccionFuncional}
+${instruccionFuncional}${instruccionFeedback}${instruccionExistentes}${mapaCapturasTexto}
 Elementos detectados en la interfaz:
 Campos de entrada:
 ${camposTexto}
@@ -351,7 +381,8 @@ Botones y acciones:
 ${accionesTexto}
 
 INSTRUCCIONES:
-Genera entre 2 y 4 casos de prueba automatizados para validar exhaustivamente esta pantalla respetando cualquier directiva obligatoria anterior.
+Genera entre 2 y 5 casos de prueba automatizados para validar exhaustivamente las vistas y sub-URLs capturadas respetando cualquier directiva obligatoria anterior.
+Cada caso debe indicar exactamente en "urlPantalla" la URL de la captura correspondiente y en "capturaFileName" el nombre de archivo de esa captura.
 Cada caso de prueba debe tener una secuencia ordenada de pasos ejecutables por Playwright ('navegar', 'escribir', 'clic', 'seleccionar', 'esperar_visible').
 
 RESPONDE ÚNICAMENTE CON UN ARREGLO JSON VÁLIDO CON ESTA ESTRUCTURA (sin bloques markdown ni explicaciones):
@@ -359,6 +390,8 @@ RESPONDE ÚNICAMENTE CON UN ARREGLO JSON VÁLIDO CON ESTA ESTRUCTURA (sin bloque
   {
     "codigo": "CP-01",
     "titulo": "Carga inicial y visibilidad de componentes",
+    "urlPantalla": "${opciones.capturasConUrl?.[0]?.url || opciones.route}",
+    "capturaFileName": "${opciones.capturasConUrl?.[0]?.fileName || ''}",
     "descripcion": "Verifica que la pantalla cargue correctamente y los elementos principales estén visibles.",
     "criterioAsercion": {
       "tipo": "selector_visible",
@@ -386,20 +419,32 @@ RESPONDE ÚNICAMENTE CON UN ARREGLO JSON VÁLIDO CON ESTA ESTRUCTURA (sin bloque
         text?: string;
       }> = [];
 
-      if (opciones.screenshotPath && (await fs.pathExists(opciones.screenshotPath))) {
-        const buffer = await fs.readFile(opciones.screenshotPath);
-        partesContenido.push({
-          inlineData: {
-            mimeType: 'image/png',
-            data: buffer.toString('base64'),
-          },
-        });
+      const rutasImagenes = (
+        opciones.screenshotPaths && opciones.screenshotPaths.length > 0
+          ? opciones.screenshotPaths
+          : opciones.screenshotPath
+            ? [opciones.screenshotPath]
+            : []
+      ).slice(0, 6);
+
+      for (const rutaImg of rutasImagenes) {
+        if (rutaImg && (await fs.pathExists(rutaImg))) {
+          const buffer = await fs.readFile(rutaImg);
+          partesContenido.push({
+            inlineData: {
+              mimeType: 'image/png',
+              data: buffer.toString('base64'),
+            },
+          });
+        }
       }
 
       partesContenido.push({ text: promptCasos });
 
       const modeloActivo = this.model || 'gemini-2.5-flash';
-      const colaModelos = [modeloActivo, 'gemini-2.5-flash-lite', 'gemini-2.0-flash'];
+      const colaModelos = Array.from(
+        new Set([modeloActivo, 'gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.0-flash']),
+      );
 
       for (const mod of colaModelos) {
         try {
@@ -413,20 +458,236 @@ RESPONDE ÚNICAMENTE CON UN ARREGLO JSON VÁLIDO CON ESTA ESTRUCTURA (sin bloque
           });
 
           const texto = (response.text || '').replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-          const casos = JSON.parse(texto) as CasoPruebaGeneradoIa[];
-          if (Array.isArray(casos) && casos.length > 0) {
+          const parsed = JSON.parse(texto);
+          const casos: CasoPruebaGeneradoIa[] = Array.isArray(parsed)
+            ? parsed
+            : Array.isArray(parsed?.casos)
+              ? parsed.casos
+              : Array.isArray(parsed?.testCases)
+                ? parsed.testCases
+                : [];
+
+          if (casos.length > 0) {
             console.log(pc.green(`  ✔ ${casos.length} casos de prueba generados con IA (${mod}) para ${opciones.sectionTitle}`));
             return casos;
           }
+          console.log(pc.yellow(`  ⚠ ${mod} devolvió una respuesta vacía o sin casos válidos.`));
         } catch (err: any) {
-          console.warn(`  ⚠ Fallo al generar casos con ${mod}: ${err.message}`);
+          console.log(pc.yellow(`  ⚠ Fallo al generar casos con ${mod}: ${err.message}`));
         }
       }
 
       return [];
     } catch (err: any) {
-      console.warn(`  ⚠ Error general en generación de casos de prueba con IA: ${err.message}`);
+      console.log(pc.red(`  ✖ Error general en generación de casos de prueba con IA: ${err.message}`));
       return [];
+    }
+  }
+
+  /**
+   * Analiza una captura completa cuando un caso de prueba falla durante su re-ejecución con Playwright.
+   */
+  public async analizarFalloPrueba(opciones: {
+    tituloCaso: string;
+    errorTecnico: string;
+    screenshotPath: string;
+  }): Promise<string | null> {
+    this.sincronizarEntorno();
+    if (!this.estaDisponible() || !(await fs.pathExists(opciones.screenshotPath))) {
+      return null;
+    }
+
+    try {
+      const buffer = await fs.readFile(opciones.screenshotPath);
+      const response = await this.ai!.models.generateContent({
+        model: this.model || 'gemini-2.5-flash',
+        contents: [
+          {
+            role: 'user',
+            parts: [
+              {
+                inlineData: {
+                  mimeType: 'image/png',
+                  data: buffer.toString('base64'),
+                },
+              },
+              {
+                text: `Actúa como QA Senior. El caso de prueba "${opciones.tituloCaso}" falló en Playwright con el error: "${opciones.errorTecnico}".
+Observando la captura completa de la pantalla en el momento del fallo, explica en máximo 2 líneas claras qué se ve en la pantalla y por qué pudo fallar (ej. sesión expirada, modal abierto, texto distinto, botón oculto).`,
+              },
+            ],
+          },
+        ],
+        config: { temperature: 0.2 },
+      });
+
+      return (response.text || '').trim() || null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Planifica acciones concretas de Playwright para llegar a la sección/módulo/modal
+   * que el QA indicó que faltó en la pantalla actual.
+   */
+  public async planificarAccionesParaIndicacion(opciones: {
+    screenshotPath: string;
+    indicacionIa: string;
+    elementosVisibles: Array<{ etiqueta: string; selector?: string; tipo: string }>;
+  }): Promise<
+    Array<{
+      accion: 'clic' | 'escribir' | 'esperar_tiempo';
+      selector?: string;
+      textoVisible?: string;
+      valor?: string;
+      descripcion: string;
+    }>
+  > {
+    this.sincronizarEntorno();
+    if (!this.estaDisponible() || !(await fs.pathExists(opciones.screenshotPath))) {
+      return [];
+    }
+
+    try {
+      const buffer = await fs.readFile(opciones.screenshotPath);
+      const listaElementos = opciones.elementosVisibles
+        .slice(0, 60)
+        .map((e) => `- [${e.tipo}] "${e.etiqueta}"${e.selector ? ` (selector: ${e.selector})` : ''}`)
+        .join('\n');
+
+      const prompt = `Actúa como Ingeniero QA automatizando con Playwright.
+El QA indicó lo siguiente que faltó probar o mostrar en la pantalla:
+"${opciones.indicacionIa}"
+
+Observando la captura completa actual y los elementos interactivos detectados en el DOM:
+${listaElementos || '(Sin elementos detectados)'}
+
+Indica los pasos mínimos necesarios para navegar/abrir/mostrar esa parte que faltó (por ejemplo hacer clic en un botón, menú, pestaña o enlace).
+Si ya está visible en la captura actual y no se requiere ningún clic previo, devuelve [].
+
+RESPONDE ÚNICAMENTE CON UN ARREGLO JSON VÁLIDO:
+[
+  {
+    "accion": "clic",
+    "textoVisible": "Texto exacto visible del botón o menú",
+    "selector": "selector CSS opcional si es claro",
+    "descripcion": "Abrir el módulo o sección solicitada"
+  }
+]`;
+
+      const response = await this.ai!.models.generateContent({
+        model: this.model || 'gemini-2.5-flash',
+        contents: [
+          {
+            role: 'user',
+            parts: [
+              { inlineData: { mimeType: 'image/png', data: buffer.toString('base64') } },
+              { text: prompt },
+            ],
+          },
+        ],
+        config: {
+          temperature: 0.1,
+          responseMimeType: 'application/json',
+        },
+      });
+
+      const texto = (response.text || '').replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      const parsed = JSON.parse(texto);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (err: any) {
+      console.log(pc.yellow(`  ⚠ No se pudieron planificar acciones previas con IA: ${err.message}`));
+      return [];
+    }
+  }
+
+  /**
+   * Analiza en tiempo real la captura actual de Playwright y los elementos visibles del DOM
+   * para encontrar de forma genérica el elemento real cuando un selector técnico falla.
+   */
+  public async resolverPasoConVision(opciones: {
+    screenshotPath: string;
+    tituloCaso?: string;
+    urlActual?: string;
+    textoPantalla?: string;
+    accion: string;
+    descripcion: string;
+    selectorIntentado?: string;
+    valor?: string;
+    elementosEnVivo: Array<{ tag: string; texto: string; selector: string; role?: string }>;
+  }): Promise<{
+    encontrado: boolean;
+    selector?: string;
+    textoVisible?: string;
+    motivoBloqueo?: string;
+  }> {
+    this.sincronizarEntorno();
+    if (!this.estaDisponible() || !(await fs.pathExists(opciones.screenshotPath))) {
+      return { encontrado: false };
+    }
+
+    try {
+      const buffer = await fs.readFile(opciones.screenshotPath);
+      const lista = opciones.elementosEnVivo
+        .slice(0, 80)
+        .map((e) => `- <${e.tag}${e.role ? ` role="${e.role}"` : ''}> texto="${e.texto}" | selector="${e.selector}"`)
+        .join('\n');
+
+      const prompt = `Actúa como QA Senior observando Playwright en vivo.
+Caso de prueba en ejecución: "${opciones.tituloCaso || ''}"
+URL actual del navegador: "${opciones.urlActual || ''}"
+Textos visibles principales en pantalla:
+${(opciones.textoPantalla || '').slice(0, 1200) || '(No extraídos)'}
+
+Paso automatizado cuyo selector técnico falló:
+- Acción: "${opciones.accion}"
+- Descripción del paso: "${opciones.descripcion}"
+- Selector que falló: "${opciones.selectorIntentado || 'ninguno'}"
+- Valor a usar: "${opciones.valor || ''}"
+
+Elementos interactivos visibles detectados actualmente en la pantalla:
+${lista || '(No se detectaron elementos interactivos)'}
+
+Observa la captura completa de la pantalla y la lista real de elementos:
+1. Si el elemento que busca el paso SÍ está en pantalla (por ejemplo es un mat-select, un div/button[role="combobox"], un menú o tiene un texto/selector distinto al que falló), indica "encontrado": true y devuelve el "selector" exacto de la lista o su "textoVisible" exacto.
+2. Si la pantalla muestra que ese elemento definitivamente NO está disponible (por ejemplo, hay un modal de login bloqueando o estamos en otra pantalla), indica "encontrado": false y explica brevemente en "motivoBloqueo".
+
+RESPONDE ÚNICAMENTE CON UN JSON VÁLIDO:
+{
+  "encontrado": true,
+  "selector": "selector CSS exacto si aplica",
+  "textoVisible": "texto visible exacto si aplica",
+  "motivoBloqueo": ""
+}`;
+
+      const response = await this.ai!.models.generateContent({
+        model: this.model || 'gemini-2.5-flash',
+        contents: [
+          {
+            role: 'user',
+            parts: [
+              { inlineData: { mimeType: 'image/png', data: buffer.toString('base64') } },
+              { text: prompt },
+            ],
+          },
+        ],
+        config: {
+          temperature: 0.1,
+          responseMimeType: 'application/json',
+        },
+      });
+
+      const texto = (response.text || '').replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      const parsed = JSON.parse(texto);
+      return {
+        encontrado: Boolean(parsed?.encontrado),
+        selector: parsed?.selector || undefined,
+        textoVisible: parsed?.textoVisible || undefined,
+        motivoBloqueo: parsed?.motivoBloqueo || undefined,
+      };
+    } catch {
+      return { encontrado: false };
     }
   }
 }

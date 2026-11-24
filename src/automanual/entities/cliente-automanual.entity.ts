@@ -7,6 +7,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import type { ModuloAutomanual } from './modulo-automanual.entity.js';
+import type { PantallaAutomanual } from './pantalla-automanual.entity.js';
 
 @Entity('clientes_automanual')
 export class ClienteAutomanual {
@@ -37,6 +38,9 @@ export class ClienteAutomanual {
 
   @OneToMany('ModuloAutomanual', 'cliente', { cascade: true })
   modulos: ModuloAutomanual[];
+
+  @OneToMany('PantallaAutomanual', 'cliente', { cascade: true })
+  pantallas: PantallaAutomanual[];
 
   @CreateDateColumn({ name: 'fecha_creacion', type: 'timestamp with time zone' })
   fechaCreacion: Date;

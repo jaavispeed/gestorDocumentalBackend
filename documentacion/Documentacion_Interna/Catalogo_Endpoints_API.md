@@ -49,3 +49,17 @@ Este documento contiene la especificación completa de todos los endpoints dispo
 | `POST` | `/api/automanual/subir-logo` | Almacena el logo institucional para personalización de manuales |
 | `GET` | `/api/automanual/configuracion` | Obtiene la configuración activa del motor de exploración |
 | `POST` | `/api/automanual/configuracion` | Actualiza rutas, cookies y parámetros de exploración |
+
+### AutoManual QA por Pantalla (`/api/automanual`)
+
+| Método | Ruta | Descripción |
+| :--- | :--- | :--- |
+| `GET` | `/api/automanual/clientes/:slug/pantallas` | Lista pantallas configuradas directamente para el cliente con conteo de casos/capturas y estado QA |
+| `POST` | `/api/automanual/clientes/:slug/pantallas` | Crea o actualiza una pantalla asociada al cliente (`nombre`, `ruta`, `descripcion`) |
+| `DELETE` | `/api/automanual/pantallas/:pantallaId` | Elimina una pantalla y en cascada sus capturas y casos de prueba |
+| `GET` | `/api/automanual/pantallas/:pantallaId/capturas` | Obtiene las evidencias visuales de una pantalla |
+| `GET` | `/api/automanual/pantallas/:pantallaId/casos-prueba` | Obtiene los casos de prueba de una pantalla |
+| `POST` | `/api/automanual/pantallas/:pantallaId/generar` | Ejecuta Playwright con capturas completas (`fullPage: true`) y Gemini Vision sobre todas las imágenes para proponer casos en revisión previa |
+| `POST` | `/api/automanual/pantallas/:pantallaId/ejecutar-casos` | Re-ejecución 1-Click de los casos de prueba guardados en BD mediante `EjecutorCasosPrueba` y análisis de fallos con IA |
+| `POST` | `/api/automanual/clientes/:slug/ejecutar-regresion` | Ejecuta regresión general de todas las pantallas del cliente (Paso 1 Login primero) actualizando `estadoRegresion` en vivo |
+| `POST` | `/api/automanual/pantallas/:pantallaId/generar-faltantes` | Navega con Playwright guiado por IA hacia lo indicado por el QA, saca nueva captura completa y genera solo los casos faltantes |

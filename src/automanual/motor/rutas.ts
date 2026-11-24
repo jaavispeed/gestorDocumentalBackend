@@ -1,4 +1,5 @@
 import * as path from 'path';
+import * as os from 'os';
 import fs from 'fs-extra';
 
 export interface RutasAutomanual {
@@ -11,18 +12,12 @@ export interface RutasAutomanual {
 
 export function obtenerRutasAutomanual(): RutasAutomanual {
   const directorioRaiz = process.env.APP_ROOT || process.cwd();
-  const directorioClientes = path.join(
-    directorioRaiz,
-    'datos',
-    'automanual',
-    'clientes',
+  const directorioTempBase = path.join(
+    os.tmpdir(),
+    'gestor-documental-automanual-runtime',
   );
-  const directorioDocs = path.join(
-    directorioRaiz,
-    'datos',
-    'automanual',
-    'docs',
-  );
+  const directorioClientes = path.join(directorioTempBase, 'clientes');
+  const directorioDocs = path.join(directorioTempBase, 'docs');
   const archivoEnv = path.join(directorioRaiz, '.env');
   const directorioPlantillas = path.join(
     directorioRaiz,

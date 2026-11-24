@@ -14,6 +14,8 @@ export class SupabaseStorageService {
   private clienteSupabase: SupabaseClient | null = null;
   private readonly nombreBucket: string;
 
+  private bucketVerificado = false;
+
   constructor(private readonly configService: ConfigService) {
     const supabaseUrl = this.configService.get<string>('SUPABASE_URL');
     const supabaseKey = this.configService.get<string>('SUPABASE_KEY');
@@ -28,6 +30,7 @@ export class SupabaseStorageService {
         this.logger.log(
           `Supabase Storage inicializado para el bucket: ${this.nombreBucket}`,
         );
+        void this.asegurarBucketPublico();
       } catch (err: any) {
         this.logger.error(
           `Error al inicializar cliente de Supabase: ${err.message}`,
@@ -40,6 +43,35 @@ export class SupabaseStorageService {
     }
   }
 
+  private async asegurarBucketPublico(): Promise<void> {
+    if (!this.clienteSupabase || this.bucketVerificado) return;
+    try {
+      const { data, error } = await this.clienteSupabase.storage.getBucket(
+        this.nombreBucket,
+      );
+      if (error || !data) {
+        const { error: createErr } =
+          await this.clienteSupabase.storage.createBucket(this.nombreBucket, {
+            public: true,
+          });
+        if (createErr) {
+          this.logger.warn(
+            `No se pudo crear automáticamente el bucket "${this.nombreBucket}" en Supabase (${createErr.message}). Créalo manualmente como Public Bucket.`,
+          );
+          return;
+        }
+        this.logger.log(
+          `Bucket "${this.nombreBucket}" creado automáticamente como público en Supabase Storage.`,
+        );
+      } else if (!data.public) {
+        await this.clienteSupabase.storage
+          .updateBucket(this.nombreBucket, { public: true })
+          .catch(() => {});
+      }
+      this.bucketVerificado = true;
+    } catch {}
+  }
+
   public estaDisponible(): boolean {
     return this.clienteSupabase !== null;
   }
@@ -50,6 +82,7 @@ export class SupabaseStorageService {
     contentType = 'image/png',
   ): Promise<ResultadoSubidaStorage | null> {
     if (!this.clienteSupabase) return null;
+    await this.asegurarBucketPublico();
 
     try {
       if (!(await fs.pathExists(rutaArchivoLocal))) {
